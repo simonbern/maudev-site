@@ -1,0 +1,20 @@
+# Le dépôt stocke des fins de ligne LF ; la copie de travail garde celles du
+# système. Sans cette ligne, un aller-retour Windows / Linux — le site est
+# construit sur Linux chez l'hébergeur — réécrit des fichiers entiers en
+# CRLF et noie chaque diff dans du bruit.
+* text=auto eol=lf
+
+# Détectés comme binaires : jamais de conversion, jamais de diff textuel.
+*.jpg  binary
+*.jpeg binary
+*.png  binary
+*.gif  binary
+*.svg  text eol=lf
+*.webp binary
+*.ico  binary
+*.mp4  binary
+*.mov  binary
+*.webm binary
+*.pdf  binary
+*.woff  binary
+*.woff2 binary

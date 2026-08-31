@@ -1,0 +1,14 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Landing from '../components/Landing.astro';
+import { landing } from '../copy/landing';
+---
+
+<Layout
+  locale="fr"
+  overlay
+  title="MauDev — Logements neufs à louer"
+  description={landing.fr.hero.lead}
+>
+  <Landing locale="fr" />
+</Layout>

@@ -1,0 +1,137 @@
+---
+/**
+ * Visionneuse plein écran, partagée par les galeries et par les plans.
+ *
+ * `<dialog>` natif plutôt qu'une bibliothèque : il apporte déjà le fond modal,
+ * le piège à focus, la fermeture à Échap et le retour du focus sur l'élément
+ * d'origine. Rien à réimplémenter.
+ *
+ * La liste des images est portée par le composant, pas déduite des
+ * déclencheurs : ceux-ci se contentent d'un `data-index`. C'est ce qui permet
+ * à un même plan d'avoir deux déclencheurs dans la page — le tableau ≥ md et
+ * les cartes < md — sans être compté deux fois dans la navigation.
+ */
+interface Props {
+  /** Relie le dialogue à ses déclencheurs `[data-lightbox="<id>"]`. */
+  id: string;
+  /** Images, dans l'ordre de navigation. `data-index` pointe dedans. */
+  items: { full: string; alt: string }[];
+  label: string;
+  /** Gabarit du compteur, avec les jetons {i} et {n}. */
+  countTemplate: string;
+  closeLabel: string;
+  prevLabel: string;
+  nextLabel: string;
+}
+const { id, items, label, countTemplate, closeLabel, prevLabel, nextLabel } = Astro.props;
+
+// `</script>` dans un alt casserait la balise. Aucun de nos alts n'en contient,
+// mais le coût de l'échappement est nul et il vient du contenu client.
+const payload = JSON.stringify(items).replace(/</g, '\\u003c');
+---
+
+<script type="application/json" id={`lightbox-items-${id}`} is:inline set:html={payload} />
+
+<dialog
+  id={`lightbox-${id}`}
+  class="fixed inset-0 m-0 h-dvh max-h-none w-dvw max-w-none border-0 bg-transparent p-0 backdrop:bg-scrim/90"
+  aria-label={label}
+>
+  <div data-surface class="relative flex h-full w-full items-center justify-center p-4 md:p-8">
+    <img id={`lightbox-img-${id}`} alt="" class="max-h-full max-w-full object-contain" />
+
+    <p
+      id={`lightbox-count-${id}`}
+      data-template={countTemplate}
+      class="num absolute top-5 left-1/2 -translate-x-1/2 bg-scrim/60 px-3 py-1 text-label text-on-inverse md:top-7"
+    >
+    </p>
+
+    <button
+      type="button"
+      data-close
+      aria-label={closeLabel}
+      class="absolute top-4 right-4 rounded-card inline-flex h-11 w-11 cursor-pointer items-center justify-center bg-scrim/60 text-on-inverse transition-colors duration-200 hover:bg-scrim/90 md:top-6 md:right-6"
+    >
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" class="h-6 w-6" aria-hidden="true">
+        <path d="M5 5l14 14M19 5L5 19"></path>
+      </svg>
+    </button>
+
+    <button
+      type="button"
+      data-prev
+      aria-label={prevLabel}
+      class="absolute left-3 rounded-card inline-flex h-11 w-11 cursor-pointer items-center justify-center bg-scrim/60 text-on-inverse transition-colors duration-200 hover:bg-scrim/90 md:left-6"
+    >
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-6 w-6" aria-hidden="true">
+        <path d="M15 18l-6-6 6-6"></path>
+      </svg>
+    </button>
+
+    <button
+      type="button"
+      data-next
+      aria-label={nextLabel}
+      class="absolute right-3 rounded-card inline-flex h-11 w-11 cursor-pointer items-center justify-center bg-scrim/60 text-on-inverse transition-colors duration-200 hover:bg-scrim/90 md:right-6"
+    >
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-6 w-6" aria-hidden="true">
+        <path d="M9 18l6-6-6-6"></path>
+      </svg>
+    </button>
+  </div>
+</dialog>
+
+<script>
+  // Une page peut porter plusieurs visionneuses (photos, rendus, plans) :
+  // chacune retrouve ses propres éléments et ses propres déclencheurs par son id.
+  for (const dialog of document.querySelectorAll<HTMLDialogElement>('dialog[id^="lightbox-"]')) {
+    const key = dialog.id.replace('lightbox-', '');
+    const img = document.getElementById(`lightbox-img-${key}`) as HTMLImageElement;
+    const count = document.getElementById(`lightbox-count-${key}`) as HTMLElement;
+    const items = JSON.parse(
+      document.getElementById(`lightbox-items-${key}`)!.textContent!,
+    ) as { full: string; alt: string }[];
+    const template = count.dataset.template ?? '';
+
+    let current = 0;
+    const show = (i: number) => {
+      current = (i + items.length) % items.length;
+      img.src = items[current].full;
+      img.alt = items[current].alt;
+      count.textContent = template
+        .replace('{i}', String(current + 1))
+        .replace('{n}', String(items.length));
+    };
+
+    for (const trigger of document.querySelectorAll<HTMLElement>(`[data-lightbox="${key}"]`)) {
+      trigger.addEventListener('click', () => {
+        show(Number(trigger.dataset.index));
+        dialog.showModal();
+      });
+    }
+
+    dialog.querySelector('[data-close]')!.addEventListener('click', () => dialog.close());
+    dialog.querySelector('[data-prev]')!.addEventListener('click', () => show(current - 1));
+    dialog.querySelector('[data-next]')!.addEventListener('click', () => show(current + 1));
+
+    dialog.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowLeft') show(current - 1);
+      if (e.key === 'ArrowRight') show(current + 1);
+    });
+
+    // Clic sur le fond : la surface interne couvre tout le dialogue, donc le
+    // backdrop n'est jamais la cible. On ferme quand le clic tombe sur la
+    // surface elle-même, pas sur l'image ni sur un bouton.
+    dialog.querySelector('[data-surface]')!.addEventListener('click', (e) => {
+      if (e.target === e.currentTarget) dialog.close();
+    });
+
+    // Un seul élément : les flèches et le compteur n'ont aucun sens.
+    if (items.length < 2) {
+      dialog.querySelector<HTMLElement>('[data-prev]')!.hidden = true;
+      dialog.querySelector<HTMLElement>('[data-next]')!.hidden = true;
+      count.hidden = true;
+    }
+  }
+</script>

@@ -1,0 +1,9 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import Confidentialite from '../../components/Confidentialite.astro';
+import { legal } from '../../copy/legal';
+---
+
+<Layout locale="en" title={`${legal.en.title} — MauDev`} description={legal.en.lead}>
+  <Confidentialite locale="en" />
+</Layout>

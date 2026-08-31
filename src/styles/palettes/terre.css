@@ -1,0 +1,118 @@
+/* ══════════════════════════════════════════════════════════════════════════
+   Palette « Terre chaleureuse » — la palette d'origine.
+   Dérivée du logo du client : brun #241c17, crème #efe7db, terracotta #b4552d.
+
+   Pour l'activer : dans global.css, remplacer l'import de palette par
+       @import "./palettes/terre.css";
+   Une seule palette à la fois. Tous les ratios ci-dessous sont calculés,
+   pas estimés — voir DESIGN.md § Contraste.
+   ══════════════════════════════════════════════════════════════════════════ */
+
+@theme {
+  /* ── Réinitialisation ───────────────────────────────────────────────────
+     On efface la palette Tailwind par défaut : `bg-blue-500` doit être une
+     erreur, pas une tentation. Seuls les mots-clés CSS survivent.          */
+  --color-*: initial;
+  --color-transparent: transparent;
+  --color-current: currentColor;
+  --color-white: #ffffff;
+
+  /* ── Primitives · Sand (neutres chauds) ─────────────────────────────────
+     Dérivés du crème du logo (#efe7db = sand-200).                         */
+  --color-sand-50: #fbf8f3;
+  --color-sand-100: #f5efe5;
+  --color-sand-200: #efe7db;
+  --color-sand-300: #e2d7c6;
+  --color-sand-400: #c9bba5;
+  --color-sand-500: #a99881;
+  --color-sand-600: #85735c;
+
+  /* ── Primitives · Bark (bruns) ──────────────────────────────────────────
+     Dérivés du brun du logo (#241c17 = bark-900).                          */
+  --color-bark-500: #6b5b4c;
+  --color-bark-700: #4a3b30;
+  --color-bark-800: #33281f;
+  --color-bark-900: #241c17;
+  --color-bark-950: #171110;
+
+  /* ── Primitives · Clay (terracotta) ─────────────────────────────────────
+     Dérivés de l'accent du logo (#b4552d = clay-600).                      */
+  --color-clay-100: #f7e8df;
+  --color-clay-400: #d07a52;
+  --color-clay-600: #b4552d;
+  --color-clay-700: #93431f;
+
+  /* ── Primitives · Moss ────────────────────────────────────────
+     Seule couleur hors-marque. Servait aux étiquettes de statut, retirées
+     depuis. Aucun composant ne l'utilise aujourd'hui : à supprimer si rien
+     ne la reprend.                                                        */
+  --color-moss-100: #e6ede3;
+  --color-moss-400: #93b391;
+  --color-moss-700: #3f6b45;
+
+  /* ── Sémantiques · Surfaces ─────────────────────────────────────────────
+     Les composants utilisent CES noms, pas les primitives.                 */
+  --color-page: var(--color-sand-50);
+  --color-surface: var(--color-white);
+  --color-surface-alt: var(--color-sand-200);
+  --color-section-alt: var(--color-sand-100);
+  /* Équivalent chaud du même jeton : le terracotta dilué à 15 %. */
+  --color-section-accent: #f4e6df;
+  --color-inverse: var(--color-bark-900);
+  --color-inverse-alt: var(--color-bark-800);
+
+  /* ── Sémantiques · Texte ────────────────────────────────────────────────
+     Ratios vérifiés sur --color-page (voir DESIGN.md § Contraste).         */
+  --color-ink: var(--color-bark-900); /* 15.81:1 */
+  --color-ink-soft: var(--color-bark-700); /* 10.12:1 */
+  --color-ink-muted: var(--color-bark-500); /*  6.14:1 */
+  --color-on-inverse: var(--color-sand-200); /* 13.66:1 */
+  --color-on-inverse-muted: var(--color-sand-400); /*  8.88:1 */
+  --color-on-accent: var(--color-sand-50); /*  4.63:1 sur clay-600 */
+
+  /* ── Sémantiques · Accent ───────────────────────────────────────────────
+     Deux terracottas, non interchangeables :
+       accent      → aplats et fonds (boutons pleins, badges)
+       accent-ink  → texte et icônes terracotta (clay-600 en texte tombe à
+                     4.00:1 sur surface-alt, sous le seuil AA)             */
+  --color-accent: var(--color-clay-600);
+  --color-accent-hover: var(--color-clay-700);
+  --color-accent-ink: var(--color-clay-700); /*  6.47:1 */
+  --color-accent-tint: var(--color-clay-100);
+  --color-accent-on-inverse: var(--color-clay-400); /*  5.26:1 sur inverse */
+
+  /* ── Sémantiques · Titre d'ouverture ─────────────────────────────
+     La ligne italique du titre du hero. Elle a son propre jeton depuis la
+     palette Marine, où elle prend une couleur qui n'est pas l'accent. Ici
+     elle suit l'accent sur fond sombre — il n'y a rien à distinguer.       */
+  --color-display-accent: var(--color-clay-400);
+
+  /* ── Sémantiques · Traits ───────────────────────────────────────────────
+     line / line-strong sont décoratifs (séparateurs, contours de cartes).
+     line-input est le seul qui atteint 3:1 : obligatoire sur tout champ de
+     formulaire et tout contrôle dont la bordure porte du sens.             */
+  --color-line: var(--color-sand-300);
+  --color-line-strong: var(--color-sand-400);
+  --color-line-input: var(--color-sand-600); /*  4.31:1 */
+  --color-line-inverse: var(--color-bark-700);
+
+  /* ── Sémantiques · Voiles et survols ────────────────────────────
+     Voir foret.css pour le raisonnement : ces deux jetons existent pour que
+     les composants n'aient plus à nommer `bark-950` ni `sand-100`.          */
+  --color-scrim: var(--color-bark-950);
+  --color-surface-hover: var(--color-sand-100);
+
+  /* ── Sémantiques · Succès ──────────────────────────────────────
+     Le vert servait aux étiquettes de statut, retirées depuis. Il ne reste
+     qu'un usage : l'accusé de réception du formulaire de visite — succès et
+     échec ne doivent pas se ressembler.                                     */
+  --color-available: var(--color-moss-700); /*  5.83:1 sur page      */
+  --color-available-tint: var(--color-moss-100);
+  /* ── Ombres ────────────────────────────────────────────────────────────
+     Teintées de la couleur sombre de la palette, jamais noires : une ombre
+     neutre vire au gris sur un fond coloré et casse la chaleur. Elles vivent
+     donc ici et non dans global.css — changer de palette change les ombres. */
+  --shadow-soft: 0 1px 2px rgb(36 28 23 / 0.04), 0 4px 12px rgb(36 28 23 / 0.06);
+  --shadow-lift: 0 2px 4px rgb(36 28 23 / 0.05), 0 12px 28px rgb(36 28 23 / 0.10);
+  --shadow-media: 0 24px 48px -12px rgb(36 28 23 / 0.18);
+}

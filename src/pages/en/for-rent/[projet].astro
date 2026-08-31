@@ -1,0 +1,29 @@
+---
+import type { GetStaticPaths } from 'astro';
+import { getCollection } from 'astro:content';
+import Layout from '../../../layouts/Layout.astro';
+import ProjectDetail from '../../../components/ProjectDetail.astro';
+import { estEnLocation } from '../../../i18n';
+
+export const getStaticPaths = (async () => {
+  const projets = await getCollection('projets');
+  return projets
+    .filter((p) => estEnLocation(p.data.statut))
+    .map((projet) => ({
+      params: { projet: projet.data.url.en },
+      props: { projet, autre: projet.data.url.fr },
+    }));
+}) satisfies GetStaticPaths;
+
+const { projet, autre } = Astro.props;
+---
+
+<Layout
+  locale="en"
+  overlay
+  lastSegment={autre}
+  title={`${projet.data.nom} — MauDev`}
+  description={projet.data.resume.en}
+>
+  <ProjectDetail projet={projet} locale="en" />
+</Layout>

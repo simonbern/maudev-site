@@ -1,0 +1,132 @@
+---
+import { localize, ui, type Locale } from '../i18n';
+
+/**
+ * Bandeau de consentement aux témoins.
+ *
+ * Le site ne dépose rien par lui-même : pas de mesure d'audience, polices
+ * auto-hébergées. Le seul tiers est la carte Google des pages de projet. Ce
+ * bandeau existe donc pour une finalité unique, d'où un seul interrupteur.
+ * Le jour où de l'analytique s'ajoute, il faudra des catégories séparées :
+ * la Loi 25 exige un consentement **spécifique par finalité**.
+ *
+ * Ce que le mécanisme respecte, et pourquoi c'est écrit comme ça :
+ *
+ * · **Rien avant le choix.** La carte n'est jamais dans le HTML livré ; elle
+ *   est créée en JavaScript, et seulement sur `accepte`.
+ * · **Refuser aussi simple qu'accepter.** Les deux boutons ont exactement la
+ *   même classe. Un « Accepter » en aplat de couleur face à un « Refuser » en
+ *   lien gris est précisément le motif que la loi vise.
+ * · **Refus par défaut.** Aucune valeur stockée = rien ne se charge. Pas de
+ *   case pré-cochée, pas de consentement déduit de la navigation.
+ * · **Rétractation.** Le pied de page rouvre le bandeau ; passer à `refuse`
+ *   retire la carte déjà affichée, sans rechargement.
+ *
+ * Le bandeau n'est pas modal : il n'emprisonne pas le focus et ne masque pas
+ * la page. Rien ne se charge tant qu'on n'a pas répondu, donc rien ne presse.
+ */
+interface Props {
+  locale: Locale;
+}
+const { locale } = Astro.props;
+const t = ui[locale];
+---
+
+<aside
+  data-temoins
+  hidden
+  role="region"
+  aria-label={t.temoinsTitre}
+  class="fixed inset-x-0 bottom-0 z-50 p-4 md:p-6"
+>
+  <div
+    class="mx-auto flex max-w-page flex-col gap-5 rounded-panel bg-inverse p-6 shadow-media md:flex-row md:items-center md:justify-between md:gap-10 md:p-7"
+  >
+    <div class="max-w-prose">
+      <h2 class="text-h3 text-on-inverse">{t.temoinsTitre}</h2>
+      <p class="mt-2 text-small text-on-inverse-muted">
+        {t.temoinsTexte}{' '}
+        <a
+          href={localize('/confidentialite', locale)}
+          class="cursor-pointer underline decoration-line-inverse underline-offset-4 transition-colors duration-200 hover:text-accent-on-inverse hover:decoration-accent-on-inverse"
+        >
+          {t.privacy}
+        </a>
+      </p>
+    </div>
+
+    {/* Même classe sur les deux : le refus ne doit pas coûter un geste de plus
+        ni paraître secondaire. */}
+    <div class="flex shrink-0 flex-wrap gap-3">
+      <button
+        type="button"
+        data-temoins-refuser
+        class="inline-flex h-12 flex-1 cursor-pointer items-center justify-center rounded-card bg-page px-6 text-small font-semibold text-ink transition-colors duration-200 hover:bg-surface-hover md:flex-none"
+      >
+        {t.temoinsRefuser}
+      </button>
+      <button
+        type="button"
+        data-temoins-accepter
+        class="inline-flex h-12 flex-1 cursor-pointer items-center justify-center rounded-card bg-page px-6 text-small font-semibold text-ink transition-colors duration-200 hover:bg-surface-hover md:flex-none"
+      >
+        {t.temoinsAccepter}
+      </button>
+    </div>
+  </div>
+</aside>
+
+<script>
+  // Contrat partagé avec Carte.astro. `localStorage` plutôt qu'un témoin : la
+  // valeur ne voyage jamais vers le serveur, et le site est statique.
+  const CLE = 'maudev.temoins';
+  const EVENEMENT = 'maudev:temoins';
+
+  // Un navigateur en navigation privée, ou réglé pour bloquer le stockage,
+  // lève à la lecture comme à l'écriture. Sans valeur lisible on retombe sur
+  // le refus, qui est le bon défaut.
+  const lire = () => {
+    try {
+      return localStorage.getItem(CLE);
+    } catch {
+      return null;
+    }
+  };
+  const ecrire = (v: string) => {
+    try {
+      localStorage.setItem(CLE, v);
+    } catch {
+      /* choix valable pour la session seule */
+    }
+  };
+
+  const bandeau = document.querySelector<HTMLElement>('[data-temoins]');
+  if (bandeau) {
+    const decider = (valeur: 'accepte' | 'refuse') => {
+      ecrire(valeur);
+      bandeau.hidden = true;
+      document.dispatchEvent(new CustomEvent(EVENEMENT, { detail: valeur }));
+    };
+
+    bandeau
+      .querySelector('[data-temoins-accepter]')!
+      .addEventListener('click', () => decider('accepte'));
+    bandeau
+      .querySelector('[data-temoins-refuser]')!
+      .addEventListener('click', () => decider('refuse'));
+
+    // Rétractation : le pied de page rouvre le bandeau.
+    for (const lien of document.querySelectorAll('[data-temoins-rouvrir]')) {
+      lien.addEventListener('click', () => {
+        bandeau.hidden = false;
+        bandeau.querySelector<HTMLElement>('[data-temoins-refuser]')?.focus();
+      });
+    }
+
+    // Pas encore répondu : on demande. Sinon on ne redemande pas, mais on
+    // rediffuse le choix pour que les cartes de la page s'y conforment.
+    const choix = lire();
+    if (choix === null) bandeau.hidden = false;
+    else document.dispatchEvent(new CustomEvent(EVENEMENT, { detail: choix }));
+  }
+</script>

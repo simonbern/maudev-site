@@ -1,0 +1,308 @@
+---
+import Panneau from './Panneau.astro';
+import Gallery from './Gallery.astro';
+import Icon from './Icon.astro';
+import Logo from './Logo.astro';
+import Reveal from './Reveal.astro';
+import { getCollection } from 'astro:content';
+import { Image, getImage } from 'astro:assets';
+import { projetsCopy } from '../copy/projets';
+import { landing } from '../copy/landing';
+import { localize, ui, CONTACT, type Locale } from '../i18n';
+import { deliveryDate } from '../format';
+
+/**
+ * Page `/projets-a-venir` — les chantiers annoncés.
+ *
+ * **Une page, pas des pages.** `/a-louer` donne une page par projet parce
+ * qu'il y a de quoi la remplir : des plans, des superficies, des prix, un
+ * formulaire de visite. Ici il n'y a qu'un paragraphe, une date et une liste
+ * d'inclusions — une page dédiée par projet serait une page vide avec un
+ * titre. Chaque projet est donc une section entière de celle-ci, ce qui donne
+ * aussi le bon geste : on descend la page et on voit ce qui s'en vient.
+ *
+ * **Aucun appel à louer.** Pas de bouton « Visiter », pas de « Prix sur
+ * demande », pas de badge « Disponible ». Ces bâtiments ne se louent pas
+ * encore ; le seul geste possible est de demander à être prévenu, et il est
+ * en bas de page, une fois. Répéter un bouton de contact sous chaque projet
+ * n'accélère rien — il n'y a que deux projets, et le bas de page est à un
+ * pouce.
+ *
+ * **Les visuels sont des rendus, et la page le dit.** Un rendu 3D présenté
+ * comme une photo est une fausse représentation — c'est la règle de la
+ * collection, et elle vaut doublement ici, où rien n'est bâti. D'où le titre
+ * « Rendus 3D » au-dessus de la galerie, et le gabarit pour qui n'en a pas :
+ * un cadre vide dirait « image manquante », la marque et « visuels à venir »
+ * disent « pas encore livrés », ce qui est le cas.
+ *
+ * L'alternance sombre / claire suit celle du reste du site : un projet sur
+ * deux, ce qui donne au passage la séparation entre les deux fiches sans
+ * qu'aucun filet ne soit nécessaire.
+ */
+interface Props {
+  locale: Locale;
+}
+const { locale } = Astro.props;
+const t = projetsCopy[locale].aVenir;
+const td = projetsCopy[locale].detail;
+const u = ui[locale];
+
+// Tri par `ordre` décroissant, comme partout ailleurs : c'est le seul rang que
+// le client contrôle sans toucher au code. À défaut, la livraison la plus
+// proche d'abord — deux chantiers annoncés se lisent dans l'ordre où ils
+// arrivent.
+const projets = (await getCollection('projets'))
+  .filter((p) => p.data.statut === 'construction')
+  .sort((a, b) => b.data.ordre - a.data.ordre || (a.data.livraison ?? '').localeCompare(b.data.livraison ?? ''));
+
+const totalLogements = projets.reduce((n, p) => n + (p.data.unites ?? 0), 0);
+const c = landing[locale].projets;
+
+// Le poster du drone, en URL : l'attribut `poster` d'une <video> veut une
+// chaîne, pas un composant <Image>. `getImage` donne l'une à partir de l'autre.
+const posters = new Map(
+  await Promise.all(
+    projets
+      .filter((p) => p.data.video?.poster)
+      .map(
+        async (p) =>
+          [p.id, (await getImage({ src: p.data.video!.poster!, width: 1280, format: 'webp' })).src] as const,
+      ),
+  ),
+);
+---
+
+<section class="bg-page pt-12 pb-10 md:pt-16 md:pb-12 lg:pt-20 lg:pb-14">
+  <div class="mx-auto max-w-page px-5 md:px-8 lg:px-12">
+    <div class="grid gap-y-8 md:grid-cols-12 md:gap-x-10">
+      <h1 data-reveal class="text-display text-balance text-ink md:col-span-7">{t.title}</h1>
+      <p
+        data-reveal
+        style="transition-delay:100ms"
+        class="text-lead text-ink-soft md:col-span-5 md:col-start-8 md:self-end"
+      >
+        {t.lead}
+      </p>
+    </div>
+
+    {
+      projets.length > 0 && (
+        <p data-reveal style="transition-delay:180ms" class="mt-10 text-body text-ink-muted">
+          <span class="num">{c.projects(projets.length)}</span>
+          {' · '}
+          <span class="num">{c.units(totalLogements)}</span>
+        </p>
+      )
+    }
+  </div>
+</section>
+
+{/* Les fiches, dans UNE section, sur la nuance claire.
+
+    Chaque projet était une section pleine largeur, sur un fond alterné. Deux
+    problèmes, et le même : rien ne disait où un projet finissait et où l'autre
+    commençait, et rien ne séparait le titre de page du premier projet. Un fond
+    qui change n'est pas une bordure ; il dit « nouvelle partie de la page »,
+    pas « nouvel objet ».
+
+    Les deux fiches sont donc **identiques** : même fond, même rayon, même
+    rembourrage, même ordre interne. C'est ce qui les rend comparables — et
+    comparer deux chantiers annoncés est exactement ce qu'on vient faire ici.
+    Elles sont posées sur la section, comme les cartes de tarifs d'une fiche
+    projet ; `page` est plus clair que `section-alt` en zone claire, donc une
+    fiche se détache de son fond sans qu'aucun filet ne soit dessiné.
+
+    Et la section entière bascule en clair : le titre de page reste sur le vert
+    sombre, les fiches sur la sauge. La séparation que le titre n'avait pas est
+    maintenant celle des deux fonds. */}
+<section class="zone-claire bg-section-alt py-14 md:py-16 lg:py-20">
+  <div class="mx-auto max-w-page px-5 md:px-8 lg:px-12">
+    {projets.length === 0 && <p class="text-lead text-ink-muted">{t.empty}</p>}
+
+    <div class="flex flex-col gap-8 md:gap-10">
+      {projets.map((p, index) => {
+        const d = p.data;
+        const [couverture, ...autresRendus] = d.renders;
+        return (
+          <article data-reveal class="rounded-panel bg-page p-6 md:p-10 lg:p-12">
+            {/* **Le visuel ouvre la fiche, à côté du titre.** Il l'a d'abord
+                fermée : la première image arrivait après un écran et demi de
+                texte. Puis il l'a ouverte en bandeau, bord à bord — et un
+                bandeau de 16/9 pleine largeur repoussait le nom du projet sous
+                la ligne de flottaison, ce qui déplaçait le problème d'un cran.
+
+                Il tient donc **cinq colonnes sur douze**, à gauche du nom. On
+                voit le bâtiment et on lit de qui il s'agit d'un seul regard,
+                et la fiche redevient assez courte pour qu'on puisse comparer
+                les deux projets sans faire l'aller-retour.
+
+                Trois blocs, deux ordres.
+
+                **Sur téléphone : le nom, puis l'image, puis le reste.** Une
+                colonne unique rend l'ordre du DOM ; l'image étant écrite en
+                premier, on tombait sur un bâtiment avant de savoir lequel, et
+                les deux fiches s'ouvraient sur deux images sans légende. Le nom
+                d'abord, l'image ensuite : c'est l'ordre d'une légende, pas celui
+                d'un album.
+
+                **À partir de `md` : l'image à gauche, sur les deux rangées.**
+                `row-start` place chaque bloc explicitement, donc l'ordre du DOM
+                n'a plus à correspondre à l'ordre visuel — c'est exactement ce
+                qu'on demande à une grille, et ça évite de rendre deux fois le
+                même titre avec un `hidden` sur chacun.
+
+                `md:self-start` sur la figure : sans lui, un élément qui couvre
+                deux rangées est étiré à leur hauteur, et `aspect-ratio` n'est
+                qu'une taille préférée — l'image grandirait avec la longueur du
+                texte d'à côté. */}
+            <div class="grid gap-x-8 gap-y-6 md:grid-cols-12 md:gap-y-5 lg:gap-x-12">
+              <div class="md:col-span-7 md:col-start-6 md:row-start-1">
+                <h2 class="text-h2 text-balance text-ink">{d.nom}</h2>
+                {/* Saint-Anicet n'a pas d'adresse civique : son nom de projet
+                    EST sa municipalité, et la ligne répétait le titre mot pour
+                    mot juste en dessous. */}
+                {(d.adresse || d.ville !== d.nom) && (
+                  <p class="mt-3 text-lead text-ink-muted">
+                    {d.ville}
+                    {d.adresse && ` · ${d.adresse}`}
+                  </p>
+                )}
+              </div>
+
+              {/* Le premier rendu sert de couverture, comme la couverture d'un
+                  projet à louer : il n'ouvre pas la visionneuse. Ceux qui
+                  restent vont dans la galerie, en bas — d'où le `slice(1)`, qui
+                  évite de montrer deux fois la même image sur la même fiche. */}
+              {couverture ? (
+                <Image
+                  src={couverture.src}
+                  alt={couverture.alt[locale]}
+                  widths={[400, 600, 900]}
+                  sizes="(min-width: 768px) 34vw, 100vw"
+                  loading={index === 0 ? 'eager' : 'lazy'}
+                  class="aspect-[4/3] w-full object-cover md:col-span-5 md:col-start-1 md:row-span-2 md:row-start-1 md:self-start"
+                />
+              ) : (
+                /* Gabarit. Même raisonnement que sur `/projets` : on ne comble
+                   pas un visuel manquant avec le visuel d'un autre projet. Il
+                   garde le cadrage de la vraie couverture — une absence plus
+                   courte que le contenu décalerait tout le reste et casserait
+                   la lecture en parallèle des deux fiches. */
+                <div class="flex aspect-[4/3] flex-col items-center justify-center gap-4 bg-surface-alt md:col-span-5 md:col-start-1 md:row-span-2 md:row-start-1 md:self-start">
+                  <Logo class="text-h2 text-ink opacity-60" />
+                  <span class="text-label text-ink-muted">{t.visuelsSoon}</span>
+                </div>
+              )}
+
+              <div class="md:col-span-7 md:col-start-6 md:row-start-2">
+                {d.description[locale].map((par, i) => (
+                  <p class:list={['max-w-prose text-body text-ink-soft', i > 0 && 'mt-5']}>{par}</p>
+                ))}
+
+                {/* Les faits sur deux colonnes, sous la description. Ils
+                    occupaient une colonne à eux ; l'image la prend maintenant,
+                    et quatre étiquettes de deux mots tiennent très bien à plat. */}
+                <dl class="mt-8 grid grid-cols-2 gap-x-8 gap-y-5">
+                  {d.faits.map((f) => (
+                    <div class="flex flex-col gap-1 border-t border-line pt-3">
+                      <dt class="text-small text-ink-muted">{f.label[locale]}</dt>
+                      <dd class="num text-body text-ink">{f.valeur[locale]}</dd>
+                    </div>
+                  ))}
+                  {d.livraison && (
+                    <div class="flex flex-col gap-1 border-t border-line pt-3">
+                      <dt class="text-small text-ink-muted">{u.delivery}</dt>
+                      <dd class="num text-body text-ink">{deliveryDate(d.livraison, locale)}</dd>
+                    </div>
+                  )}
+                </dl>
+              </div>
+            </div>
+
+            {d.inclusions.length > 0 && (
+              <div class="mt-10 border-t border-line pt-8 md:mt-12 md:pt-10">
+                <h3 class="text-label text-ink-muted">{td.inclusions}</h3>
+                <ul class="mt-8 grid grid-cols-2 gap-x-6 gap-y-10 md:grid-cols-4">
+                  {d.inclusions.map((inc) => (
+                    <li class="group flex flex-col items-center gap-4 text-center">
+                      <Icon name={inc.icone} stroke={1.25} class="icone-survol h-12 w-12 text-accent-ink" />
+                      <span class="text-body text-balance text-ink">{inc.label[locale]}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
+            {/* Le drone du chantier. **Contrôles natifs, aucun JavaScript.**
+                Le hero a les siens — lecture automatique, bouton de pause,
+                arrêt hors écran — parce qu'il démarre sans qu'on le demande.
+                Ici c'est un document qu'on ouvre : la lecture native fait
+                exactement ce qu'il faut, pause comprise, sans une ligne de
+                script.
+
+                `preload="metadata"` : rien du fichier ne part avant le clic,
+                sauf ses dimensions, pour que la boîte ne saute pas.
+
+                Ce n'est pas un rendu — c'est le vrai chantier, filmé — d'où un
+                bloc à lui, distinct de la galerie de rendus juste en dessous. */}
+            {d.video?.mp4 && (
+              <div class="mt-10 border-t border-line pt-8 md:mt-12 md:pt-10">
+                <h3 class="text-label text-ink-muted">{t.chantier}</h3>
+                <video
+                  class="mt-6 aspect-video w-full max-w-3xl rounded-card bg-inverse object-cover"
+                  src={d.video.mp4}
+                  poster={posters.get(p.id)}
+                  controls
+                  muted
+                  loop
+                  playsinline
+                  preload="metadata"
+                />
+                <p class="mt-4 text-small text-ink-muted">{t.chantierNote}</p>
+              </div>
+            )}
+
+            {autresRendus.length > 0 && (
+              <div class="mt-10 border-t border-line pt-8 md:mt-12 md:pt-10">
+                <h3 class="text-label text-ink-muted">{td.renders}</h3>
+                <div class="mt-6">
+                  <Gallery photos={autresRendus} locale={locale} id={`renders-${p.id}`} />
+                </div>
+              </div>
+            )}
+          </article>
+        );
+      })}
+    </div>
+  </div>
+</section>
+
+
+{/* Un seul appel, en bas. Ces projets ne se louent pas encore : la seule chose
+    qu'on puisse demander est d'être prévenu quand ils le seront. */}
+<section class="bg-page py-14 md:py-16 lg:py-20">
+  <Panneau>
+    <div class="flex flex-col items-start justify-between gap-8 md:flex-row md:items-end">
+      <h2 data-reveal class="max-w-narrow text-h2 text-balance text-ink">{t.contactTitle}</h2>
+      <div data-reveal class="flex flex-wrap items-center gap-4">
+        <a
+          href={localize('/a-louer', locale)}
+          class="inline-flex h-14 cursor-pointer items-center rounded-card border border-line-strong px-7 text-body font-semibold text-ink transition-colors duration-200 hover:bg-surface-hover"
+        >
+          {t.toRent}
+        </a>
+        <a
+          href={`mailto:${CONTACT.email}`}
+          class="group inline-flex h-14 shrink-0 cursor-pointer items-center gap-3 rounded-card bg-accent px-7 text-body font-semibold text-on-accent transition-colors duration-200 hover:bg-accent-hover"
+        >
+          {t.contactCta}
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-5 w-5 transition-transform duration-300 group-hover:translate-x-1" aria-hidden="true">
+            <path d="M5 12h14M13 6l6 6-6 6" />
+          </svg>
+        </a>
+      </div>
+    </div>
+  </Panneau>
+</section>
+
+<Reveal />

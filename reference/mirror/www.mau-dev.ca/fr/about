@@ -1,0 +1,128 @@
+<!DOCTYPE html><html lang="fr"> <head><title>Notre modèle intégré | MauDev</title><!-- Default Meta tags --><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="description" content="MauDev réunit le développement, le financement, la construction, la location et l'administration au sein d'un même modèle intégré."><!-- Canonical URL --><link rel="canonical" href="about"><!-- Icons --><link rel="icon" href="../favicon.svg" type="image/svg+xml"><link rel="icon" href="../favicon.ico" sizes="any"><!-- OpenGraph --><meta property="og:title" content="Notre modèle intégré | MauDev"><meta property="og:description" content="MauDev réunit le développement, le financement, la construction, la location et l'administration au sein d'un même modèle intégré."><meta property="og:type" content="website"><meta property="og:url" content="https://www.mau-dev.ca/fr/about"><meta property="og:image" content="/default-og-image.jpg"><!-- Twitter Card --><meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="Notre modèle intégré | MauDev"><meta name="twitter:description" content="MauDev réunit le développement, le financement, la construction, la location et l'administration au sein d'un même modèle intégré."><meta name="twitter:image" content="/default-og-image.jpg"><!-- Robots --><meta name="robots" content="index, follow"><!-- scripts --><link rel="stylesheet" href="../_astro/PageLayout.DMnV6Y9U.css"></head><body class="body"> <main class="main">  <header class="nav nav--light"> <div class="width nav__inner"> <a class="nav__brand" href="../fr">MauDev</a> <nav> <ul class="nav__list"> <li><a href="projects">Projets</a></li><li><a href="about">Notre modèle</a></li> <li><a class="nav__lang" href="../en/about">EN</a></li> </ul> </nav> </div> </header> <section class="about" data-node-id="136:428"> <section class="width about__title-row" data-node-id="141:133"> <h1 class="about__title">Notre modèle intégré</h1> <p class="about__intro reveal-in-up" style="--reveal-delay: 250ms;">MauDev est un développeur familial et entrepreneur général conçu pour l&#39;exécution à long terme. L&#39;équipe réunit l&#39;acquisition, la densification, le financement, la construction, la location et l&#39;administration sous un même toit afin de réduire la friction et de protéger le rendement des investisseurs.</p> <div class="about__capital reveal-in-up" style="--reveal-delay: 500ms;"> <p>Volume de construction 2025</p> <strong class="about__capital-value" data-counter-target="30" data-counter-suffix="m$"> 0m$ </strong> </div> </section> <section class="about__formula" data-node-id="138:152"> <h2 class="about__formula-heading">Une seule plateforme intégrée</h2> <article class="formula-card formula-card--tone-1"> <div class="width formula-card__inner"> <div class="formula-card__media" aria-hidden="true"></div> <div class="formula-card__copy reveal-on-scroll" style="--reveal-delay:140ms;"> <p class="formula-card__label">Acquérir et densifier</p> <p>MauDev cible des sites à bon prix et crée de la valeur grâce au zonage, à la densification et à une sélection disciplinée des marchés.</p> </div> </div> </article><article class="formula-card formula-card--flip formula-card--tone-2"> <div class="width formula-card__inner"> <div class="formula-card__media" aria-hidden="true"></div> <div class="formula-card__copy reveal-on-scroll" style="--reveal-delay:260ms;"> <p class="formula-card__label">Financer et construire</p> <p>L&#39;équipe gère le financement, les appels d&#39;offres, les contrats et le chantier, tandis que Trexco et Les Distributions M. Dion améliorent le contrôle du risque, des prix et de l&#39;approvisionnement.</p> </div> </div> </article><article class="formula-card formula-card--tone-3"> <div class="width formula-card__inner"> <div class="formula-card__media" aria-hidden="true"></div> <div class="formula-card__copy reveal-on-scroll" style="--reveal-delay:380ms;"> <p class="formula-card__label">Louer et administrer</p> <p>MauDev accompagne l&#39;actif jusqu&#39;à la sélection des locataires, la location, l&#39;administration, les états trimestriels et les rapports de fin d&#39;année.</p> </div> </div> </article> </section> <section class="width about__values" data-node-id="141:132"> <h2>Pourquoi les investisseurs choisissent MauDev</h2> <div class="faq-list"> <details class="faq-item"> <summary class="faq-summary"> <span>1. Vision long terme</span> </summary> <div class="faq-answer"> <p>Comme entreprise familiale, MauDev développe des actifs avec une vision durable de la qualité, de la pérennité et de l&#39;alignement avec les investisseurs.</p> </div> </details><details class="faq-item"> <summary class="faq-summary"> <span>2. Transparence</span> </summary> <div class="faq-answer"> <p>L&#39;entreprise privilégie une communication claire, une reddition de comptes disciplinée et une responsabilité visible tout au long du cycle du projet.</p> </div> </details><details class="faq-item"> <summary class="faq-summary"> <span>3. Intégration verticale</span> </summary> <div class="faq-answer"> <p>Trexco et Les Distributions M. Dion améliorent le contrôle du risque d&#39;excavation, de l&#39;approvisionnement, des prix et de l&#39;exécution en chantier.</p> </div> </details><details class="faq-item"> <summary class="faq-summary"> <span>4. Discipline de marché</span> </summary> <div class="faq-answer"> <p>MauDev se concentre sur des marchés locaux où la demande locative est forte, les prix stables et les occasions de création de valeur bien identifiées.</p> </div> </details> </div> </section> <section class="about__team" data-node-id="141:131"> <div class="width about__team-grid"> <div class="about__team-image" aria-hidden="true"></div> <div> <h2>Équipe de direction</h2> <p>MauDev est dirigée par Alexandre Paquin, président - finances, Jean-Christophe Paquin, président - développement, et Samuel Brisson, président - construction. L&#39;équipe élargie comprend aussi Pierre-Hugues au développement, Stéphanie Grenon aux finances et Marc-André Dion au développement des affaires.</p> </div> </div> </section> </section> <script>
+  (() => {
+    const revealCards = Array.from(document.querySelectorAll('.about__formula .reveal-on-scroll'));
+    const revealElement = (el) => el.classList.add('is-visible');
+
+    if (revealCards.length) {
+      if (!('IntersectionObserver' in window)) {
+        revealCards.forEach(revealElement);
+      } else {
+        const revealObserver = new IntersectionObserver(
+          (entries, obs) => {
+            entries.forEach((entry) => {
+              if (!entry.isIntersecting) return;
+              revealElement(entry.target);
+              obs.unobserve(entry.target);
+            });
+          },
+          {
+            threshold: 0.2,
+            rootMargin: '0px 0px -10% 0px'
+          }
+        );
+
+        revealCards.forEach((card) => revealObserver.observe(card));
+      }
+    }
+
+    const counter = document.querySelector('.about__capital-value[data-counter-target]');
+    if (!counter) return;
+
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const revealContainer = counter.closest('.about__capital');
+    const target = Number(counter.dataset.counterTarget ?? Number.NaN);
+    const suffix = counter.dataset.counterSuffix ?? '';
+    const duration = 750;
+    const formatValue = (value) => `${Math.round(value)}${suffix}`;
+
+    if (Number.isNaN(target)) return;
+
+    counter.textContent = formatValue(0);
+
+    const toMilliseconds = (timeValue) => {
+      const raw = (timeValue ?? '').trim();
+      if (!raw) return 0;
+      if (raw.endsWith('ms')) return Number.parseFloat(raw);
+      if (raw.endsWith('s')) return Number.parseFloat(raw) * 1000;
+      return Number.parseFloat(raw) || 0;
+    };
+
+    const setFinalValue = () => {
+      counter.textContent = formatValue(target);
+      counter.dataset.counterDone = 'true';
+    };
+
+    const animateCounter = () => {
+      if (counter.dataset.counterDone === 'true') return;
+
+      const start = performance.now();
+
+      const tick = (now) => {
+        const progress = Math.min((now - start) / duration, 1);
+        const eased = 1 - Math.pow(1 - progress, 3);
+        counter.textContent = formatValue(target * eased);
+
+        if (progress < 1) {
+          requestAnimationFrame(tick);
+          return;
+        }
+
+        counter.dataset.counterDone = 'true';
+      };
+
+      requestAnimationFrame(tick);
+    };
+
+    const startWithReveal = () => {
+      if (!revealContainer) {
+        animateCounter();
+        return;
+      }
+
+      let hasStarted = false;
+      const startOnce = () => {
+        if (hasStarted) return;
+        hasStarted = true;
+        animateCounter();
+      };
+
+      const computed = window.getComputedStyle(revealContainer);
+      const delayValue = (computed.animationDelay || '0ms').split(',')[0];
+      const fallbackDelay = toMilliseconds(delayValue) + 20;
+
+      revealContainer.addEventListener(
+        'animationstart',
+        (event) => {
+          if (event.target !== revealContainer) return;
+          startOnce();
+        },
+        { once: true }
+      );
+
+      window.setTimeout(startOnce, fallbackDelay);
+    };
+
+    if (prefersReducedMotion) {
+      setFinalValue();
+      return;
+    }
+
+    if (!('IntersectionObserver' in window)) {
+      startWithReveal();
+      return;
+    }
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting) return;
+          startWithReveal();
+          observer.unobserve(counter);
+        });
+      },
+      { threshold: 0.5 }
+    );
+
+    observer.observe(counter);
+  })();
+</script> </main> <footer class="global-footer"> <div class="global-footer__inner"> <section class="global-footer__col"> <h3>Pages</h3> <ul> <li><a href="../fr">Présentation</a></li><li><a href="about">À propos</a></li><li><a href="projects">Projets</a></li> </ul> </section> <section class="global-footer__col"> <h3>Réseaux</h3> <ul> <li><a href="https://www.linkedin.com" target="_blank" rel="noreferrer">LinkedIn</a></li><li><a href="https://www.instagram.com" target="_blank" rel="noreferrer">Instagram</a></li><li><a href="https://www.facebook.com" target="_blank" rel="noreferrer">Facebook</a></li> </ul> </section> <section class="global-footer__col"> <h3>Coordonnées</h3> <ul> <li><strong>Adresse:</strong> 47 rue Nicholson, Salaberry de Valleyfield</li> <!-- <li><strong>{text.phone}:</strong> +1 555 010 020</li> --> <li><strong>Courriel:</strong> info@mau-dev.ca</li> </ul> </section> </div> <div class="global-footer__copyright"> <div class="global-footer__inner">© 2026 MauDev - Tous droits réservés.</div> </div> </footer> </body></html>

@@ -1,0 +1,13 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import CompletedList from '../../components/CompletedList.astro';
+import { projetsCopy } from '../../copy/projets';
+---
+
+<Layout
+  locale="en"
+  title={`${projetsCopy.en.realises.title} — MauDev`}
+  description={projetsCopy.en.realises.lead}
+>
+  <CompletedList locale="en" />
+</Layout>

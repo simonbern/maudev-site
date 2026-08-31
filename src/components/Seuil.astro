@@ -1,0 +1,138 @@
+---
+/**
+ * Un seuil : une ligne pleine largeur qu'on franchit, au lieu d'un bouton.
+ *
+ * **Réservé à l'accueil.** Les pages intérieures gardent des boutons : le seuil
+ * y prenait la place d'une section pour un lien de bas de page, et répété sur
+ * cinq pages il cessait d'être un moment pour devenir un gabarit. Deux
+ * occurrences, toutes deux sur `/` : le hero et la section contact.
+ *
+ * Le bouton a été retiré parce qu'il était générique — et l'arrondir ou le
+ * mettre au carré ne change rien à ça. Un rectangle de 180 px avec un libellé
+ * centré est le même objet sur tous les sites du monde ; c'est sa forme qui est
+ * banale, pas son rayon.
+ *
+ * Le seuil dit autre chose. Il prend toute la largeur de la grille, il porte
+ * son libellé au corps d'un titre, et il pose une donnée réelle à droite —
+ * « 3 projets · 100 logements », pas « en savoir plus ». On ne clique pas sur
+ * un objet posé dans la page : on passe une ligne.
+ *
+ * Trois conséquences pratiques :
+ *
+ * · **Il fait la largeur de son contenu, pas celle de la grille** (`w-fit`).
+ *   Pleine largeur, le filet traversait l'écran pour un lien de six mots et le
+ *   libellé se retrouvait à un écran de sa propre flèche. La cible reste
+ *   nettement plus grande qu'un bouton, sans occuper une section.
+ * · **Le libellé est en `text-h3`, pas en `text-h2`.** À 50 px il pesait autant
+ *   que le titre de section qu'il suivait, et une page ne peut pas avoir deux
+ *   voix aussi fortes. À 30 px il reste au-dessus du corps courant — c'est un
+ *   passage, pas un paragraphe — sans concurrencer ce qui l'annonce.
+ * · **Le survol remplit, il ne teinte pas.** Le terracotta balaie depuis la
+ *   gauche (`scale-x` sur une couche en `origin-left`) et le texte bascule sur
+ *   `on-accent`. Une transformation, donc composée par le GPU — pas une
+ *   animation de couleur qui repeint à chaque image.
+ * · **Aucun ornement au repos.** Les filets au-dessus et en dessous ont été
+ *   retirés : deux traits horizontaux clairs posés sur une photo de hero
+ *   dessinaient une boîte là où on voulait un passage, et ils entraient en
+ *   concurrence avec les vraies séparations de la page. Restent le libellé, sa
+ *   donnée et la flèche ; c'est le remplissage au survol qui donne la limite,
+ *   au moment où elle sert.
+ */
+interface Props {
+  href: string;
+  /** Le libellé, au corps d'un sous-titre. Pas « cliquez ici ». */
+  label: string;
+  /** Donnée réelle posée à droite. Omise, la flèche reste seule. */
+  meta?: string;
+  /** `inverse` = posé sur une surface sombre ou sur une photo. */
+  tone?: 'page' | 'inverse';
+  /**
+   * Masque la flèche sous `md`. Pour le dernier seuil de l'accueil : au bas
+   * d'une page qu'on vient de dérouler au pouce, une flèche vers la droite
+   * promet une suite qui n'existe pas. Le seuil du hero la garde — là, elle
+   * annonce bien une page à venir.
+   */
+  flecheDesktop?: boolean;
+  class?: string;
+}
+const {
+  href,
+  label,
+  meta,
+  tone = 'page',
+  flecheDesktop = false,
+  class: className = '',
+} = Astro.props;
+
+const c =
+  tone === 'inverse'
+    ? { texte: 'text-on-inverse', meta: 'text-on-inverse-muted' }
+    : { texte: 'text-ink', meta: 'text-ink-muted' };
+---
+
+<a
+  href={href}
+  class:list={[
+    'group relative inline-flex w-fit max-w-full cursor-pointer py-4 md:py-5',
+    className,
+  ]}
+>
+  {/* Couche de remplissage, `aria-hidden` : elle ne porte rien, le lien a déjà
+      son libellé.
+
+      Elle déborde de 16 px de chaque côté (`-inset-x-4`) pour que le libellé
+      respire dans l'aplat sans quitter la grille : à `inset-0` le « V »
+      touchait le bord de l'aplat, et le rentrer avec du `padding` l'aurait
+      décalé du titre au-dessus. Le débordement tient dans la gouttière —
+      121 px à 1 440, 20 px à 375. */}
+  <span
+    class="absolute inset-y-0 -inset-x-4 origin-left scale-x-0 bg-accent transition-transform duration-500 ease-[var(--ease-doux)] group-hover:scale-x-100 group-focus-visible:scale-x-100"
+    aria-hidden="true"></span>
+
+  <span class="relative flex flex-wrap items-center gap-x-7 gap-y-2">
+    <span
+      class:list={[
+        'text-h3 text-balance transition-colors duration-500 group-hover:text-on-accent group-focus-visible:text-on-accent',
+        c.texte,
+      ]}
+    >
+      {label}
+    </span>
+
+    {
+      meta && (
+        <span
+          class:list={[
+            'num text-small transition-colors duration-500 group-hover:text-on-accent group-focus-visible:text-on-accent',
+            c.meta,
+          ]}
+        >
+          {meta}
+        </span>
+      )
+    }
+
+    {/* La flèche a sa propre case, plus large qu'elle de la distance qu'elle
+        parcourt. Elle avançait auparavant depuis le bord du lien et sortait
+        du filet de 8 px — ce qui se lit comme un désalignement, pas comme un
+        mouvement. Ici elle glisse à l'intérieur de sa case : le filet reste
+        droit, et la fin de la course marque le bord. */}
+    <span class:list={['w-11 shrink-0 justify-start', flecheDesktop ? 'hidden md:inline-flex' : 'inline-flex']}>
+      <svg
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        class:list={[
+          'h-7 w-7 shrink-0 transition-all duration-500 ease-[var(--ease-doux)] group-hover:translate-x-2.5 group-hover:text-on-accent group-focus-visible:translate-x-2.5 group-focus-visible:text-on-accent',
+          c.texte,
+        ]}
+        aria-hidden="true"
+      >
+        <path d="M5 12h14M13 6l6 6-6 6" />
+      </svg>
+    </span>
+  </span>
+</a>

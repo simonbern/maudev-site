@@ -1,0 +1,118 @@
+---
+import { projetsCopy } from '../copy/projets';
+import { ui, localize, type Locale } from '../i18n';
+
+/**
+ * Carte de localisation d'un projet.
+ *
+ * **La carte suit le consentement**, elle ne le demande plus elle-même. Tant
+ * qu'il n'est pas donné, l'`<iframe>` n'existe pas — ni dans le HTML livré, ni
+ * dans le DOM — donc aucune requête ne part vers Google. Le bandeau de
+ * `Temoins.astro` diffuse la décision ; ce composant l'écoute et se retire si
+ * elle est retirée.
+ *
+ * L'adresse et le lien vers Maps restent lisibles dans tous les cas : refuser
+ * les témoins ne doit pas coûter l'information.
+ *
+ * Pas de clé d'API : `maps.google.com/maps?q=…&output=embed` suffit pour un
+ * repère et la carte de base, qui affiche déjà les commerces, écoles et parcs
+ * des environs. L'Embed API officielle (clé requise) n'aurait d'intérêt que
+ * pour piloter le zoom ou lancer une recherche de commodités précise.
+ *
+ * Rendue seulement quand le projet a une adresse civique : un repère posé sur
+ * le centre-ville parce qu'on ne connaît que la municipalité serait une
+ * précision inventée.
+ */
+interface Props {
+  adresse: string;
+  ville: string;
+  locale: Locale;
+}
+const { adresse, ville, locale } = Astro.props;
+const t = projetsCopy[locale].detail;
+const u = ui[locale];
+
+const requete = `${adresse}, ${ville}, Québec, Canada`;
+const encodee = encodeURIComponent(requete);
+const src = `https://www.google.com/maps?q=${encodee}&hl=${locale}&z=16&output=embed`;
+const lien = `https://www.google.com/maps/search/?api=1&query=${encodee}`;
+const titre = t.carteTitre.replace('{a}', adresse);
+---
+
+<figure class="flex flex-col gap-3">
+  <div
+    data-carte
+    data-src={src}
+    data-titre={titre}
+    class="relative aspect-[4/3] overflow-hidden rounded-media border border-line bg-surface-alt"
+  >
+    {/* Ce qu'on voit sans carte : l'adresse, et de quoi la changer d'avis. */}
+    <div class="absolute inset-0 flex flex-col items-center justify-center gap-4 p-6 text-center">
+      <svg
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="1.75"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        class="h-10 w-10 text-accent-ink"
+        aria-hidden="true"
+      >
+        <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"></path>
+        <path d="M12 7a3 3 0 1 1 0 6 3 3 0 0 1 0-6Z"></path>
+      </svg>
+
+      <p class="text-body text-ink">{adresse}<br />{ville}</p>
+
+      <p class="max-w-prose text-small text-ink-muted">
+        {t.carteAvis}{' '}
+        <button
+          type="button"
+          data-temoins-rouvrir
+          class="cursor-pointer font-semibold text-accent-ink underline decoration-line underline-offset-4 transition-colors duration-200 hover:text-accent-hover hover:decoration-accent-hover"
+        >
+          {u.temoinsRouvrir}
+        </button>
+      </p>
+    </div>
+  </div>
+
+  <figcaption class="text-small">
+    <a
+      href={lien}
+      target="_blank"
+      rel="noopener"
+      class="cursor-pointer text-accent-ink underline decoration-line underline-offset-4 transition-colors duration-200 hover:text-accent-hover hover:decoration-accent-hover"
+    >
+      {t.carteOuvrir}
+    </a>
+  </figcaption>
+</figure>
+
+<script>
+  // Contrat partagé avec Temoins.astro.
+  const EVENEMENT = 'maudev:temoins';
+
+  for (const bloc of document.querySelectorAll<HTMLElement>('[data-carte]')) {
+    const afficher = () => {
+      if (bloc.querySelector('iframe')) return;
+      const cadre = document.createElement('iframe');
+      cadre.src = bloc.dataset.src!;
+      cadre.title = bloc.dataset.titre!;
+      cadre.loading = 'lazy';
+      cadre.referrerPolicy = 'no-referrer-when-downgrade';
+      cadre.className = 'absolute inset-0 h-full w-full border-0';
+      bloc.append(cadre);
+    };
+
+    // Se rétracter doit être aussi simple que consentir : retirer l'`<iframe>`
+    // coupe la connexion sans recharger la page.
+    const masquer = () => bloc.querySelector('iframe')?.remove();
+
+    document.addEventListener(EVENEMENT, (e) => {
+      const choix = (e as CustomEvent<string>).detail;
+      if (choix === 'accepte') afficher();
+      else masquer();
+    });
+  }
+</script>

@@ -1,0 +1,40 @@
+# Genere depuis reference/mirror/www.mau-dev.ca/{fr,en}/projects/2055-61-chemin-ridge
+# Textes et chiffres repris tels quels de l’ancien site.
+nom: "2055-61 Chemin Ridge"
+statut: realise
+ordre: 0
+url: { fr: 2055-61-chemin-ridge, en: 2055-61-chemin-ridge }
+
+adresse: "2055-61 Chemin Ridge"
+ville: "Huntingdon"
+
+resume:
+  fr: "Projet mixte livré à Huntingdon."
+  en: "Completed mixed-use project in Huntingdon."
+
+description:
+  fr:
+    - "Un ensemble mixte qui répartit logements et espaces commerciaux sur quatre bâtiments distincts."
+  en:
+    - "A mixed-use cluster that distributes homes and commercial space across four distinct buildings."
+
+faits:
+  - label: { fr: "Statut", en: "Status" }
+    valeur: { fr: "Livré", en: "Delivered" }
+  - label: { fr: "Programme", en: "Program" }
+    valeur: { fr: "Mixte", en: "Mixed-use" }
+  - label: { fr: "Bâtiments", en: "Buildings" }
+    valeur: { fr: "4", en: "4" }
+  - label: { fr: "Logements", en: "Residential units" }
+    valeur: { fr: "42", en: "42" }
+  - label: { fr: "Espaces commerciaux", en: "Commercial spaces" }
+    valeur: { fr: "6", en: "6" }
+
+# Deux couvertures ont été écartées avant d'en arriver là. Celle du mirror
+# montrait un ensemble de maisons en rangée vues du ciel, sans rapport avec
+# les quatre immeubles du chemin Ridge. Un séjour meublé a pris sa place, puis
+# est parti à son tour.
+#
+# Aucune couverture : les dix-neuf photos livrées (reference/NEW/RIDGE) sont
+# toutes des intérieurs. Même règle qu'au 110 Ste-Cécile — gabarit en
+# attendant une photo de façade.

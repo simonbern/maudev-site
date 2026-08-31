@@ -1,0 +1,35 @@
+# Genere depuis reference/mirror/www.mau-dev.ca/{fr,en}/projects/145-salaberry
+# Textes et chiffres repris tels quels de l’ancien site.
+nom: "145 Salaberry"
+statut: realise
+ordre: 0
+url: { fr: 145-salaberry, en: 145-salaberry }
+
+adresse: "145 Salaberry"
+ville: "Salaberry-de-Valleyfield"
+
+resume:
+  fr: "Actif mixte livré à Salaberry-de-Valleyfield."
+  en: "Completed mixed-use asset in Salaberry-de-Valleyfield."
+
+description:
+  fr:
+    - "Un actif mixte qui combine une base résidentielle dense à une composante commerciale de 10 000 pi²."
+  en:
+    - "A mixed-use asset that combines a dense residential base with 10,000 sq. ft. of commercial area."
+
+faits:
+  - label: { fr: "Statut", en: "Status" }
+    valeur: { fr: "Livré", en: "Delivered" }
+  - label: { fr: "Programme", en: "Program" }
+    valeur: { fr: "Mixte", en: "Mixed-use" }
+  - label: { fr: "Logements", en: "Residential units" }
+    valeur: { fr: "41", en: "41" }
+  - label: { fr: "Surface commerciale", en: "Commercial area" }
+    valeur: { fr: "10 000 pi²", en: "10,000 sq. ft." }
+
+couverture:
+  src: ../../assets/projets/145-salaberry/couverture.jpg
+  alt:
+    fr: "145 Salaberry — Salaberry-de-Valleyfield"
+    en: "145 Salaberry — Salaberry-de-Valleyfield"

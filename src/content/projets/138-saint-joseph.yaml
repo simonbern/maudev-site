@@ -1,0 +1,34 @@
+# Source : client, 2026-08-28. Voir 148-route-202.yaml.
+#
+# ⚠ À TRANCHER — chevauchement avec 142-saint-joseph.yaml. Cette fiche-ci vient
+# du courriel du 2026-08-28 ; l'autre vient du mirror de l'ancien site. Même
+# rue, même municipalité, même locataire ancré (Caisse Desjardins). Ce sont
+# soit deux adresses voisines, soit une correction du numéro civique. Les deux
+# sont publiées en attendant la réponse du client — publier deux fiches est
+# réparable, fusionner deux projets distincts ne l'est pas.
+nom: "138 rue Saint-Joseph"
+statut: realise
+ordre: 0
+url: { fr: 138-saint-joseph, en: 138-saint-joseph }
+
+adresse: "138 rue Saint-Joseph"
+ville: "Sainte-Martine"
+aConfirmer: [adresse]
+
+resume:
+  fr: "8 000 pi² de commercial à Sainte-Martine, occupés par la Caisse Desjardins."
+  en: "8,000 sq. ft. of commercial space in Sainte-Martine, occupied by Caisse Desjardins."
+
+description:
+  fr:
+    - "Un immeuble commercial de 8 000 pi² à Sainte-Martine, dont la Caisse Desjardins est locataire."
+  en:
+    - "An 8,000 sq. ft. commercial building in Sainte-Martine, with Caisse Desjardins as tenant."
+
+faits:
+  - label: { fr: "Programme", en: "Program" }
+    valeur: { fr: "Commercial", en: "Commercial" }
+  - label: { fr: "Superficie", en: "Area" }
+    valeur: { fr: "8 000 pi²", en: "8,000 sq. ft." }
+  - label: { fr: "Locataire", en: "Tenant" }
+    valeur: { fr: "Caisse Desjardins", en: "Caisse Desjardins" }

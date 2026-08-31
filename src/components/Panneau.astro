@@ -1,0 +1,49 @@
+---
+/**
+ * Section de couleur posée SUR le fond de page, au lieu de le remplacer.
+ *
+ * Avant, chaque section peignait sa couleur bord à bord : la page se lisait
+ * comme une pile de bandes, sans base commune. Ici le fond de page reste
+ * visible tout autour — au-dessus, en dessous et sur les côtés — et la couleur
+ * devient un panneau déposé dessus.
+ *
+ * **Le contenu respire à l'intérieur.** Le rembourrage avait d'abord été
+ * calculé pour que le texte d'un panneau tombe exactement sur la colonne des
+ * sections pleine largeur : 8 / 12 / 16 px, le complément du retrait extérieur.
+ * L'alignement était parfait et le résultat serré — 16 px entre un titre et le
+ * bord d'un panneau coloré, ce n'est pas un panneau, c'est un débordement.
+ *
+ * Le rembourrage est donc devenu une vraie marge intérieure :
+ *
+ *   | Écran | retrait | rembourrage | bord → texte |
+ *   |-------|---------|-------------|--------------|
+ *   | 375   | px-3    | px-8        | 32 px        |
+ *   | 768   | px-5    | px-12       | 48 px        |
+ *   | 1440  | px-8    | px-16       | 64 px        |
+ *
+ * Le texte d'un panneau est donc légèrement plus rentré que celui d'une section
+ * pleine largeur. C'est ce que fait une carte, et ça se lit comme tel.
+ */
+interface Props {
+  /** `alt` = surface claire alternée, `inverse` = surface sombre. */
+  tone?: 'alt' | 'inverse';
+  /** Respiration interne. Par défaut celle d'une section de contenu. */
+  padding?: string;
+  class?: string;
+}
+const {
+  tone = 'alt',
+  padding = 'py-14 md:py-16 lg:py-20',
+  class: className = '',
+} = Astro.props;
+
+const fond = tone === 'inverse' ? 'bg-inverse' : 'bg-surface-alt';
+---
+
+<div class="mx-auto max-w-page px-3 md:px-5 lg:px-8">
+  <div class:list={['rounded-panel', fond, padding, className]}>
+    <div class="px-8 md:px-12 lg:px-16">
+      <slot />
+    </div>
+  </div>
+</div>

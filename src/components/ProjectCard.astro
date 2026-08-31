@@ -1,0 +1,123 @@
+---
+import { Image } from 'astro:assets';
+import type { CollectionEntry } from 'astro:content';
+import Logo from './Logo.astro';
+import { localize, ui, type Locale } from '../i18n';
+import { deliveryDate } from '../format';
+
+/**
+ * Un projet en location sur `/a-louer` — une rangée pleine largeur, pas une
+ * carte dans une grille.
+ *
+ * **Trois informations, pas davantage** : le nom, l'adresse, et la ligne de
+ * pied. Les types, les superficies et les inclusions vivent sur la page du
+ * projet ; les répéter ici obligeait à lire deux fois la même chose pour
+ * choisir sur quoi cliquer.
+ *
+ * **La ligne de pied ne porte plus de prix.** Elle affichait « À partir de
+ * 895 $ », ou « Prix sur demande » quand le projet n'en avait pas. Le client a
+ * demandé qu'aucun prix n'apparaîsse sur `/a-louer` (2026-08-28) : une
+ * fourchette annoncée dans une liste devient un engagement, alors que les
+ * loyers varient d'une unité à l'autre.
+ *
+ * Ce qui la remplace est déjà dans la fiche : le nombre de logements et la
+ * date de livraison. Deux chiffres qui aident à choisir sur quoi cliquer, là
+ * où « Prix sur demande » répété trois fois n'aidait personne. La ligne tombe
+ * si le projet n'a ni l'un ni l'autre — le filet et la flèche suffisent.
+ *
+ * Avec trois projets, une grille de trois tuiles gaspille la page. Une rangée
+ * par projet, l'image alternant de côté, donne à chacun la place de se voir et
+ * crée un rythme en descendant. Le nom peut alors monter à la taille d'un titre
+ * de page.
+ *
+ * Le lien est un calque (`after:absolute after:inset-0`) : toute la rangée est
+ * cliquable, et le nom du projet porte le nom accessible du lien.
+ */
+interface Props {
+  projet: CollectionEntry<'projets'>;
+  locale: Locale;
+  /** Rang dans la liste : décide du côté de l'image. */
+  index: number;
+}
+const { projet, locale, index } = Astro.props;
+const d = projet.data;
+const t = ui[locale];
+
+const href = `${localize('/a-louer', locale)}/${d.url[locale]}`;
+
+// Ce que la ligne de pied annonce, dans l'ordre, en sautant ce qui manque.
+const pied = [
+  d.unites !== undefined ? `${d.unites} ${t.unitsWord}` : undefined,
+  d.livraison ? `${t.delivery} ${deliveryDate(d.livraison, locale)}` : undefined,
+].filter((x): x is string => x !== undefined);
+
+const imageADroite = index % 2 === 1;
+---
+
+<li
+  data-reveal
+  class="group relative grid items-center gap-8 border-t border-line pt-10 md:grid-cols-12 md:gap-x-12 md:pt-14 lg:gap-x-20"
+>
+  <div
+    class:list={[
+      'overflow-hidden bg-surface-alt md:col-span-6',
+      imageADroite ? 'md:order-2 md:col-start-7' : 'md:col-start-1',
+    ]}
+  >
+    <div class="aspect-[4/3] lg:aspect-[3/2]">
+      {
+        d.couverture ? (
+          <Image
+            src={d.couverture.src}
+            alt={d.couverture.alt[locale]}
+            widths={[600, 1000, 1400]}
+            sizes="(min-width: 768px) 58vw, 100vw"
+            loading={index === 0 ? 'eager' : 'lazy'}
+            class="h-full w-full object-cover transition-transform duration-700 ease-[var(--ease-doux)] group-hover:scale-[1.04]"
+          />
+        ) : (
+          /* Projet « à venir » sans image : gabarit sobre plutôt qu'un cadre
+             vide ou une image d'emprunt. Voir DESIGN.md § 7. */
+          <div class="flex h-full w-full flex-col items-center justify-center gap-3">
+            <Logo class="text-h2 text-ink opacity-60" />
+            <span class="text-label text-ink-muted">{t.photosSoon}</span>
+          </div>
+        )
+      }
+    </div>
+  </div>
+
+  {/* Cinq colonnes et non quatre : à quatre, un nom de projet un peu long
+      tombe sur trois lignes à 68 px. */}
+  <div class:list={['md:col-span-5', imageADroite ? 'md:order-1 md:col-start-1' : 'md:col-start-8']}>
+    <h2 class="text-h1 text-balance text-ink">
+      {/* Le survol change la couleur, il ne souligne pas. Règle du site :
+          survoler quelque chose de cliquable l'amène à l'accent. Le
+          soulignement reste réservé aux liens en pleine prose, où il est
+          permanent — là, il identifie le lien plutôt qu'il ne réagit. */}
+      <a
+        href={href}
+        class="cursor-pointer transition-colors duration-200 after:absolute after:inset-0 hover:text-accent-ink"
+      >
+        {d.nom}
+      </a>
+    </h2>
+
+    <p class="mt-4 text-lead text-ink-muted">
+      {d.ville}{d.adresse && ` · ${d.adresse}`}
+    </p>
+
+    <div class="mt-8 flex items-end justify-between gap-6 border-t border-line pt-6">
+      <p class="num text-lead text-ink">{pied.join(' · ')}</p>
+
+      <span
+        class="rounded-card mb-1 inline-flex shrink-0 items-center justify-center p-3 text-accent-ink transition-all duration-500 ease-[var(--ease-doux)] group-hover:bg-accent group-hover:text-on-accent"
+        aria-hidden="true"
+      >
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-5 w-5 transition-transform duration-500 ease-[var(--ease-doux)] group-hover:translate-x-1">
+          <path d="M5 12h14M13 6l6 6-6 6"></path>
+        </svg>
+      </span>
+    </div>
+  </div>
+</li>

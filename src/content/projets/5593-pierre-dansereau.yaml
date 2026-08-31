@@ -1,0 +1,35 @@
+# Genere depuis reference/mirror/www.mau-dev.ca/{fr,en}/projects/5593-pierre-dansereau
+# Textes et chiffres repris tels quels de l’ancien site.
+nom: "5593 Pierre-Dansereau"
+statut: realise
+ordre: 0
+url: { fr: 5593-pierre-dansereau, en: 5593-pierre-dansereau }
+
+adresse: "5593 Pierre-Dansereau"
+ville: "Salaberry-de-Valleyfield"
+
+resume:
+  fr: "Projet récent du portefeuille de Salaberry-de-Valleyfield."
+  en: "Recent project within the Salaberry-de-Valleyfield portfolio."
+
+description:
+  fr:
+    - "Un projet récent qui étend l'empreinte de MauDev dans le secteur Pierre-Dansereau."
+  en:
+    - "A recent project that expands MauDev's footprint in the Pierre-Dansereau corridor."
+
+faits:
+  - label: { fr: "Statut", en: "Status" }
+    valeur: { fr: "Construit en 2025", en: "Built in 2025" }
+  - label: { fr: "Bâtiments", en: "Buildings" }
+    valeur: { fr: "1", en: "1" }
+  - label: { fr: "Surface du bâtiment", en: "Building area" }
+    valeur: { fr: "± 42 000 pi²", en: "± 42,000 sq. ft." }
+  - label: { fr: "Échéancier", en: "Timeline" }
+    valeur: { fr: "Construction 2025", en: "Construction 2025" }
+
+couverture:
+  src: ../../assets/projets/5593-pierre-dansereau/couverture.jpg
+  alt:
+    fr: "5593 Pierre-Dansereau — Salaberry-de-Valleyfield"
+    en: "5593 Pierre-Dansereau — Salaberry-de-Valleyfield"

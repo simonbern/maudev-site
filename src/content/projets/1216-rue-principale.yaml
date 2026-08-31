@@ -1,0 +1,86 @@
+# Source : client, 2026-08-28. Statut « construction » : annoncé, pas encore en
+# location — ni prix, ni plans, ni disponibilité. Voir src/content.config.ts.
+#
+# Ce projet avait déjà une fiche, retirée faute d'informations. Il revient avec
+# ce que le client a fourni, et rien de plus : les inclusions sont recopiées
+# une par une de son message, le décompte de logements et la répartition en
+# 3 ½ / 4 ½ aussi. Aucun prix, aucune superficie, aucune date plus précise que
+# le mois — il n'en a pas donné.
+nom: "1216 rue Principale"
+statut: construction
+ordre: 80
+url: { fr: 1216-rue-principale, en: 1216-rue-principale }
+
+adresse: "1216 rue Principale"
+ville: "Rivière-Beaudette"
+
+unites: 24
+livraison: "2027-03"
+
+resume:
+  fr: "24 logements neufs de 3 ½ et 4 ½ à Rivière-Beaudette, avec vue sur la rivière. Livraison en mars 2027."
+  en: "24 new 3½ and 4½ apartments in Rivière-Beaudette, overlooking the river. Delivery March 2027."
+
+description:
+  fr:
+    - "L'immeuble comptera 24 logements, offerts en 3 ½ et 4 ½. La livraison est prévue en mars 2027."
+    - "Le terrain donne sur la rivière : les logements profitent de la vue et d'énormes balcons."
+  en:
+    - "The building will hold 24 apartments, in 3½ and 4½ layouts. Delivery is expected in March 2027."
+    - "The site fronts the river: the apartments take in the view from oversized balconies."
+
+faits:
+  - label: { fr: "Statut", en: "Status" }
+    valeur: { fr: "En construction", en: "Under construction" }
+  - label: { fr: "Logements", en: "Apartments" }
+    valeur: { fr: "24", en: "24" }
+  - label: { fr: "Types", en: "Layouts" }
+    valeur: { fr: "3 ½ et 4 ½", en: "3½ and 4½" }
+
+# Recopiées du message du client, dans son ordre.
+inclusions:
+  - label: { fr: Internet, en: Internet }
+    icone: wifi
+  - label: { fr: Comptoirs de quartz, en: Quartz countertops }
+    icone: countertop
+  - label: { fr: Thermopompe, en: Heat pump }
+    icone: wind
+  - label: { fr: Rangement, en: Storage }
+    icone: package
+  - label: { fr: Stationnement, en: Parking }
+    icone: square-parking
+  - label: { fr: Intercom, en: Intercom }
+    icone: bell-ring
+  - label: { fr: Énormes balcons, en: Oversized balconies }
+    icone: balcon
+  - label: { fr: Vue sur la rivière, en: River view }
+    icone: waves
+
+# Le drone du chantier, déjà encodé pour le hero de l'accueil : c'est le même
+# plan et le même fichier, donc aucun poids supplémentaire. Le master de
+# 1,41 Go vit dans reference/assets/ et n'est pas publié.
+video:
+  mp4: /videos/1216-rue-principale/1216-rue-principale.mp4
+  poster: ../../assets/projets/1216-rue-principale/video-poster.jpg
+
+# CE SONT DES RENDUS 3D, pas des photos : le bâtiment n'est pas construit.
+# Ils alimentent donc `renders` et la page les titre comme tels.
+# Source : reference/assets/RIVIÈRE-BEAUDETTE/PS_25141_*.jpg (1200×675) et
+# PS-24141_ILLUSTRATION 3D_VUE D_OISEAU.pdf, rastérisé à 2001 px de large.
+renders:
+  - src: ../../assets/projets/1216-rue-principale/renders/rb-avant.jpg
+    alt:
+      fr: "Rendu 3D de la façade avant, vue depuis la rue Principale"
+      en: "3D rendering of the front façade, seen from rue Principale"
+  - src: ../../assets/projets/1216-rue-principale/renders/rb-arriere.jpg
+    alt:
+      fr: "Rendu 3D de la façade arrière et des balcons donnant sur la rivière"
+      en: "3D rendering of the rear façade and the balconies facing the river"
+  - src: ../../assets/projets/1216-rue-principale/renders/rb-vue-oiseau.jpg
+    alt:
+      fr: "Rendu 3D à vol d'oiseau : l'immeuble, ses stationnements et la rivière"
+      en: "Bird's-eye 3D rendering: the building, its parking areas and the river"
+  - src: ../../assets/projets/1216-rue-principale/renders/rb-vue-dessus.jpg
+    alt:
+      fr: "Rendu 3D vu du dessus : implantation du bâtiment sur le terrain"
+      en: "Top-down 3D rendering: the building's placement on the site"

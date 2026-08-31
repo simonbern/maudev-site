@@ -1,0 +1,278 @@
+---
+import { Image } from 'astro:assets';
+import HeroVideo from './HeroVideo.astro';
+import type { CollectionEntry } from 'astro:content';
+import Icon from './Icon.astro';
+import UnitTable from './UnitTable.astro';
+import Gallery from './Gallery.astro';
+import Carte from './Carte.astro';
+import FormulaireVisite from './FormulaireVisite.astro';
+import ProjectHeroContent from './ProjectHeroContent.astro';
+import Reveal from './Reveal.astro';
+import { projetsCopy } from '../copy/projets';
+import { money } from '../format';
+import type { Locale } from '../i18n';
+
+/**
+ * Corps d'une page projet — layout inspiré de
+ * reference/inspo/project-page-example.png.
+ *
+ * Toutes les sections après le hero sont conditionnelles : Dalhousie n'a ni
+ * photos, ni plans, ni superficies. Une section vide ne doit jamais s'afficher
+ * — c'est plus visible qu'une section absente.
+ *
+ * Les sections n'ont pas toutes la même respiration ni la même largeur : la
+ * description est étroite et décalée, les tarifs occupent la grille entière,
+ * les photos occupent la même grille que le reste. Un empilement de blocs
+ * strictement identiques se lit comme un gabarit rempli, quel que soit le
+ * contenu — mais un bloc plus large que ses voisins se lit comme un bloc mal
+ * aligné, pas comme un choix.
+ */
+interface Props {
+  projet: CollectionEntry<'projets'>;
+  locale: Locale;
+}
+const { projet, locale } = Astro.props;
+const d = projet.data;
+const t = projetsCopy[locale].detail;
+
+const hasMedia = d.photos.length > 0 || d.plans.length > 0 || d.renders.length > 0;
+
+// Neuf inclusions au maximum dans la grille : trois colonnes, trois rangées,
+// une section qui tient dans un écran. Au-delà, la grille déborde et la
+// dernière rangée reste incomplète.
+//
+// Le surplus n'est pas jeté — il est listé sous la grille. La coupure suit
+// l'ordre du client, pas mon jugement sur ce qui mérite d'être montré.
+const GRILLE_MAX = 9;
+const inclusions = d.inclusions.slice(0, GRILLE_MAX);
+const inclusionsReste = d.inclusions.slice(GRILLE_MAX);
+const heroPoster = d.video?.poster ?? d.couverture?.src;
+---
+
+<!-- Hero. Avec vidéo si le projet en a une (même traitement que la landing :
+     source attachée en JS, poster image, rien sur mobile ni en mouvement
+     réduit), sinon la couverture, sinon un bandeau brun plein.
+
+     **Même hauteur que le hero de l'accueil : 92svh.** Les deux branches
+     étaient plus basses — 78svh plafonné à 900 px pour la vidéo, 68svh pour
+     l'image fixe — et une fiche de projet s'ouvrait donc sur un bandeau plus
+     court que la page d'où l'on venait. La marche se voyait au clic. -->
+{
+  heroPoster && (d.video?.webm || d.video?.mp4) ? (
+    <HeroVideo
+      poster={heroPoster}
+      posterAlt={d.couverture?.alt[locale] ?? d.nom}
+      webm={d.video.webm}
+      mp4={d.video.mp4}
+      pauseLabel={t.pauseVideo}
+      playLabel={t.playVideo}
+      height="min-h-[92svh]"
+    >
+      <ProjectHeroContent projet={projet} locale={locale} />
+    </HeroVideo>
+  ) : (
+    <section class="relative isolate flex min-h-[92svh] flex-col justify-end overflow-hidden bg-inverse">
+      {d.couverture && (
+        <>
+          <Image
+            src={d.couverture.src}
+            alt={d.couverture.alt[locale]}
+            widths={[800, 1200, 1600, 2400]}
+            sizes="100vw"
+            loading="eager"
+            fetchpriority="high"
+            class="absolute inset-0 -z-20 h-full w-full object-cover"
+          />
+          <div
+            class="absolute inset-0 -z-10 bg-gradient-to-t from-scrim/85 via-scrim/50 to-scrim/30"
+            aria-hidden="true"
+          />
+        </>
+      )}
+      <div
+        class="absolute inset-x-0 top-0 -z-10 h-40 bg-gradient-to-b from-scrim/70 to-transparent"
+        aria-hidden="true"
+      />
+      <div class="mx-auto w-full max-w-page px-5 pt-28 pb-10 md:px-8 md:pb-14 lg:px-12">
+        <ProjectHeroContent projet={projet} locale={locale} />
+      </div>
+    </section>
+  )
+}
+
+<!-- Logements et tarifs -->
+{
+  d.logements.length > 0 && (
+    <section class="zone-claire bg-section-alt py-14 md:py-16 lg:py-20">
+      <div class="mx-auto max-w-page px-5 md:px-8 lg:px-12">
+        <h2 class="mb-8 text-h2 text-balance text-ink md:mb-10">{t.logements}</h2>
+        <UnitTable logements={d.logements} plans={d.plans} locale={locale} />
+
+        {d.options.length > 0 && (
+          <div class="mt-12 max-w-narrow">
+            <h3 class="mb-4 text-label text-ink-muted">{t.options}</h3>
+            <ul class="flex flex-col gap-2 text-small text-ink-soft">
+              {d.options.map((o) => (
+                <li class="flex justify-between gap-4 border-b border-line py-2">
+                  <span>{o.label[locale]}</span>
+                  {o.prix !== undefined && <span class="num">{money(o.prix, locale)}</span>}
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+      </div>
+    </section>
+  )
+}
+
+<!-- Photos. Même conteneur que le reste de la page. Une largeur maximale plus
+     grande avait été essayée pour faire déborder les images ; sous 1 664 px de
+     fenêtre elle ne s'applique jamais et le bloc part bord à bord — 48 px des
+     bords, quand tout le reste est à 121 px. -->
+{
+  d.photos.length > 0 && (
+    <section class="bg-page py-12 md:py-14 lg:py-16">
+      <div class="mx-auto max-w-page px-5 md:px-8 lg:px-12">
+        <h2 class="mb-8 text-h2 text-balance text-ink md:mb-10">{t.photos}</h2>
+        <Gallery photos={d.photos} locale={locale} />
+      </div>
+    </section>
+  )
+}
+
+<!-- Description + emplacement. Le texte tient dans les sept
+     premières colonnes et n'est pas centré : une colonne de prose au milieu
+     d'un vide symétrique est le réglage par défaut de tous les gabarits.
+
+     La carte occupe les quatre dernières colonnes — la place que ce décalage
+     laissait vide. Elle n'apparaît que si le projet a une adresse civique. -->
+<section class="zone-claire bg-section-alt py-14 md:py-16 lg:py-20">
+  <div class="mx-auto max-w-page px-5 md:px-8 lg:px-12">
+    <div class="grid gap-y-10 md:grid-cols-12 md:gap-x-10 lg:gap-x-14">
+      <div class="md:col-span-7">
+        {d.description[locale].map((p) => <p class="mb-6 text-lead text-ink-soft last:mb-0">{p}</p>)}
+      </div>
+
+      {d.adresse && (
+        <div class="md:col-span-5 lg:col-start-8">
+          <h2 class="mb-4 text-label text-ink-muted">{t.emplacement}</h2>
+          <Carte adresse={d.adresse} ville={d.ville} locale={locale} />
+        </div>
+      )}
+    </div>
+  </div>
+</section>
+
+
+<!-- Ce qui est inclus. Après les tarifs et les photos : on regarde un
+     logement, puis on veut savoir ce qu'il y a dedans. L'ordre inverse
+     énumérait des équipements avant d'avoir montré quoi que ce soit.
+
+     C'était un bloc à la fin de la section « description » ; c'est
+     maintenant une section à elle seule, ce qu'elle aurait dû être. -->
+{
+  d.inclusions.length > 0 && (
+    <section class="bg-page py-12 md:py-14 lg:py-16">
+      <div class="mx-auto max-w-page px-5 md:px-8 lg:px-12">
+        <h2 class="text-h2 text-balance text-ink">{t.inclusions}</h2>
+
+        {/* Icône au-dessus du libellé, le tout centré : à 56 px l'icône porte
+            l'élément au lieu de le décorer, et la grille se parcourt en rangées
+            plutôt qu'en colonne de puces.
+
+            Aucun filet : Dalhousie n'a que quatre inclusions, donc une
+            dernière rangée à trois quarts vide. Tout traçage de cellules —
+            bordures ou fond traversé par des gouttières — dessine ce trou.
+            L'espace seul le laisse invisible. */}
+        <ul class="mt-8 grid grid-cols-2 gap-x-8 gap-y-10 sm:grid-cols-3 md:mt-12 md:gap-y-12">
+          {inclusions.map((i) => (
+            <li class="group flex flex-col items-center gap-5 px-2 text-center">
+              <Icon name={i.icone} stroke={1.5} class="icone-survol h-14 w-14 shrink-0 text-accent-ink" />
+              <span class="text-lead text-balance text-ink">
+                {i.label[locale]}
+                {i.payant && <span class="text-ink-muted"> ($)</span>}
+              </span>
+            </li>
+          ))}
+        </ul>
+
+        {inclusionsReste.length > 0 && (
+          <p class="mt-8 text-body text-ink-muted">
+            <span class="text-ink-soft">{t.inclusionsPlus} </span>
+            {inclusionsReste.map((i) => i.label[locale]).join(' · ')}
+          </p>
+        )}
+      </div>
+    </section>
+  )
+}
+
+<!-- Appel à la visite, au milieu de la page.
+
+     Le formulaire est en bas, après les photos et les rendus : sur Hermine, il
+     est à plus de six écrans du hero. Le bouton du hero y renvoie, mais un
+     visiteur qui décide en lisant les tarifs n'a rien sous la main.
+
+     Une section, pas un bouton isolé : elle sépare aussi les tarifs des photos,
+     là où deux sections claires se suivaient.
+
+     **Le bloc est pâle.** Il a été sombre, pour attirer l'œil au milieu d'une
+     page claire. Il l'attirait, et il coupait la page en deux : on descendait
+     une fiche de projet entièrement lumineuse et on butait sur une dalle de
+     nuit. Le bouton d'accent suffit à faire le point de fixation ; le bloc,
+     lui, n'a qu'à se distinguer du fond de section, ce qu'un cran de teinte
+     fait très bien. -->
+<section class="zone-claire bg-section-alt py-14 md:py-16 lg:py-20">
+  <div class="mx-auto max-w-page px-5 md:px-8 lg:px-12">
+    <div class="flex flex-col items-start justify-between gap-8 rounded-panel bg-surface-alt p-7 md:flex-row md:items-center md:p-9">
+      <div>
+        <h2 class="max-w-narrow text-h2 text-balance text-ink">{t.contactTitle}</h2>
+        <p class="mt-3 max-w-prose text-body text-ink-soft">{t.visitLead}</p>
+      </div>
+      <a
+        href="#visite"
+        class="group inline-flex h-14 shrink-0 cursor-pointer items-center gap-3 rounded-card bg-accent px-7 text-body font-semibold text-on-accent transition-colors duration-200 hover:bg-accent-hover"
+      >
+        {t.visitCta}
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-5 w-5 transition-transform duration-300 group-hover:translate-y-1" aria-hidden="true">
+          <path d="M12 5v14M6 13l6 6 6-6" />
+        </svg>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- Rendus 3D — projets pas encore bâtis. Galerie distincte des photos :
+     ce ne sont pas des clichés du réel, et le titre le dit. -->
+{
+  d.renders.length > 0 && (
+    <section class="bg-page py-14 md:py-16 lg:py-20">
+      <div class="mx-auto max-w-page px-5 md:px-8 lg:px-12">
+        <h2 class="mb-8 text-h2 text-balance text-ink md:mb-10">{t.renders}</h2>
+        <Gallery photos={d.renders} locale={locale} id="renders" />
+      </div>
+    </section>
+  )
+}
+
+<!-- Demande de visite. Sur `page` et non `inverse` : le footer est déjà brun,
+     et DESIGN.md interdit deux sections sombres consécutives. -->
+<section class="bg-page py-10 md:py-12 lg:py-14">
+  <div class="mx-auto max-w-page px-5 md:px-8 lg:px-12">
+    {
+      /* Projet sans aucun média : on le dit ici plutôt que d'ajouter une
+         section pour une seule phrase. */
+      !hasMedia && <p class="mb-12 max-w-prose text-lead text-ink-muted">{t.noMedia}</p>
+    }
+    <div class="border-t border-line-strong pt-14 md:pt-20">
+      <FormulaireVisite projet={projet} locale={locale} />
+    </div>
+  </div>
+</section>
+
+{/* Les révélations du hero. La page n'en avait pas : son entrée s'affichait
+    d'un bloc pendant que l'accueil, `/a-louer` et `/projets` déroulaient la
+    leur. Le script est le même partout et ne fait rien sans `[data-reveal]`. */}
+<Reveal />

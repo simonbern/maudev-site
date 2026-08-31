@@ -1,0 +1,125 @@
+---
+import { slugVille } from '../format';
+import { localize, type Locale } from '../i18n';
+
+/**
+ * Où MauDev bâtit — un index cliquable.
+ *
+ * Remplace les trois piliers numérotés qui fermaient la section « Notre
+ * modèle » de l'accueil. Ils disaient exactement ce que `/notre-modele` dit
+ * en entier, dans les mêmes mots, à un clic de distance : une page d'accueil
+ * qui résume la page suivante retarde le clic sans rien ajouter.
+ *
+ * Ce bloc dit quelque chose que l'accueil ne disait nulle part : **où**. Les
+ * villes viennent de la collection — ajouter un projet change la liste sans
+ * que personne édite un fichier de contenu.
+ *
+ * **Chaque ligne est un lien**, vers son groupe sur `/projets`. Elle ne l'a
+ * pas toujours été, et une liste qui a l'air d'un menu sans en être un est
+ * pire qu'une liste sobre : on essaie de cliquer, il ne se passe rien.
+ *
+ * **Le nombre de projets livrés ne s'affiche plus.** Il l'a fait, aligné à
+ * droite. La section répond à « où », pas à « combien », et le chiffre était
+ * déjà deux fois sur le chemin : dans « MauDev en chiffres » juste après, et
+ * en tête de chaque groupe de `/projets`, où le lien mène. Il sert encore à
+ * **trier** — les municipalités les plus fournies d'abord — mais il ne se lit
+ * plus.
+ *
+ * **Aucun filet, aucune bordure.** La première version en avait neuf : une
+ * bordure au-dessus de chaque ligne, une sous la dernière, et un filet de
+ * liaison au milieu de chacune. Ça venait d'une table des matières, où le
+ * filet sert à traverser un grand vide entre un titre à gauche et un numéro
+ * de page à droite. Ici il n'y a pas de vide à traverser : la flèche suit le
+ * nom sur la même ligne, à une chasse de distance.
+ *
+ * Ce qui sépare les entrées est donc l'espace, et rien d'autre — quatre lignes
+ * de texte alignées à gauche, drapeau à droite. C'est aussi ce qui évite la
+ * grande zone vide à droite des noms courts : « Huntingdon » ne tire plus un
+ * trait sur 900 px pour rejoindre son chiffre.
+ *
+ * Le nom est en serif d'affichage. C'est la deuxième fois seulement que cette
+ * famille apparaît (l'autre est le titre du hero) : elle est réservée à ce qui
+ * se lit comme un titre et non comme une donnée.
+ *
+ * **Le titre de section est deux fois plus grand que les noms.** Il a été à
+ * leur taille exacte — `text-h2` des deux côtés : le changement de famille ne
+ * suffisait pas à dire lequel des deux était le titre, et la section se lisait
+ * comme cinq entrées dont la première était bizarre. Le titre est donc passé
+ * en `text-display`, la taille des trois autres titres de section de
+ * l'accueil, qu'il n'aurait jamais dû quitter.
+ *
+ * **Une carte a été essayée puis retirée** — quatre pastilles vertes posées sur
+ * les vraies coordonnées, avec les plans d'eau de la région tirés
+ * d'OpenStreetMap en fond. Elle marchait, et elle n'a pas convaincu. Sont
+ * partis avec elle `src/geo.ts`, `src/villes.ts` et `scripts/carte/`.
+ *
+ * Aucune boîte, aucune photo. La section vient juste après le carrousel des
+ * projets et juste avant la photo d'intérieur : c'est elle qui les sépare.
+ */
+interface Props {
+  titre: string;
+  /** Déjà triées et comptées par l'appelant. `projets` = livrés. */
+  villes: { nom: string; projets: number }[];
+  locale: Locale;
+}
+const { titre, villes, locale } = Astro.props;
+
+const projetsUrl = localize('/projets', locale);
+---
+
+{/* La seule section teintée de l'accent du site. Elle est prise entre deux
+    sections crème — les projets à louer au-dessus, la plateforme en dessous —
+    et c'est ce qui lui donne son rôle : une respiration colorée au milieu de
+    la page, là où elle change de sujet. `section-alt` l'en séparait à peine.
+
+    Le vert part du #789C9A du client, dilué puis poussé vers le vert : assez teinté
+    pour se lire comme un vert, assez pâle pour porter le texte courant. */}
+<section class="zone-claire bg-section-accent py-14 md:py-16 lg:py-20">
+  <div class="mx-auto max-w-page px-5 md:px-8 lg:px-12">
+    {/* `text-display`, comme les trois autres titres de section de l'accueil.
+        Il était en `text-h2` — exactement la taille des noms de ville en
+        dessous : deux niveaux de lecture à la même taille, et le titre ne se
+        lisait plus comme un titre. Il est maintenant deux fois plus grand
+        qu'eux, et dans l'autre famille. */}
+    <h2 data-reveal class="max-w-narrow text-display text-balance text-ink">{titre}</h2>
+
+    <ol class="mt-12 flex flex-col gap-6 md:mt-16 md:gap-8">
+      {
+        villes.map((v, i) => (
+          <li data-reveal style={`transition-delay:${i * 80}ms`}>
+            {/* `w-fit` : la zone cliquable épouse le texte. Sur toute la
+                largeur, survoler le vide à droite d'« Huntingdon » allumait
+                la ligne, ce qui promet un lien là où il n'y a rien à lire. */}
+            <a
+              href={`${projetsUrl}#ville-${slugVille(v.nom)}`}
+              class="group flex w-fit max-w-full cursor-pointer flex-wrap items-baseline gap-x-5 gap-y-1 rounded-card"
+            >
+              <span class="font-display text-h2 text-balance text-ink transition-colors duration-500 group-hover:text-accent-ink">
+                {v.nom}
+              </span>
+
+              {/* Le décompte de projets livrés a été retiré : la section
+                  répond à « où », pas à « combien », et le chiffre est déjà
+                  deux fois sur la page — dans « MauDev en chiffres » et en
+                  tête de chaque groupe de `/projets`, où le lien mène. */}
+              <span class="flex items-center text-ink-muted transition-colors duration-500 group-hover:text-accent-ink">
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  class="h-5 w-5 shrink-0 transition-transform duration-500 ease-[var(--ease-doux)] group-hover:translate-x-1"
+                  aria-hidden="true"
+                >
+                  <path d="M5 12h14M13 6l6 6-6 6" />
+                </svg>
+              </span>
+            </a>
+          </li>
+        ))
+      }
+    </ol>
+  </div>
+</section>

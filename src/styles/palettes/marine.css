@@ -1,0 +1,199 @@
+/* ══════════════════════════════════════════════════════════════════════════
+   Palette « Marine » — sombre, bâtie autour du #18554D du client.
+
+   Le site était clair sur crème, avec le vert en accent. Il **alterne**
+   maintenant entre deux verts : le #18554D fourni, sombre, et une sauge pâle
+   qui prend le relais une section sur deux.
+
+   **L'alternance n'est pas qu'une affaire de fond.** Passer d'un vert profond
+   à une sauge pâle inverse tout ce qui se pose dessus : l'encre, les filets,
+   la couleur d'accent, le texte des boutons. Ces bascules sont groupées dans
+   l'utilitaire `zone-claire` (global.css), qui redéfinit les jetons pour son
+   sous-arbre. Les composants n'ont rien à savoir : ils écrivent `text-ink` et
+   `bg-accent` comme partout ailleurs.
+
+   Ce que le fond sombre oblige à changer, et pourquoi :
+
+   · **Le texte s'inverse.** Encre sombre sur fond clair devient encre claire
+     sur fond vert. Les quatre tons d'encre sont des sauges pâles, pas des
+     blancs purs — un blanc pur sur un vert profond vibre.
+   · **L'accent ne peut plus être le vert.** #18554D est devenu le fond ; s'en
+     servir aussi pour les boutons reviendrait à peindre un bouton de la
+     couleur du mur. C'est le **saumon #F69F96** qui prend le rôle : c'est la
+     seule des sept couleurs fournies qui tranche vraiment sur ce vert. Le
+     taupe et le rose ancien sont trop proches en valeur, le sauge et le
+     vert-bleu doux appartiennent à la même famille que le fond.
+   · **Les blocs descendent au lieu de monter.** Sur fond sombre, le réflexe
+     est d'éclaircir ce qui est posé dessus. Empiler quatre surfaces de plus
+     en plus claires épuise le budget de contraste : à la quatrième, le texte
+     secondaire tombait à 2,94:1 — mesuré. Les blocs sont donc plus **sombres**
+     que la page, et seules les bandes de séparation sont plus claires. C'est
+     ce que le brief demandait, et c'est aussi ce qui tient.
+
+   Les sept couleurs fournies, et ce qu'elles sont devenues :
+
+       #18554D  vert profond   → le fond de page. Toute la palette en dérive.
+       #F69F96  saumon         → l'accent : boutons, liens, « Dev » du logo,
+                                 lignes d'ouverture du hero.
+       #C6D5D2  sauge pâle     → deux rôles : le texte secondaire sur les
+                                 surfaces sombres, et les blocs posés sur une
+                                 zone claire.
+       #789C9A  vert-bleu doux → écarté. Entre le fond et les filets, il n'a
+                                 plus de place où être lisible.
+       #6B7069  gris-vert      → écarté avec les neutres froids : la palette
+                                 n'a plus de gris, elle est verte de bout en
+                                 bout.
+       #A0837B  taupe          → écartés. Chauds au milieu d'une palette
+       #D09188  rose ancien       froide, et le saumon occupe déjà ce registre.
+
+   Pour revenir à une direction claire : dans global.css, remplacer
+       @import "./palettes/marine.css";
+   par `terre.css` ou `pin.css`. Rien d'autre — aucun composant ne nomme une
+   primitive.
+
+   TOUS les ratios ci-dessous ont été calculés, jamais estimés.
+   ══════════════════════════════════════════════════════════════════════════ */
+
+@theme {
+  /* ── Réinitialisation ───────────────────────────────────────────────────
+     On efface la palette Tailwind par défaut : `bg-blue-500` doit être une
+     erreur, pas une tentation. Seuls les mots-clés CSS survivent.          */
+  --color-*: initial;
+  --color-transparent: transparent;
+  --color-current: currentColor;
+  --color-white: #ffffff;
+
+  /* ── Primitives · Teal (toute la structure) ─────────────────────────────
+     Une seule échelle, du plus sombre au plus clair, dérivée du #18554D
+     fourni — qui est `teal-600`, au milieu. Les huit premiers sont des
+     surfaces, les trois derniers des filets.                               */
+  --color-teal-950: #06201c; /* voile posé sur les images              */
+  --color-teal-900: #0b2e29; /* hero, pied de page                     */
+  --color-teal-800: #123f38; /* champs de formulaire                   */
+  --color-teal-700: #14483f; /* blocs posés sur une section            */
+  --color-teal-600: #18554d; /* LE fond de page — la couleur donnée    */
+  --color-teal-500: #1b5c52; /* survol d'un bloc                       */
+  --color-teal-400: #1f6659; /* survol d'un bouton fantôme             */
+  --color-teal-300: #216859; /* réserve                                */
+  --color-teal-200: #2f7368; /* filets décoratifs                      */
+  --color-teal-100: #478f81; /* filets marqués                         */
+  --color-teal-50: #9dc4ba; /*  bordures de champ (3:1 minimum)        */
+
+  /* ── Primitives · Mist (les clairs) ─────────────────────────────────────
+     Sur fond sombre, ce sont les encres : des sauges pâles, jamais du blanc
+     pur — un blanc pur sur un vert profond vibre. Sur fond clair, les plus
+     denses d'entre elles deviennent des surfaces.
+
+     `mist-300` est le #C6D5D2 fourni. `mist-400` et `mist-500` sont les deux
+     verts pâles qui portent les zones claires.                             */
+  --color-mist-50: #f2f7f5;
+  --color-mist-100: #d9e6e1;
+  --color-mist-200: #cfdfd9;
+  --color-mist-300: #c6d5d2;
+  --color-mist-400: #cadfd4; /* zone claire teintée                     */
+  --color-mist-500: #d7e5db; /* zone claire                             */
+  --color-mist-600: #e6f0ea; /* survol d'un bloc en zone claire         */
+
+  /* ── Primitives · Salmon (l'accent) ─────────────────────────────────────
+     `salmon-400` est le #F69F96 fourni : il sert en aplat, où il porte du
+     texte sombre. Les deux plus clairs servent EN TEXTE sur le vert — le
+     saumon d'origine y donne 4,22:1, sous le seuil du texte courant.       */
+  --color-salmon-400: #f69f96;
+  --color-salmon-300: #fbb3ab;
+  --color-salmon-200: #fdd2cc;
+
+  /* ── Primitives · Leaf (succès) ─────────────────────────────────────────
+     Hors palette client, et volontairement : c'est une couleur d'état, pas
+     de marque. Un accusé de réception en saumon se confondrait avec l'accent
+     et ne dirait plus « réussi ».                                          */
+  --color-leaf-300: #a8e0bd;
+  --color-leaf-900: #10402f;
+
+  /* ── Sémantiques · Surfaces ─────────────────────────────────────────────
+     Les composants utilisent CES noms, pas les primitives.
+
+     Dans une zone sombre, l'ordre de valeur va du plus sombre au plus clair :
+
+       inverse < surface < surface-alt < page < accent-tint
+
+     La page est en haut de cette pile. Ce qui est posé dessus s'enfonce :
+     empiler des surfaces de plus en plus claires épuise le budget de
+     contraste, et à la quatrième le texte secondaire tombait à 2,94:1.
+
+     `section-alt` et `section-accent` sortent de cette pile : ce sont les
+     deux sauges pâles de l'alternance.                                     */
+  --color-page: var(--color-teal-600);
+  --color-surface: var(--color-teal-800);
+  --color-surface-alt: var(--color-teal-700);
+  /* Les deux sections claires. C'est le seul endroit où la palette sombre
+     nomme une surface pâle : les composants qui les portent ajoutent
+     `zone-claire`, qui bascule tout ce qui se pose dessus.                 */
+  --color-section-alt: var(--color-mist-500);
+  --color-section-accent: var(--color-mist-400);
+  --color-inverse: var(--color-teal-900);
+  --color-inverse-alt: var(--color-teal-800);
+
+  /* ── Sémantiques · Texte ────────────────────────────────────────────────
+     Ratios donnés dans le pire cas des zones sombres, c'est-à-dire sur
+     `accent-tint`, la surface la plus claire de cette pile. En zone claire,
+     `zone-claire` remplace ces trois jetons.                               */
+  --color-ink: var(--color-mist-50); /*  7.19:1 au pire · 7.93:1 sur la page */
+  --color-ink-soft: var(--color-mist-100); /*  6.06:1 au pire               */
+  --color-ink-muted: var(--color-mist-200); /*  5.40:1 au pire              */
+  --color-on-inverse: var(--color-mist-50); /* 13.50:1 sur inverse          */
+  --color-on-inverse-muted: var(--color-mist-300); /*  9.64:1 sur inverse   */
+  --color-on-accent: var(--color-teal-900); /*  7.18:1 sur l'aplat saumon   */
+
+  /* ── Sémantiques · Accent ───────────────────────────────────────────────
+     `accent` et `accent-ink` ne pointent PAS la même primitive, contrairement
+     à la version claire de cette palette. Le saumon d'origine tient en aplat
+     — 7,18:1 pour le texte sombre posé dessus — mais pas en texte sur le
+     vert, où il donne 4,22:1. Le texte prend donc un saumon plus clair.
+
+     C'est le logo qui rend la distinction visible : « Dev » consomme
+     `accent-ink`, et il est écrit sur le vert.                             */
+  --color-accent: var(--color-salmon-400);
+  --color-accent-hover: var(--color-salmon-300);
+  --color-accent-ink: var(--color-salmon-200); /* 5.66:1 au pire · 6.24 page */
+  --color-accent-tint: var(--color-teal-500);
+  --color-accent-on-inverse: var(--color-salmon-200); /* 10.62:1 sur inverse */
+
+  /* ── Sémantiques · Titre d'ouverture ────────────────────────────────────
+     Les deux lignes serif du titre du hero. Le saumon d'origine, en très
+     grand corps, par-dessus le voile de la vidéo : 8,63:1 sur la surface
+     sombre. Cette couleur ne descend jamais sous `text-display`.           */
+  --color-display-accent: var(--color-salmon-400);
+
+  /* ── Sémantiques · Traits ───────────────────────────────────────────────
+     Sur fond sombre les filets s'éclaircissent au lieu de s'assombrir.
+     `line-input` est le seul qui doive atteindre 3:1 : il est obligatoire
+     sur tout champ de formulaire et tout contrôle dont la bordure porte du
+     sens.                                                                  */
+  --color-line: var(--color-teal-200);
+  --color-line-strong: var(--color-teal-100);
+  --color-line-input: var(--color-teal-50); /*  4.51:1 sur la page          */
+  --color-line-inverse: var(--color-teal-700);
+
+  /* ── Sémantiques · Voiles et survols ────────────────────────────────────
+     `scrim` est la teinte posée sur une image pour rendre lisible ce qui est
+     écrit dessus. Toujours avec une opacité : `bg-scrim/60`.
+
+     `surface-hover` est le fond des boutons fantômes au survol. Sur fond
+     sombre il **éclaircit** — un cran vers la section alternée.            */
+  --color-scrim: var(--color-teal-950);
+  --color-surface-hover: var(--color-teal-400);
+
+  /* ── Sémantiques · Succès ───────────────────────────────────────────────
+     Un seul usage : l'accusé de réception du formulaire de visite.         */
+  --color-available: var(--color-leaf-300); /*  5.75:1 sur la page          */
+  --color-available-tint: var(--color-leaf-900);
+
+  /* ── Ombres ─────────────────────────────────────────────────────────────
+     Nettement plus denses que sur fond clair. Une ombre à 7 % d'opacité ne
+     se voit pas sur un vert profond : ce qui creuse un fond clair doit être
+     doublé pour creuser un fond sombre. Elles vivent ici et non dans
+     global.css — changer de palette change les ombres.                     */
+  --shadow-soft: 0 1px 2px rgb(6 32 28 / 0.35), 0 4px 12px rgb(6 32 28 / 0.4);
+  --shadow-lift: 0 2px 4px rgb(6 32 28 / 0.4), 0 12px 28px rgb(6 32 28 / 0.5);
+  --shadow-media: 0 24px 48px -12px rgb(6 32 28 / 0.6);
+}

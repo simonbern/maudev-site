@@ -1,0 +1,370 @@
+---
+import { Image, getImage } from 'astro:assets';
+
+/**
+ * Hero de la page d'accueil — DESIGN.md § 6.
+ *
+ * La vidéo n'est pas encore livrée. Le composant est bâti pour que son arrivée
+ * soit un remplacement d'asset, pas une refonte :
+ *
+ *   · L'image est TOUJOURS rendue, en couche de fond. Elle est la première
+ *     image du plan, et le repli si la vidéo n'arrive pas à jouer.
+ *   · La vidéo se superpose et n'existe que si `webm`/`mp4` sont fournis.
+ *     Sans eux, aucun élément <video> n'est émis — pas de balise vide, pas de
+ *     requête, pas de bouton de pause orphelin.
+ *   · Les sources sont attachées en JS, jamais dans le HTML : c'est le seul
+ *     moyen de garantir qu'on ne télécharge rien en `prefers-reduced-motion`
+ *     ni avant que le hero entre dans le cadre — `preload="none"` n'étant
+ *     qu'une indication.
+ *   · **La vidéo joue à toutes les largeurs.** Elle était réservée à `md` et
+ *     plus ; à 1,9 Mo pour douze secondes, en priver le téléphone coûtait plus
+ *     que de la lui servir.
+ */
+interface Props {
+  poster: ImageMetadata;
+  posterAlt: string;
+  /**
+   * Second cadrage, sous `md`. **Personne ne la passe aujourd'hui.** Elle a
+   * servi tant que la vidéo ne jouait pas sur téléphone : le poster **était**
+   * le hero, et un plan de drone vu petit et immobile devient un champ. La
+   * vidéo jouant partout, le poster n'est plus que la demi-seconde avant
+   * qu'elle démarre — il doit être la première image du plan, aux deux
+   * tailles, sinon le démarrage est une coupure (§ 6).
+   *
+   * La prop reste : le jour où un hero voudra deux cadrages, tout est là.
+   */
+  posterMobile?: ImageMetadata;
+  webm?: string;
+  mp4?: string;
+  pauseLabel: string;
+  playLabel: string;
+  /** Hauteur du bloc. La landing occupe l'écran, une fiche projet moins. */
+  height?: string;
+}
+const {
+  poster,
+  posterAlt,
+  posterMobile,
+  webm,
+  mp4,
+  pauseLabel,
+  playLabel,
+  height = 'min-h-[85svh] max-h-[900px]',
+} = Astro.props;
+const hasVideo = Boolean(webm || mp4);
+
+/**
+ * Art direction : deux images, une seule téléchargée.
+ *
+ * Deux `<Image>` avec `md:hidden` / `hidden md:block` seraient plus courts —
+ * et le navigateur irait chercher les deux, y compris celle qu'il n'affiche
+ * pas. Sur un hero de première vue, en données cellulaires, c'est exactement
+ * ce qu'on cherche à éviter. `<picture>` + `media` ne charge que la bonne.
+ *
+ * D'où `getImage` à la main : `<Image>` sait écrire une balise complète, pas
+ * une `<source>`.
+ *
+ * **`object-left` à partir de `md`, et un plan en 2,2:1.** Le sujet du plan
+ * — le chantier — tombait derrière le titre, qui court jusqu'à 930 px à
+ * 1 440. En 16:9, la vidéo ne dépasse le cadre que de 129 px : la décaler au
+ * maximum ne l'aurait bougée que de 64. Le plan a donc été **rogné en 2,2:1 à
+ * l'encodage**, ce qui porte le dépassement à 500 px et le décalage à 250 —
+ * le chantier passe à droite du titre au lieu de dessous.
+ *
+ * `left` et non `right` : caler la source à gauche montre sa **partie
+ * gauche**, donc pousse le sujet vers la droite de l'écran. L'inverse a été
+ * essayé en premier, et il l'enfonçait un peu plus sous le titre.
+ *
+ * Le poster suit le même recadrage et la même ancre : sans quoi le démarrage
+ * de la vidéo ferait sauter l'image de 250 px. L'ancre est `object-center`
+ * sous `md`, où le cadre est en portrait et n'a rien à décaler latéralement.
+ *
+ * **`sizes` de 300vw sur mobile, et ce n'est pas une faute de frappe.** Le
+ * cadre du téléphone est deux fois plus haut que large ; la source est un
+ * paysage. `object-cover` la met donc à l'échelle par la **hauteur**, et sa
+ * largeur rendue vaut environ trois fois celle de la fenêtre — le reste est
+ * rogné à gauche et à droite. `sizes` ne décrivant qu'une largeur, un
+ * honnête `100vw` fait choisir au navigateur une variante trois fois trop
+ * petite : mesuré, il prenait le fichier de 375 px pour un cadre de 718 px
+ * de haut. Sur un cadre paysage (le desktop), la largeur redevient la
+ * contrainte et `100vw` est juste.
+ */
+const LARGEURS = [640, 900, 1200, 1600, 2400];
+const jeu = async (img: ImageMetadata) => {
+  const rendus = await Promise.all(
+    LARGEURS.filter((w) => w <= img.width).map(async (w) => ({
+      w,
+      src: (await getImage({ src: img, width: w, format: 'webp' })).src,
+    })),
+  );
+  return rendus.map((r) => `${r.src} ${r.w}w`).join(', ');
+};
+const jeuDesktop = posterMobile ? await jeu(poster) : null;
+const jeuMobile = posterMobile ? await jeu(posterMobile) : null;
+const replMobile = posterMobile
+  ? (await getImage({ src: posterMobile, width: 900, format: 'webp' })).src
+  : null;
+---
+
+{/* **Pas de `isolate`, pas de fond ici.** Les deux empêchéraient l'effet.
+
+    Un contexte d'empilement sur le hero peint tout son sous-arbre — calque
+    fixe compris — à l'étape des éléments positionnés, donc **au-dessus** des
+    fonds des sections suivantes, qui sont de simples blocs en flux. La vidéo
+    restait devant la page au lieu de passer derrière. Vérifié à la main :
+    `elementFromPoint` au centre de l'écran renvoyait le voile du hero alors
+    qu'on était deux sections plus bas.
+
+    Sans contexte d'empilement, le calque à `-z-10` remonte au niveau de la
+    racine et se peint avant tous les fonds en flux : chaque section opaque le
+    recouvre, dans l'ordre du document.
+
+    Le fond sombre part avec — il est sur le calque fixe, où il sert de repli
+    si les médias ne chargent pas, sans masquer le calque lui-même. */}
+<section class:list={["relative flex flex-col justify-end", height]}>
+  {/* **Le média est fixe, la page monte dessus.** Il était `absolute` dans le
+      hero, donc il défilait avec lui. Ici il reste à sa place pendant que le
+      titre remonte et que la section suivante vient le recouvrir — c'est le
+      défilement qui révèle la page, pas le hero qui s'en va.
+
+      `fixed` et non `sticky` : un élément collé ne tient que le temps de son
+      conteneur, et le conteneur du hero fait exactement un écran — il n'y
+      aurait aucune course. Le rendre collant demanderait d'envelopper toute la
+      page dans son conteneur, pour un effet que trois lettres obtiennent.
+
+      Ce qui rend la chose sûre : **toutes les sections qui suivent ont un fond
+      opaque** et viennent plus tard dans le document, donc elles le couvrent
+      complètement. Le calque garde `-z-10` pour rester sous le titre du hero.
+
+      Le cadre du calque est la fenêtre, pas le hero (92svh) : les 8 % du bas
+      sont déjà derrière la section suivante. */}
+  <div class="fixed inset-0 -z-10 overflow-hidden bg-inverse">
+  {
+      posterMobile ? (
+        <picture>
+          <source media="(min-width: 768px)" srcset={jeuDesktop} sizes="100vw" type="image/webp" />
+          <img
+            src={replMobile}
+            srcset={jeuMobile}
+            sizes="300vw"
+            alt={posterAlt}
+            width={posterMobile.width}
+            height={posterMobile.height}
+            loading="eager"
+            fetchpriority="high"
+            decoding="async"
+            class="absolute inset-0 -z-20 h-full w-full object-cover"
+          />
+        </picture>
+      ) : (
+        <Image
+          src={poster}
+          alt={posterAlt}
+          widths={[800, 1200, 1600, 2400]}
+          sizes="(min-width: 768px) 100vw, 300vw"
+          loading="eager"
+          fetchpriority="high"
+          class="absolute inset-0 -z-20 h-full w-full object-cover"
+        />
+      )
+    }
+
+    {
+      hasVideo && (
+        <video
+          id="hero-video"
+          data-webm={webm}
+          data-mp4={mp4}
+          preload="none"
+          muted
+          loop
+          playsinline
+          aria-hidden="true"
+          tabindex="-1"
+          class="absolute inset-0 -z-10 h-full w-full object-cover opacity-0 transition-opacity duration-500 data-[playing]:opacity-100 md:object-left"
+        />
+      )
+    }
+
+    <!-- Voile dégradé, pas uniforme : il assombrit le bas, où le titre est
+         ancré, et laisse respirer le haut de l'image.
+
+         **Les arrêts ont été remontés de 85/45/25 à 88/62/38.** Le titre du hero
+         ne tient pas dans le tiers bas : il fait trois lignes et monte jusqu'au
+         milieu du cadre, là où le voile était à 41 %. Mesuré pixel par pixel
+         sur le poster, derrière chaque glyphe : **41 % des pixels de la
+         première ligne** tombaient sous 3:1, dans le ciel. Aux nouveaux
+         arrêts, 0,01 %.
+
+         Le voile ne connaît pas le plan qu'il couvre — une vidéo change de
+         cadrage, de lumière et de saison. C'est donc lui qui doit tenir le
+         contraste, pas le hasard du plan. -->
+    <div
+      class="absolute inset-0 -z-10 bg-gradient-to-t from-scrim/88 via-scrim/62 to-scrim/38"
+      aria-hidden="true"
+    >
+    </div>
+
+    <!-- Second voile, latéral. Le titre est à gauche, le sujet du plan est à
+         droite : assombrir toute la largeur pour protéger la moitié gauche
+         revenait à payer deux fois. Celui-ci s'éteint à 70 % de la largeur, et
+         ce qu'on est venu montrer — le chantier, les champs — reste intact.
+
+         Mesuré sur cinq images du plan, derrière chaque glyphe : la part de
+         pixels sous 3:1 passe de 0,35 % à 0,11 %. Ce qui reste est le soleil
+         rasant à travers les arbres, quelques dizaines de pixels sur un titre
+         de 130 px.
+
+         **Masqué sous `md`.** Il protège une colonne de gauche ; sur téléphone
+         le titre prend toute la largeur, donc le voile aussi — il ne protégeait
+         plus rien en particulier et assombrissait toute l'image. Le voile
+         vertical y suffit. -->
+    <div
+      class="absolute inset-0 -z-10 hidden bg-gradient-to-r from-scrim/45 to-transparent to-70% md:block"
+      aria-hidden="true"
+    >
+    </div>
+  </div>
+
+  <!-- Écran propre à la nav : elle flotte par-dessus la photo, et une image
+       claire en haut rendrait ses liens illisibles. -->
+  <div
+    class="absolute inset-x-0 top-0 -z-10 h-40 bg-gradient-to-b from-scrim/70 to-transparent"
+    aria-hidden="true"
+  >
+  </div>
+
+  <div class="mx-auto w-full max-w-page px-5 pt-28 pb-12 md:px-8 md:pb-16 lg:px-12">
+    <slot />
+  </div>
+
+  {
+    hasVideo && (
+      <button
+        id="hero-toggle"
+        type="button"
+        hidden
+        data-pause-label={pauseLabel}
+        data-play-label={playLabel}
+        aria-label={pauseLabel}
+        class="absolute right-5 bottom-5 z-10 rounded-card inline-flex h-11 w-11 cursor-pointer items-center justify-center bg-scrim/60 text-on-inverse backdrop-blur-sm transition-colors duration-200 hover:bg-scrim/80 md:right-8 lg:right-12"
+      >
+        <svg viewBox="0 0 24 24" fill="currentColor" class="h-5 w-5" aria-hidden="true">
+          <rect x="7" y="5" width="3.5" height="14" rx="1" />
+          <rect x="13.5" y="5" width="3.5" height="14" rx="1" />
+        </svg>
+        <svg viewBox="0 0 24 24" fill="currentColor" class="hidden h-5 w-5" aria-hidden="true" data-play-icon>
+          <path d="M8 5.5v13l11-6.5z" />
+        </svg>
+      </button>
+    )
+  }
+</section>
+
+<script>
+  const video = document.getElementById('hero-video') as HTMLVideoElement | null;
+  const toggle = document.getElementById('hero-toggle') as HTMLButtonElement | null;
+
+  if (video && toggle) {
+    const pauseIcon = toggle.querySelector('svg:not([data-play-icon])') as SVGElement;
+    const playIcon = toggle.querySelector('[data-play-icon]') as SVGElement;
+
+    const calm = matchMedia('(prefers-reduced-motion: reduce)');
+    // Seul garde-fou : le mouvement réduit. La vidéo jouait sur `md` et plus
+    // seulement — un téléphone recevait une image fixe là où l'écran large
+    // recevait le plan de drone, et c'est le téléphone qui voit le hero le plus
+    // souvent. Le fichier fait 2 Mo : le coût en données ne justifiait plus de
+    // priver la moitié des visiteurs de ce que la page a de mieux.
+    //
+    // Ce qui reste vrai : la source n'est attachée qu'au moment de démarrer, la
+    // lecture s'arrête dès que le hero sort du cadre, et le poster tient seul si
+    // le réseau ou le navigateur refuse.
+    const allowed = () => !calm.matches;
+
+    let attached = false;
+    const attach = () => {
+      if (attached) return;
+      attached = true;
+      for (const [type, src] of [
+        ['video/webm', video.dataset.webm],
+        ['video/mp4', video.dataset.mp4],
+      ] as const) {
+        if (!src) continue;
+        const s = document.createElement('source');
+        s.type = type;
+        s.src = src;
+        video.appendChild(s);
+      }
+      video.load();
+    };
+
+    // Source injoignable ou format refusé : on reste sur l'image de fond et on
+    // retire le bouton, qui ne piloterait rien. `play()` sur une source en
+    // échec ne rejette pas toujours — cet écouteur est le seul signal fiable.
+    let broken = false;
+    video.addEventListener('error', () => {
+      broken = true;
+      toggle.hidden = true;
+      video.removeAttribute('data-playing');
+    }, { capture: true });
+
+    const render = (playing: boolean) => {
+      if (broken) return;
+      video.toggleAttribute('data-playing', playing);
+      toggle.hidden = !attached;
+      toggle.setAttribute(
+        'aria-label',
+        playing ? toggle.dataset.pauseLabel! : toggle.dataset.playLabel!,
+      );
+      pauseIcon.classList.toggle('hidden', !playing);
+      playIcon.classList.toggle('hidden', playing);
+    };
+
+    const start = async () => {
+      if (!allowed()) return;
+      attach();
+      try {
+        await video.play();
+        render(true);
+      } catch {
+        // Lecture refusée par le navigateur : l'image de fond reste, et le
+        // bouton permet de lancer la vidéo à la main.
+        render(false);
+      }
+    };
+
+    toggle.addEventListener('click', () => {
+      if (video.paused) {
+        attach();
+        video.play().then(() => render(true));
+      } else {
+        video.pause();
+        render(false);
+      }
+    });
+
+    // Rien ne tourne pendant qu'on lit le bas de la page.
+    new IntersectionObserver(
+      ([e]) => {
+        if (!attached) {
+          if (e.isIntersecting) start();
+          return;
+        }
+        if (e.isIntersecting) video.play().then(() => render(true)).catch(() => {});
+        else if (!video.paused) {
+          video.pause();
+          render(false);
+        }
+      },
+      { threshold: 0.15 },
+    ).observe(video);
+
+    // Passer en mouvement réduit en cours de route doit couper la vidéo.
+    calm.addEventListener('change', (e) => {
+      if (e.matches && !video.paused) {
+        video.pause();
+        render(false);
+      }
+    });
+  }
+</script>

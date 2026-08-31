@@ -1,0 +1,40 @@
+# Genere depuis reference/mirror/www.mau-dev.ca/{fr,en}/projects/142-saint-joseph
+# Textes et chiffres repris de l’ancien site, moins le registre financier :
+# le fait « Note d'investissement / Mise de fonds remboursée (no cash deal) »
+# et la mention « approche de montage créative » ont été retirés sur demande
+# du client (2026-08-28). Le site s'adresse à des locataires.
+nom: "142 Saint-Joseph"
+statut: realise
+ordre: 0
+url: { fr: 142-saint-joseph, en: 142-saint-joseph }
+
+adresse: "142 Saint-Joseph"
+ville: "Sainte-Martine"
+
+resume:
+  fr: "Projet structuré à Sainte-Martine avec locataire ancré."
+  en: "Structured project in Sainte-Martine with an anchor tenant."
+
+description:
+  fr:
+    - "Un projet structuré autour de 12 unités résidentielles et d'un locataire ancré."
+  en:
+    - "A structured project built around 12 residential units and an anchor tenant."
+
+faits:
+  - label: { fr: "Statut", en: "Status" }
+    valeur: { fr: "Livré", en: "Delivered" }
+  - label: { fr: "Programme", en: "Program" }
+    valeur: { fr: "Résidentiel avec locataire ancré", en: "Residential with anchor tenant" }
+  - label: { fr: "Unités résidentielles", en: "Residential units" }
+    valeur: { fr: "12", en: "12" }
+  - label: { fr: "Locataire", en: "Tenant" }
+    valeur: { fr: "Caisse Populaire Desjardins", en: "Caisse Populaire Desjardins" }
+  - label: { fr: "Structure", en: "Structure" }
+    valeur: { fr: "Subdivision du lot initial", en: "Subdivision of the initial lot" }
+
+couverture:
+  src: ../../assets/projets/142-saint-joseph/couverture.jpg
+  alt:
+    fr: "142 Saint-Joseph — Sainte-Martine"
+    en: "142 Saint-Joseph — Sainte-Martine"

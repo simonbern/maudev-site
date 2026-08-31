@@ -1,0 +1,35 @@
+# Genere depuis reference/mirror/www.mau-dev.ca/{fr,en}/projects/110-alphonse-desjardins
+# Textes et chiffres repris tels quels de l’ancien site.
+nom: "110 Alphonse-Desjardins"
+statut: realise
+ordre: 0
+url: { fr: 110-alphonse-desjardins, en: 110-alphonse-desjardins }
+
+adresse: "110 Alphonse-Desjardins"
+ville: "Salaberry-de-Valleyfield"
+
+resume:
+  fr: "Projet résidentiel livré à Salaberry-de-Valleyfield."
+  en: "Completed residential project in Salaberry-de-Valleyfield."
+
+description:
+  fr:
+    - "Un immeuble résidentiel compact de 23 unités qui s'inscrit dans la présence croissante de MauDev à Valleyfield."
+  en:
+    - "A compact 23-unit residential building that strengthens MauDev's growing presence in Valleyfield."
+
+faits:
+  - label: { fr: "Statut", en: "Status" }
+    valeur: { fr: "Livré", en: "Delivered" }
+  - label: { fr: "Programme", en: "Program" }
+    valeur: { fr: "Résidentiel", en: "Residential" }
+  - label: { fr: "Bâtiments", en: "Buildings" }
+    valeur: { fr: "1", en: "1" }
+  - label: { fr: "Unités résidentielles", en: "Residential units" }
+    valeur: { fr: "23", en: "23" }
+
+couverture:
+  src: ../../assets/projets/110-alphonse-desjardins/couverture.jpg
+  alt:
+    fr: "110 Alphonse-Desjardins — Salaberry-de-Valleyfield"
+    en: "110 Alphonse-Desjardins — Salaberry-de-Valleyfield"

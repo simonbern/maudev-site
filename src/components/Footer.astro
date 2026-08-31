@@ -1,0 +1,132 @@
+---
+import { getCollection } from 'astro:content';
+import Logo from './Logo.astro';
+import LanguageSwitcher from './LanguageSwitcher.astro';
+import { NAV, ui, localize, CONTACT, estEnLocation, type Locale } from '../i18n';
+
+interface Props {
+  locale: Locale;
+  lastSegment?: string;
+}
+const { locale, lastSegment } = Astro.props;
+const t = ui[locale];
+
+// Généré depuis la collection : ajouter un projet le fait apparaître ici sans
+// toucher au composant (DESIGN.md § 5, Pied de page).
+const projets = (await getCollection('projets'))
+  .filter((p) => estEnLocation(p.data.statut))
+  .sort((a, b) => b.data.ordre - a.data.ordre);
+
+const colonneProjets = projets.map((p) => ({
+  label: p.data.nom,
+  href: `${localize('/a-louer', locale)}/${p.data.url[locale]}`,
+}));
+
+const colonneSociete = NAV.map((i) => ({
+  label: i[locale],
+  href: localize(i.path, locale),
+}));
+
+const year = new Date().getFullYear();
+---
+
+<footer class="bg-inverse text-on-inverse-muted">
+  <div class="mx-auto max-w-page px-5 py-12 md:px-8 md:py-14 lg:px-12">
+    <!-- 3 colonnes seulement à partir de lg : à 768 px elles deviennent trop
+         étroites pour « Projet Dalhousie » et son badge. -->
+    <div class="grid gap-10 sm:grid-cols-2 sm:gap-8 lg:grid-cols-3">
+      <div class="flex flex-col gap-5">
+        <a
+          href={localize('/', locale)}
+          aria-label={t.home}
+          class="flex w-fit cursor-pointer items-center"
+        >
+          <Logo tone="dark" class="text-marque text-on-inverse" />
+        </a>
+        <address class="not-italic">
+          <a
+            href={`mailto:${CONTACT.email}`}
+            class="cursor-pointer text-small underline decoration-line-inverse underline-offset-4 transition-colors duration-200 hover:text-accent-on-inverse hover:decoration-accent-on-inverse"
+          >
+            {CONTACT.email}
+          </a>
+        </address>
+      </div>
+
+      <nav aria-labelledby="footer-rent">
+        <h2 id="footer-rent" class="mb-4 text-label text-on-inverse">
+          {t.forRent}
+        </h2>
+        <ul class="flex flex-col gap-2">
+          {
+            colonneProjets.map((p) => (
+              <li>
+                {/* Pas de flex ici : en colonne étroite, un conteneur flex
+                    renvoie le badge seul à la ligne. En flux de texte, il
+                    suit le nom et passe à la ligne avec lui. */}
+                <a
+                  href={p.href}
+                  class="cursor-pointer text-small transition-colors duration-200 hover:text-accent-on-inverse"
+                >
+                  {p.label}
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+      </nav>
+
+      <nav aria-labelledby="footer-company">
+        <h2 id="footer-company" class="mb-4 text-label text-on-inverse">
+          {t.company}
+        </h2>
+        <ul class="flex flex-col gap-2">
+          {
+            colonneSociete.map((l) => (
+              <li>
+                <a
+                  href={l.href}
+                  class="cursor-pointer text-small transition-colors duration-200 hover:text-accent-on-inverse"
+                >
+                  {l.label}
+                </a>
+              </li>
+            ))
+          }
+          <li>
+            <a
+              href={`mailto:${CONTACT.email}`}
+              class="cursor-pointer text-small transition-colors duration-200 hover:text-accent-on-inverse"
+            >
+              {t.contact}
+            </a>
+          </li>
+        </ul>
+      </nav>
+    </div>
+
+    <div
+      class="mt-10 flex flex-col-reverse items-start justify-between gap-6 border-t border-line-inverse pt-6 sm:flex-row sm:items-center"
+    >
+      <div class="flex flex-wrap items-center gap-x-6 gap-y-2">
+        <p class="text-small">© {year} MauDev. {t.rights}</p>
+        <a
+          href={localize('/confidentialite', locale)}
+          class="cursor-pointer text-small transition-colors duration-200 hover:text-accent-on-inverse"
+        >
+          {t.privacy}
+        </a>
+        {/* Se rétracter doit être aussi simple que consentir : le lien rouvre le
+            bandeau depuis n'importe quelle page. */}
+        <button
+          type="button"
+          data-temoins-rouvrir
+          class="cursor-pointer text-small transition-colors duration-200 hover:text-accent-on-inverse"
+        >
+          {t.temoins}
+        </button>
+      </div>
+      <LanguageSwitcher locale={locale} lastSegment={lastSegment} tone="dark" />
+    </div>
+  </div>
+</footer>

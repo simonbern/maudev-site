@@ -1,0 +1,61 @@
+# build output
+dist/
+# generated types
+.astro/
+
+# dependencies
+node_modules/
+
+# logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+
+# environment variables
+.env
+.env.production
+
+# macOS-specific files
+.DS_Store
+
+# jetbrains setting folder
+.idea/
+
+# Livraisons brutes du client (1,3 Go) : gardées sur disque comme source,
+# jamais versionnées. Les fichiers réellement utilisés par le site sont
+# copiés dans src/assets/projets/<slug>/ et public/videos/<slug>/.
+# Inventaire : reference/new-assets-mapping.md
+reference/NEW/
+
+# Même règle pour tout reference/assets/ — 2,2 Go de livraisons brutes : des
+# vidéos 4K à 112 Mb/s, des JPEG de 12 Mo, un master de drone de 1,41 Go. Ce
+# que le site utilise en est sorti réduit et vit dans src/assets/projets/.
+#
+# Le dossier reste sur le disque comme source — CLAUDE.md dit d'y puiser — il
+# n'est simplement pas versionné. Un clone frais n'a donc pas les originaux :
+# les redemander au client, ou les reprendre sur la machine du développeur.
+reference/assets/
+
+# Ce que le site n'utilise pas. Déplacé ici plutôt que supprimé : anciens jeux
+# de photos, plans non recadrés, rendus écartés. Rien n'est perdu, rien ne part
+# sur GitHub. Si une image redevient utile, elle est là.
+reference/assets-non-utilises/
+
+# Références d'inspiration : ce sont des sites appartenant à des tiers, aspirés
+# pour étudier des mises en page. Utiles sur le disque, jamais dans un dépôt.
+reference/inspo/
+
+# Captures de vérification Playwright (~59 Mo) : régénérées à chaque passe,
+# gardées sur disque pour comparer d'une session à l'autre, jamais versionnées.
+# Un dépôt Git n'oublie pas : ce sont des artefacts, pas des sources.
+reference/screenshots-*/
+
+# Captures du navigateur piloté pendant les vérifications.
+.playwright-mcp/
+
+# Le mirror est gardé comme source des textes et des chiffres de l'ancien site
+# — 3 Mo de HTML, d'images et de CSS. Sauf ce clip décoratif de 96 Mo, qui à
+# lui seul pèse plus que tout le reste du dépôt et n'apprend rien sur le site.
+reference/mirror/www.mau-dev.ca/videos/

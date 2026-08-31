@@ -1,0 +1,426 @@
+---
+import { getCollection } from 'astro:content';
+import { Image } from 'astro:assets';
+import HeroVideo from './HeroVideo.astro';
+import Seuil from './Seuil.astro';
+import Panneau from './Panneau.astro';
+import CarrouselProjets from './CarrouselProjets.astro';
+import Bandeau from './Bandeau.astro';
+import Chiffres from './Chiffres.astro';
+import Villes from './Villes.astro';
+import Reveal from './Reveal.astro';
+import { landing } from '../copy/landing';
+import { projetsCopy } from '../copy/projets';
+import { localize, CONTACT, estEnLocation, type Locale } from '../i18n';
+// Le hero porte la vidéo, la section « plateforme » porte la photo — l'inverse
+// de la répartition précédente. Le drone ouvre la page sur un immeuble réel
+// vu du ciel ; l'intérieur meublé va là où le texte parle de ce qu'on livre.
+//
+// `heroPoster` est l'image de repli du hero, à toutes les largeurs : elle
+// s'affiche en mouvement réduit et tant que la vidéo n'a pas démarré. C'est la
+// première image du plan, pour que le démarrage ne soit pas une coupure.
+//
+// Le plan vient d'un chantier de Rivière-Beaudette, projet retiré du site. Comme
+// le rendu de /notre-modele, c'est une image de marque et non une fiche : le
+// hero ne nomme aucun projet, et l'alternative décrit un chantier MauDev sans
+// prétendre à un lieu. Le fichier vit hors de l'arborescence des projets.
+import heroPoster from '../assets/marque/hero-drone.jpg';
+// Plus de poster propre au téléphone. Il en a eu un — un séjour meublé — tant
+// que la vidéo ne jouait que sur `md` et plus : le poster **était** le hero du
+// téléphone, et un plan de drone vu petit et immobile devient un champ.
+// Maintenant que la vidéo joue partout, le poster n'est plus que la demi-seconde
+// avant qu'elle démarre : il doit être la première image du plan, sinon le
+// démarrage est une coupure. Les deux cadres partagent donc `heroPoster`.
+// Image de marque, pas une photo de projet : la section ne nomme aucun projet.
+// La plus lumineuse et la plus large du parc photo (3000×2003, aire ouverte
+// meublée, lumière naturelle sur trois fenêtres).
+import interieur from '../assets/marque/interieur-aire-ouverte.jpg';
+// La section « À venir ». Un RENDU, pas une photo — le bâtiment n'existe pas.
+// C'est la façade avant : des quatre rendus livrés, c'est le seul qui se lise
+// à cette taille, les trois autres étant des vues d'ensemble où l'immeuble
+// occupe un quart du cadre. La légende nomme le projet et dit que c'est un
+// rendu ; sans elle, une projection sur une page d'accueil passe pour un
+// immeuble livré.
+import aVenirRendu from '../assets/projets/1216-rue-principale/renders/rb-avant.jpg';
+
+/**
+ * Corps de la page d'accueil, partagé par /fr et /en.
+ *
+ * Direction reprise de reference/inspo/landing-example.png : titres très
+ * grands, contraste grotesque / serif italique, images plein cadre, défilement
+ * horizontal, sections révélées au défilement.
+ *
+ * Trois principes tenus tout du long :
+ *
+ * · **Rien n'est masqué par le HTML.** L'état de départ des révélations est
+ *   posé par le script. Sans JavaScript, la page est entière. La capture de
+ *   Broccolini, presque vide, montre le résultat inverse.
+ * · **Le hero est une image, pas une vidéo.** Un intérieur meublé montre ce
+ *   qu'on loue ; le drone d'Hermine montre un bâtiment vu de loin. La vidéo de
+ *   Dalhousie reste, mais plus bas : c'est un survol de chantier, il illustre
+ *   « financer et construire », pas la promesse d'un logement fini.
+ * · **Aucun contenu inventé.** Les textes viennent de src/copy, les chiffres
+ *   sont calculés depuis la collection.
+ *
+ * Rythme des surfaces (DESIGN.md § 4) : hero sombre → page → inverse →
+ * surface-alt → inverse → page. Jamais deux sections `inverse` de suite.
+ */
+interface Props {
+  locale: Locale;
+}
+const { locale } = Astro.props;
+const c = landing[locale];
+const p = projetsCopy[locale];
+
+const tous = await getCollection('projets');
+const enLocation = tous
+  .filter((x) => estEnLocation(x.data.statut))
+  .sort((a, b) => b.data.ordre - a.data.ordre);
+const realises = tous.filter((x) => x.data.statut === 'realise');
+// Les chantiers annoncés. Comptés ici pour que la section « À venir » dise
+// combien il y en a sans que personne ait à le réécrire à la main.
+const enConstruction = tous.filter((x) => x.data.statut === 'construction');
+const logementsAVenir = enConstruction.reduce((n, x) => n + (x.data.unites ?? 0), 0);
+
+const totalLogements = enLocation.reduce((n, x) => n + (x.data.unites ?? 0), 0);
+
+// Les municipalités, avec leur nombre de projets **livrés**. Chaque ligne de
+// l'index mène à son groupe sur /projets, qui ne montre que les réalisations :
+// annoncer huit projets pour un groupe de sept ferait un lien cassé qui pointe
+// pourtant au bon endroit.
+//
+// Le YAML écrit certaines villes entre guillemets et d'autres non ; `trim()`
+// évite qu'un espace de fin fasse deux entrées d'une seule ville.
+const parVille = new Map<string, number>();
+for (const x of realises) {
+  const nom = x.data.ville.trim();
+  parVille.set(nom, (parVille.get(nom) ?? 0) + 1);
+}
+// Les plus fournies d'abord ; à égalité, l'ordre alphabétique, pour que la
+// liste ne bouge pas au gré de l'ordre des fichiers. Même tri que /projets.
+const municipalites = [...parVille]
+  .map(([nom, projets]) => ({ nom, projets }))
+  .sort((a, b) => b.projets - a.projets || a.nom.localeCompare(b.nom, locale));
+
+// Les chiffres comptent les municipalités où MauDev est présent, livré ou non.
+const villes = new Set(tous.map((x) => x.data.ville.trim())).size;
+
+// L'icône est posée ici et non dans `Chiffres.astro` : le composant ne reçoit
+// qu'un tableau, et une liste d'icônes par position s'y décalerait à la
+// première réorganisation, sans que rien n'échoue. À côté de sa valeur, elle
+// ne peut pas se tromper de chiffre.
+const chiffres = [
+  { valeur: enLocation.length, label: c.chiffres.enLocation, icone: 'building-2' },
+  { valeur: totalLogements, label: c.chiffres.logements, icone: 'door-open' },
+  { valeur: villes, label: c.chiffres.villes, icone: 'map-pin' },
+  { valeur: realises.length, label: c.chiffres.realises, icone: 'circle-check' },
+];
+---
+
+{/* ── Hero. Le titre passe du grotesque au serif italique en cours de phrase
+       — seul endroit du site où deux familles se croisent, et ce qui lui donne
+       une voix.
+
+       Le drone ouvre la page, à toutes les largeurs. Mêmes garanties que
+       partout (§ 6) : source attachée en JS, poster en couche de fond, rien
+       en mouvement réduit, lecture arrêtée hors cadre. */}
+<HeroVideo
+  poster={heroPoster}
+  posterAlt={c.hero.imageAlt}
+  mp4="/videos/1216-rue-principale/1216-rue-principale.mp4"
+  pauseLabel={c.hero.pause}
+  playLabel={c.hero.play}
+  height="min-h-[92svh]"
+>
+  <div class="max-w-5xl">
+    <h1 class="text-hero text-balance text-on-inverse">
+      <span data-reveal class="block">{c.hero.title}</span>
+      {/* Spectral en 600, DROITE. L'italique a été retirée : elle penchait le
+          titre et l'éloignait de la Times demandée. Voir astro.config.mjs pour
+          les trois polices qui se sont trompées de direction avant celle-ci. */}
+      <span
+        data-reveal
+        style="transition-delay:140ms"
+        class="block font-display font-semibold text-display-accent"
+      >
+        {c.hero.titleAccent}
+      </span>
+      <span
+        data-reveal
+        style="transition-delay:200ms"
+        class="block font-display font-semibold text-display-accent"
+      >
+        {c.hero.titleAccent2}
+      </span>
+    </h1>
+
+    {/* Masqué sous `md`. Les trois villes tiennent en une ligne à 1 440 et en
+        trois à 375 : sur un écran de téléphone, elles poussaient l'appel à
+        l'action hors du premier écran pour une information que la page redonne
+        plus bas. Le texte reste dans le DOM — un lecteur d'écran le lit. */}
+    <p data-reveal style="transition-delay:300ms" class="mt-12 hidden max-w-prose text-lead text-on-inverse md:mt-14 md:block">
+      {c.hero.lead}
+    </p>
+
+  </div>
+
+  {/* Un seul appel, et pas un bouton. « Notre modèle » est parti : il est dans
+      la navigation, visible en permanence, et la section du même nom porte
+      déjà son propre lien plus bas. Deux rectangles côte à côte dupliquaient
+      la barre de nav à 60 px sous elle.
+
+      Le seuil sort du bloc `max-w-5xl` : il prend toute la grille, c'est ce qui
+      le fait lire comme une limite plutôt que comme un objet posé dessus. */}
+  <div data-reveal style="transition-delay:340ms" class="mt-10 md:mt-14">
+    <Seuil
+      href={localize('/a-louer', locale)}
+      label={c.hero.primary}
+      meta={`${c.projets.projects(enLocation.length)} · ${c.projets.units(totalLogements)}`}
+      tone="inverse"
+    />
+  </div>
+</HeroVideo>
+
+{/* ── Projets en location. Le carrousel déborde à droite : la carte suivante
+       coupée par le bord dit qu'on peut faire défiler, sans point ni flèche. */}
+{/* `overflow-x-clip` : les éléments qui entrent par la droite attendent à
+    `translateX(3rem)`, donc 48 px hors du cadre. Sans clipping ça ouvrait une
+    barre de défilement horizontale de 28 px à 375 px, avant même que
+    l'animation parte. `clip` plutôt que `hidden` : `hidden` ferait de la
+    section un conteneur de défilement, avec tout ce que ça casse (ancrage,
+    éléments collants). */}
+<section class="overflow-x-clip bg-page py-12 md:py-14 lg:py-16">
+  <div class="mx-auto max-w-page px-5 md:px-8 lg:px-12">
+    <div class="mb-14 flex flex-wrap items-end justify-between gap-6 md:mb-20">
+      <div class="max-w-narrow">
+        <h2 data-reveal="droite" class="text-display text-balance text-ink">{c.projets.title}</h2>
+        <p data-reveal="droite" style="transition-delay:100ms" class="mt-6 text-body text-ink-muted">
+          <span class="num">{c.projets.projects(enLocation.length)}</span>
+          {' · '}
+          <span class="num">{c.projets.units(totalLogements)}</span>
+        </p>
+      </div>
+      <a
+        data-reveal="droite"
+        href={localize('/a-louer', locale)}
+        class="group inline-flex h-11 shrink-0 cursor-pointer items-center gap-2 text-body font-semibold text-accent-ink"
+      >
+        {c.projets.all}
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" aria-hidden="true">
+          <path d="M5 12h14M13 6l6 6-6 6" />
+        </svg>
+      </a>
+    </div>
+
+    {/* Entrée par la droite : le contenu de la section est un carrousel
+        horizontal, et le geste d'arrivée annonce l'axe de lecture. */}
+    <div data-reveal="droite" style="transition-delay:180ms">
+      <CarrouselProjets projets={enLocation} locale={locale} />
+    </div>
+  </div>
+</section>
+
+{/* ── À venir. Le renvoi vers `/projets-a-venir` : ce qui se construit et
+       qui ne se loue pas encore.
+
+       **Une seule image, pas une rangée de vignettes.** Le carrousel juste
+       au-dessus est fait de tuiles ; en remettre ici donnerait deux fois le
+       même geste à trente pixels d'intervalle. Un seul cadre large, le texte
+       à côté : on comprend qu'on a changé de sujet avant d'avoir lu le titre.
+
+       **Et pas de carte par projet.** Les chantiers annoncés n'ont ni prix ni
+       disponibilité ; une carte par projet promettrait de quoi cliquer sur
+       chacun, alors que tout ce qu'on en sait tient sur la page suivante.
+
+       Sombre, comme la section « À louer » qui la précède : les deux parlent
+       des mêmes bâtiments à deux moments, et l'alternance repart à la section
+       suivante. */}
+<section class="bg-page pb-14 md:pb-16 lg:pb-20">
+  <div class="mx-auto max-w-page px-5 md:px-8 lg:px-12">
+    <div class="grid gap-x-10 gap-y-10 border-t border-line pt-12 md:grid-cols-12 md:pt-14">
+      {/* Le titre et son lien sur la même ligne, aux deux bouts de la grille.
+          Le lien vivait sous le chapeau, à droite et tout en bas de la
+          section : il fallait avoir lu la colonne entière pour tomber dessus.
+          C'est le réglage de la section « À louer » juste au-dessus — titre à
+          gauche, « tous les projets » à droite — et deux sections voisines qui
+          mènent chacune à une liste n'ont pas de raison de le faire
+          différemment.
+
+          `items-end` : le lien s'aligne sur la ligne de base du titre, pas sur
+          son haut. Un titre en `text-h1` fait trois fois la hauteur d'un lien ;
+          centrés, ils ne se rapportent visiblement à rien. */}
+      <div class="flex flex-wrap items-end justify-between gap-x-8 gap-y-4 md:col-span-12">
+        <h2 data-reveal class="text-h1 text-balance text-ink">{c.aVenir.titre}</h2>
+        <a
+          data-reveal
+          style="transition-delay:80ms"
+          href={localize('/projets-a-venir', locale)}
+          class="group inline-flex h-11 shrink-0 cursor-pointer items-center gap-2 text-body font-semibold text-accent-ink"
+        >
+          {c.aVenir.cta}
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" aria-hidden="true">
+            <path d="M5 12h14M13 6l6 6-6 6" />
+          </svg>
+        </a>
+      </div>
+
+      <figure data-reveal class="md:col-span-7">
+        <Image
+          src={aVenirRendu}
+          alt={c.aVenir.imageAlt}
+          widths={[600, 900, 1200]}
+          sizes="(min-width: 768px) 58vw, 100vw"
+          loading="lazy"
+          class="aspect-[16/9] w-full object-cover"
+        />
+        <figcaption class="mt-4 text-small text-ink-muted">{c.aVenir.imageLegende}</figcaption>
+      </figure>
+
+      <div class="md:col-span-4 md:col-start-9 md:self-center">
+        <p data-reveal style="transition-delay:100ms" class="max-w-prose text-lead text-ink-soft">
+          {c.aVenir.lead}
+        </p>
+        {enConstruction.length > 0 && (
+          <p data-reveal style="transition-delay:140ms" class="mt-4 text-body text-ink-muted">
+            <span class="num">{c.projets.projects(enConstruction.length)}</span>
+            {' · '}
+            <span class="num">{c.projets.units(logementsAVenir)}</span>
+          </p>
+        )}
+      </div>
+    </div>
+  </div>
+</section>
+
+{/* ── Où MauDev bâtit. Ni boîte ni photo, et c'est le point : le carrousel des
+       projets précède, la photo d'intérieur suit, et ces deux blocs d'images se
+       touchaient. Une page dont toutes les images sont groupées au même
+       endroit se parcourt en deux temps — on regarde, puis on lit — au lieu
+       d'alterner.
+
+       Le contenu n'est pas un remplissage : c'est la seule fois que l'accueil
+       dit **où**. Ce qui occupait cette place résumait `/notre-modele` dans
+       les mêmes mots, à un clic de distance.
+
+       Chaque ligne mène à son groupe sur /projets — d'où le décompte en
+       projets **livrés** : c'est ce que le lien montrera. */}
+<Villes
+  titre={c.villes.titre}
+  villes={municipalites}
+  locale={locale}
+/>
+
+{/* ── Notre modèle ───────────────────────────────────────────────
+
+       La section était un aplat sombre pleine hauteur, texte compris. Elle est
+       claire ; **la photo est le seul élément sombre**, et c'en est un parmi
+       d'autres, pas un contenant qui avale tout le reste.
+
+       Disposition : le texte tient la colonne de gauche, la photo occupe la
+       droite en portrait et **descend plus bas que lui**. Ce décalage est ce
+       qui donne son mouvement à la section — deux colonnes de même hauteur se
+       lisent comme un tableau.
+
+       **Rien ne ferme la section.** Trois piliers numérotés le faisaient : ils
+       reprenaient mot pour mot ce que `/notre-modele` développe, sous le lien
+       qui y mène. Une page d'accueil qui résume la page suivante retarde le
+       clic sans rien ajouter. */}
+<section class="bg-page py-14 md:py-16 lg:py-20">
+  <div class="mx-auto max-w-page px-5 md:px-8 lg:px-12">
+    <div class="grid gap-x-10 gap-y-10 md:grid-cols-12 lg:gap-x-14">
+      <div class="md:col-span-6 md:self-center lg:col-span-5">
+        {/* `text-h1` et non `text-display` : à 96 px, « plateforme » fait 520 px
+            à lui seul et le titre tombe sur trois lignes. Ce n'est pas la
+            section principale de la page — c'est le résumé d'une page qui
+            existe à côté. */}
+        <h2 data-reveal class="text-h1 text-balance text-ink">{c.modele.title}</h2>
+        <p data-reveal style="transition-delay:100ms" class="mt-6 max-w-prose text-lead text-ink-soft">
+          {c.modele.lead}
+        </p>
+        <a
+          data-reveal
+          style="transition-delay:180ms"
+          href={localize('/notre-modele', locale)}
+          class="group mt-8 inline-flex h-11 cursor-pointer items-center gap-2 text-body font-semibold text-accent-ink transition-colors duration-200 hover:text-accent-hover"
+        >
+          {c.modele.more}
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" aria-hidden="true">
+            <path d="M5 12h14M13 6l6 6-6 6" />
+          </svg>
+        </a>
+      </div>
+
+      <figure
+        data-reveal
+        style="transition-delay:120ms"
+        class="md:col-span-6 md:col-start-7 lg:col-span-6 lg:col-start-7"
+      >
+        <Image
+          src={interieur}
+          alt={c.modele.imageAlt}
+          widths={[600, 1000, 1400]}
+          sizes="(min-width: 768px) 50vw, 100vw"
+          loading="lazy"
+          class="aspect-[4/5] w-full object-cover md:aspect-[5/6]"
+        />
+      </figure>
+    </div>
+  </div>
+</section>
+
+{/* ── Réalisations. Onze projets livrés, en carrousel manuel : les montrer
+       tous sans occuper un écran entier, sans rien faire bouger tout seul.
+
+       **Les chiffres suivent immédiatement**, et les deux sections partagent
+       la même nuance : c'est un seul mouvement, pas deux. La respiration basse
+       est donc courte — avec les deux sections à pleine hauteur, 40 px de bas
+       plus 40 px de haut faisaient une bande vide de la même couleur qu'elles,
+       et les chiffres semblaient appartenir à autre chose. */}
+<section class="zone-claire bg-section-alt pt-14 pb-6 md:pt-16 md:pb-8 lg:pt-20">
+  <div class="mx-auto max-w-page px-5 md:px-8 lg:px-12">
+    <div class="mb-10 flex flex-wrap items-end justify-between gap-6 md:mb-12">
+    <h2 data-reveal class="max-w-narrow text-display text-balance text-ink">{p.realises.title}</h2>
+    <a
+      data-reveal
+      href={localize('/projets', locale)}
+      class="group inline-flex h-11 shrink-0 cursor-pointer items-center gap-2 text-body font-semibold text-accent-ink"
+    >
+      {p.realises.voirTout}
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" aria-hidden="true">
+        <path d="M5 12h14M13 6l6 6-6 6" />
+      </svg>
+    </a>
+    </div>
+
+    {/* Le carrousel vit dans le panneau. Il n'a pas besoin d'atteindre le bord
+        de l'écran pour dire qu'on peut faire défiler : sa piste a son propre
+        `overflow-x-auto`, et la carte suivante dépasse du cadre de la piste —
+        qui est ici le bord intérieur du panneau. */}
+    <Bandeau projets={realises} locale={locale} label={p.realises.title} />
+  </div>
+</section>
+
+<Chiffres titre={c.chiffres.titre} valeurs={chiffres} locale={locale} />
+
+{/* ── Contact ───────────────────────────────────────────────────────*/}
+<section class="bg-page py-10 md:py-12 lg:py-14">
+  <div class="mx-auto max-w-page px-5 md:px-8 lg:px-12">
+    <div class="max-w-narrow">
+      <h2 data-reveal class="text-display text-balance text-ink">{c.contact.title}</h2>
+      <p data-reveal style="transition-delay:100ms" class="mt-6 text-lead text-ink-muted">
+        {c.contact.lead}
+      </p>
+    </div>
+
+    <div data-reveal style="transition-delay:180ms" class="mt-10 md:mt-14">
+      <Seuil
+        href={`mailto:${CONTACT.email}`}
+        label={c.contact.cta}
+        meta={CONTACT.email}
+        flecheDesktop
+      />
+    </div>
+  </div>
+</section>
+
+<Reveal />

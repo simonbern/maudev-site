@@ -1,0 +1,71 @@
+---
+import { Font } from 'astro:assets';
+import { SANS, SERIF } from '../fonts.mjs';
+import Nav from '../components/Nav.astro';
+import Footer from '../components/Footer.astro';
+import Temoins from '../components/Temoins.astro';
+import { translatePath, ui, locales, type Locale } from '../i18n';
+import '../styles/global.css';
+
+interface Props {
+  locale: Locale;
+  title: string;
+  description?: string;
+  /** Segment de projet dans l'autre langue, pour les routes dynamiques. */
+  lastSegment?: string;
+  /** Landing : nav transparente par-dessus le hero, contenu sous la nav. */
+  overlay?: boolean;
+}
+const { locale, title, description, lastSegment, overlay = false } = Astro.props;
+const t = ui[locale];
+
+const alternates = locales.map((l) => ({
+  lang: l,
+  href: new URL(translatePath(Astro.url.pathname, l, lastSegment), Astro.site ?? Astro.url)
+    .href,
+}));
+---
+
+<!doctype html>
+<html lang={locale}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    {/* Pas de favicon : la marque est un mot, pas un pictogramme, et celui
+        d'Astro n'a rien à faire sur les onglets d'un site de promoteur. Le
+        `data:` n'est pas une icône vide, c'est une réponse — sans lui le
+        navigateur réclame /favicon.ico à chaque page et journalise un 404. */}
+    <link rel="icon" href="data:," />
+    <title>{title}</title>
+    {description && <meta name="description" content={description} />}
+    {
+      alternates.map((a) => (
+        <link rel="alternate" hreflang={a.lang} href={a.href} />
+      ))
+    }
+    {/* Une balise par famille déclarée dans astro.config.mjs, et les noms
+        viennent du même module : une famille configurée mais non rendue ici
+        n'émet aucune variable CSS, et la règle qui la consomme retombe
+        silencieusement sur son repli.
+
+        Seule la grotesque est préchargée : elle porte tout le texte. La serif
+        ne sert qu'à deux mots du hero, sous la ligne de flottaison du poids
+        critique. */}
+    <Font cssVariable={SANS} preload />
+    <Font cssVariable={SERIF} />
+  </head>
+  <body class="flex min-h-dvh flex-col">
+    <a
+      href="#contenu"
+      class="sr-only focus:not-sr-only focus:absolute focus:top-3 focus:left-3 focus:z-100 focus:rounded-card focus:bg-accent focus:px-5 focus:py-3 focus:text-small focus:font-semibold focus:text-on-accent"
+    >
+      {t.skip}
+    </a>
+    <Nav locale={locale} lastSegment={lastSegment} overlay={overlay} />
+    <main id="contenu" class="flex-1">
+      <slot />
+    </main>
+    <Footer locale={locale} lastSegment={lastSegment} />
+    <Temoins locale={locale} />
+  </body>
+</html>

@@ -1,0 +1,52 @@
+# Source : client, 2026-08-28. Voir 1216-rue-principale.yaml.
+#
+# Aucun média fourni. La page affiche donc son gabarit « Visuels à venir » —
+# pas un rendu emprunté à un autre projet, pas une photo d'ambiance.
+#
+# Le client écrit « St-Anicet » sans numéro civique ni nom de voie : c'est la
+# municipalité, pas une adresse. `adresse` reste vide et la municipalité est
+# marquée à confirmer.
+nom: "Saint-Anicet"
+statut: construction
+ordre: 70
+url: { fr: saint-anicet, en: saint-anicet }
+
+ville: "Saint-Anicet"
+aConfirmer: [adresse]
+
+unites: 36
+livraison: "2027-04"
+
+resume:
+  fr: "36 logements neufs de 3 ½ et 4 ½ à Saint-Anicet, en 6 immeubles de 6 logements, avec accès au lac Saint-François. Livraison en avril 2027."
+  en: "36 new 3½ and 4½ apartments in Saint-Anicet, across six six-unit buildings, with access to Lac Saint-François. Delivery April 2027."
+
+description:
+  fr:
+    - "Le projet compte 36 logements répartis en 6 immeubles de 6 logements, offerts en 3 ½ et 4 ½. La livraison est prévue en avril 2027."
+    - "Les résidents auront accès au lac Saint-François."
+  en:
+    - "The project holds 36 apartments across six six-unit buildings, in 3½ and 4½ layouts. Delivery is expected in April 2027."
+    - "Residents will have access to Lac Saint-François."
+
+faits:
+  - label: { fr: "Statut", en: "Status" }
+    valeur: { fr: "En construction", en: "Under construction" }
+  - label: { fr: "Logements", en: "Apartments" }
+    valeur: { fr: "36 — 6 immeubles de 6", en: "36 — six buildings of six" }
+  - label: { fr: "Types", en: "Layouts" }
+    valeur: { fr: "3 ½ et 4 ½", en: "3½ and 4½" }
+
+inclusions:
+  - label: { fr: Internet, en: Internet }
+    icone: wifi
+  - label: { fr: Comptoirs de quartz, en: Quartz countertops }
+    icone: countertop
+  - label: { fr: Thermopompe, en: Heat pump }
+    icone: wind
+  - label: { fr: Rangement, en: Storage }
+    icone: package
+  - label: { fr: Stationnement, en: Parking }
+    icone: square-parking
+  - label: { fr: Accès au lac Saint-François, en: Access to Lac Saint-François }
+    icone: waves

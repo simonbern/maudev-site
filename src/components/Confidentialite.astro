@@ -1,0 +1,72 @@
+---
+import { legal } from '../copy/legal';
+import { CONTACT, type Locale } from '../i18n';
+
+/**
+ * Corps de /confidentialite, partagé par les deux langues.
+ *
+ * L'encadré « à compléter » est volontairement voyant : il liste ce que seul le
+ * client peut fournir. Tant qu'il est là, la page n'est pas publiable — et on
+ * le voit du premier coup d'œil, ce qui n'aurait pas été le cas d'un texte
+ * plausible rempli au jugé.
+ */
+interface Props {
+  locale: Locale;
+}
+const { locale } = Astro.props;
+const c = legal[locale];
+---
+
+<section class="bg-page pt-10 pb-12 md:pt-12 md:pb-14 lg:pt-14 lg:pb-16">
+  <div class="mx-auto max-w-page px-5 md:px-8 lg:px-12">
+    <div class="grid gap-y-8 md:grid-cols-12 md:gap-x-10">
+      <h1 class="text-h1 text-balance text-ink md:col-span-6">{c.title}</h1>
+      <p class="text-lead text-ink-soft md:col-span-5 md:col-start-8 md:self-end">{c.lead}</p>
+    </div>
+
+    <div
+      class="mt-12 max-w-narrow rounded-card border border-accent-ink bg-accent-tint p-6 md:mt-20 md:p-8"
+    >
+      <h2 class="text-h3 text-ink">{c.aCompleterTitre}</h2>
+      <p class="mt-2 text-body text-ink-soft">{c.aCompleterLead}</p>
+      <ul class="mt-5 flex flex-col gap-3">
+        {
+          c.aCompleter.map((item) => (
+            <li class="flex gap-3 text-body text-ink-soft">
+              <span class="mt-2.5 h-1.5 w-1.5 shrink-0 rounded-full bg-accent" aria-hidden="true" />
+              {item}
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+
+    <div class="mt-16 md:mt-24">
+      {
+        c.sections.map((s) => (
+          <section class="grid gap-x-10 gap-y-3 border-t border-line py-8 md:grid-cols-12 md:py-10">
+            <h2 class="text-h3 text-balance text-ink md:col-span-4">{s.titre}</h2>
+            <div class="md:col-span-7 md:col-start-6">
+              {s.paragraphes.map((p) => (
+                <p class="mb-4 text-body text-ink-soft last:mb-0">{p}</p>
+              ))}
+            </div>
+          </section>
+        ))
+      }
+
+      <section class="grid gap-x-10 gap-y-3 border-t border-line py-8 md:grid-cols-12 md:py-10">
+        <h2 class="text-h3 text-balance text-ink md:col-span-4">{c.contactTitre}</h2>
+        <div class="md:col-span-7 md:col-start-6">
+          <p class="text-body text-ink-soft">{c.contactTexte}</p>
+          <a
+            href={`mailto:${CONTACT.email}`}
+            class="mt-2 inline-block cursor-pointer text-body text-accent-ink underline decoration-line underline-offset-4 transition-colors duration-200 hover:text-accent-hover hover:decoration-accent-hover"
+          >
+            {CONTACT.email}
+          </a>
+        </div>
+      </section>
+    </div>
+  </div>
+</section>

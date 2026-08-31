@@ -1,0 +1,159 @@
+---
+/**
+ * Icônes au trait, dessinées d'après Lucide.
+ *
+ * Volontairement pas de dépendance : le site n'utilise qu'une dizaine
+ * d'icônes, toutes connues à l'avance (champ `inclusions[].icone` de la
+ * collection). Ajouter `lucide` ou `astro-icon` coûterait plus que ces
+ * quelques chemins. En ajouter une = ajouter une ligne ici.
+ */
+interface Props {
+  name: string;
+  class?: string;
+  /** Le trait ne grossit pas avec l'icône : au-delà de 40 px, on l'affine. */
+  stroke?: number;
+}
+const { name, class: className = 'h-7 w-7', stroke = 2 } = Astro.props;
+
+const PATHS: Record<string, string[]> = {
+  wind: ['M12.8 19.6A2 2 0 1 0 14 16H2', 'M17.5 8a2.5 2.5 0 1 1 2 4H2', 'M9.8 4.4A2 2 0 1 1 11 8H2'],
+  'air-vent': [
+    'M4 3h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2Z',
+    'M6 8h12',
+    'M18 17.5a2.5 2.5 0 1 1-4 2.03V12',
+  ],
+  // Comptoir en élévation : la dalle, puis le caisson dessous. Le diamant
+  // précédent prenait « quartz » au pied de la lettre — c'est une pierre, mais
+  // ce qu'on vend est un plan de travail, pas une gemme.
+  countertop: ['M3 5v4', 'M2 9h20v3H2z', 'M4 12v9', 'M20 12v9', 'M4 21h16', 'M12 12v9'],
+  refrigerator: [
+    'M5 2h14a2 2 0 0 1 2 2v16a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2Z',
+    'M5 10h14',
+    'M15 6v2',
+    'M15 14v2',
+  ],
+  zap: ['M4 14h7l-2 7 9-11h-7l2-7z'],
+  'move-vertical': ['M8 18l4 4 4-4', 'M8 6l4-4 4 4', 'M12 2v20'],
+  'bell-ring': [
+    'M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9',
+    'M10.3 21a1.94 1.94 0 0 0 3.4 0',
+    'M4 2C2.8 3.7 2 5.7 2 8',
+    'M22 8c0-2.3-.8-4.3-2-6',
+  ],
+  wifi: [
+    'M12 20h.01',
+    'M2 8.82a15 15 0 0 1 20 0',
+    'M5 12.86a10 10 0 0 1 14 0',
+    'M8.5 16.43a5 5 0 0 1 7 0',
+  ],
+  'square-parking': [
+    'M5 3h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2Z',
+    'M9 17V7h4a3 3 0 0 1 0 6H9',
+  ],
+  package: [
+    'M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z',
+    'm3.3 7 8.7 5 8.7-5',
+    'M12 22V12',
+    'm7.5 4.27 9 5.15',
+  ],
+  waves: [
+    'M2 6c.6.5 1.2 1 2.5 1C7 7 7 5 9.5 5c2.6 0 2.4 2 5 2 1.3 0 1.9-.5 2.5-1',
+    'M2 12c.6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2 2.6 0 2.4 2 5 2 1.3 0 1.9-.5 2.5-1',
+    'M2 18c.6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2 2.6 0 2.4 2 5 2 1.3 0 1.9-.5 2.5-1',
+  ],
+  // — Arguments de « Notre modèle » —
+  // Vision long terme : un sablier. La lunette astronomique, dessinée au trait
+  // à cette taille, devient un gribouillis illisible.
+  hourglass: [
+    'M5 2h14',
+    'M5 22h14',
+    'M7 2v4.172a2 2 0 0 0 .586 1.414L12 12l4.414-4.414A2 2 0 0 0 17 6.172V2',
+    'M17 22v-4.172a2 2 0 0 0-.586-1.414L12 12l-4.414 4.414A2 2 0 0 0 7 17.828V22',
+  ],
+  // Transparence : un œil ouvert.
+  eye: ['M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z', 'M12 9a3 3 0 1 1 0 6 3 3 0 0 1 0-6Z'],
+  // Intégration verticale : des couches empilées.
+  layers: [
+    'M12 2 2 7l10 5 10-5-10-5Z',
+    'm2 12 10 5 10-5',
+    'm2 17 10 5 10-5',
+  ],
+  // — Les trois métiers de la plateforme (Piliers.astro) —
+  // Acquérir et densifier : un repère planté sur un site.
+  // Un balcon : la dalle, le garde-corps et ses barreaux. Lucide n'a pas de
+  // balcon ; `fence` est une clôture au sol, qui ne dit pas la même chose.
+  balcon: ['M2 5h20', 'M4 9h16', 'M4 20h16', 'M4 9v11', 'M9 9v11', 'M15 9v11', 'M20 9v11'],
+  'map-pin': [
+    'M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z',
+    'M12 8a2 2 0 1 1 0 4 2 2 0 0 1 0-4Z',
+  ],
+  // Financer et construire : un casque de chantier.
+  'hard-hat': [
+    'M2 15h20a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1v-2a1 1 0 0 1 1-1Z',
+    'M10 10V5a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v5',
+    'M4 15v-3a6 6 0 0 1 6-6',
+    'M14 6a6 6 0 0 1 6 6v3',
+  ],
+  // Louer et administrer : une clé remise.
+  'key-round': [
+    'M2.586 17.414A2 2 0 0 0 2 18.828V21a1 1 0 0 0 1 1h3a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h1a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h.172a2 2 0 0 0 1.414-.586l.814-.814a6.5 6.5 0 1 0-4-4z',
+    'M16.5 7.5h.01',
+  ],
+
+  // Discipline de marché : une cible.
+  target: [
+    'M12 3a9 9 0 1 1 0 18 9 9 0 0 1 0-18Z',
+    'M12 7.5a4.5 4.5 0 1 1 0 9 4.5 4.5 0 0 1 0-9Z',
+    'M12 11a1 1 0 1 1 0 2 1 1 0 0 1 0-2Z',
+  ],
+
+  // Laveuse et sécheuse : une machine à hublot.
+  'washing-machine': [
+    'M3 6h3',
+    'M17 6h.01',
+    'M5 2h14a2 2 0 0 1 2 2v16a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2Z',
+    'M12 11a4.5 4.5 0 1 1 0 9 4.5 4.5 0 0 1 0-9Z',
+  ],
+
+  // — Les quatre chiffres de l'accueil (Chiffres.astro) —
+  // Projets en location : deux immeubles.
+  'building-2': [
+    'M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z',
+    'M6 12H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2',
+    'M18 9h2a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-2',
+    'M10 6h4',
+    'M10 10h4',
+    'M10 14h4',
+    'M10 18h4',
+  ],
+  // Logements : une porte qui s'ouvre. Un logement se compte à la porte.
+  'door-open': [
+    'M13 4h3a2 2 0 0 1 2 2v14',
+    'M2 20h3',
+    'M13 20h9',
+    'M10 12v.01',
+    'M13 4.56v16.16a1 1 0 0 1-1.24.97L5 20V5.56a2 2 0 0 1 1.52-1.94l4-1A2 2 0 0 1 13 4.56Z',
+  ],
+  // Projets réalisés : une coche. Livré, donc coché.
+  'circle-check': ['M12 3a9 9 0 1 1 0 18 9 9 0 0 1 0-18Z', 'm9 12 2 2 4-4'],
+
+  // Repli : une icône manquante ne doit pas casser la page ni laisser un trou.
+  dot: ['M12 12h.01'],
+};
+
+const paths = PATHS[name] ?? PATHS.dot;
+---
+
+<svg
+  viewBox="0 0 24 24"
+  fill="none"
+  stroke="currentColor"
+  stroke-width={stroke}
+  stroke-linecap="round"
+  stroke-linejoin="round"
+  class={className}
+  aria-hidden="true"
+  focusable="false"
+>
+  {paths.map((d) => <path d={d} />)}
+</svg>

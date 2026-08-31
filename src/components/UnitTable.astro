@@ -1,0 +1,285 @@
+---
+import { getImage } from 'astro:assets';
+import type { CollectionEntry } from 'astro:content';
+import Lightbox from './Lightbox.astro';
+import PlanGrid from './PlanGrid.astro';
+import { projetsCopy } from '../copy/projets';
+import { money, area, range } from '../format';
+import { ui, type Locale } from '../i18n';
+
+/**
+ * Les logements et tarifs — DESIGN.md § 5.
+ *
+ * Une colonne par type, pas un tableau. Le tableau était juste sur le fond —
+ * c'est de la donnée tabulaire — mais faux à l'usage : entêtes de colonne à
+ * 13 px, superficies et loyers au corps du texte, tout sauf le type réduit à
+ * des petits caractères. On ne compare pas trois lignes de tableau comme on
+ * compare trois offres.
+ *
+ * Le modèle est celui de `reference/inspo/project-html/lelib.ca` : type en très
+ * grand, fourchette de superficie, « à partir de », prix. Rien sous le corps de
+ * texte, aucun libellé de colonne à déchiffrer.
+ *
+ * Sémantique : une liste d'offres, chacune avec son titre et sa liste de
+ * définitions. Pas de `<table>` sans en-têtes ni de grille de `<div>` : un
+ * lecteur d'écran annonce « 3 ½ », puis « Superficie : 618 à 690 pi² ».
+ *
+ * Les plans se déplient sous la rangée, sur toute la largeur : c'est la seule
+ * place où un carrousel de vignettes à 480 px respire. Un seul panneau ouvert
+ * à la fois — deux carrousels ouverts l'un sous l'autre, on ne sait plus lequel
+ * on regarde.
+ */
+interface Props {
+  logements: CollectionEntry<'projets'>['data']['logements'];
+  plans?: CollectionEntry<'projets'>['data']['plans'];
+  locale: Locale;
+}
+const { logements, plans = [], locale } = Astro.props;
+const t = projetsCopy[locale].detail;
+const u = ui[locale];
+
+const rows = logements.map((l) => ({
+  type: l.type,
+  disponible: l.disponible,
+  superficie: range(l.superficieMin, l.superficieMax, (n) => area(n, locale)),
+  prix: range(l.prixMin, l.prixMax, (n) => money(n, locale)),
+  // « À partir de » n'a de sens que si le prix est un plancher ouvert. Quand
+  // une fourchette complète est connue, la valeur se suffit et le libellé
+  // redevient le nom du champ.
+  planch: l.prixMin !== undefined && l.prixMax === undefined,
+  inclusions: l.inclusions.map((i) => i[locale]),
+  note: l.note?.[locale],
+}));
+
+// Groupés dans l'ordre des offres. Un plan dont le type ne correspond à aucun
+// logement n'est pas perdu pour autant : il forme son propre groupe, à la fin.
+const ordre = [...new Set([...rows.map((r) => r.type), ...plans.map((p) => p.type)])];
+
+// Numérotation à plat AVANT tout await : l'index d'un plan est son rang dans la
+// visionneuse, et il doit rester stable.
+let rang = 0;
+const groupes = await Promise.all(
+  ordre
+    .map((type) => ({ type, plans: plans.filter((p) => p.type === type) }))
+    .filter((g) => g.plans.length > 0)
+    .map((g) => ({ ...g, plans: g.plans.map((p) => ({ ...p, index: rang++ })) }))
+    .map(async (g) => ({
+      type: g.type,
+      plans: await Promise.all(
+        g.plans.map(async (p) => ({
+          ...p,
+          // Le type et la superficie ne suffisent pas à distinguer un plan des
+          // neuf autres 4 ½ du projet — les numéros d'unité, si.
+          alt: t.planAlt.replace(
+            '{t}',
+            [
+              p.type,
+              p.superficie && area(p.superficie, locale),
+              p.unites.length && `${t.planUnits} ${p.unites.join(', ')}`,
+            ]
+              .filter(Boolean)
+              .join(' — '),
+          ),
+          // Les sources font 1650 px de large : demander plus serait agrandir.
+          full: (await getImage({ src: p.src, width: 1650, format: 'webp' })).src,
+        })),
+      ),
+    })),
+);
+
+const parType = new Map(groupes.map((g) => [g.type, g.plans]));
+const hasPlans = groupes.length > 0;
+
+// Trois offres tiennent sur une rangée ; au-delà on repasse à deux colonnes
+// pour que chaque prix garde sa place.
+const colonnes = rows.length >= 4 ? 'md:grid-cols-2' : 'md:grid-cols-2 lg:grid-cols-3';
+
+// Sans JavaScript, les dépliants ne s'ouvrent pas : on montre alors les plans
+// d'emblée et on retire les boutons, qui ne feraient rien.
+const sansJs =
+  '<style>[data-plans-panel]{display:block}[data-plans-toggle]{display:none}</style>';
+---
+
+{hasPlans && <noscript set:html={sansJs} />}
+
+<ul class:list={['grid gap-6', colonnes]}>
+  {
+    rows.map((r, i) => {
+      const p = parType.get(r.type);
+      return (
+        <>
+        {/* Resserré : `gap-6 p-7 md:p-8` à `gap-5 p-6 md:p-7`, et la liste
+            interne de 5 à 4. Une carte de type de logement porte trois ou
+            quatre lignes — type, superficie, prix, inclusions — et elle en
+            occupait la hauteur de six. Le trou se voyait surtout quand une
+            offre n'a ni prix ni superficie : trois mots dans une boîte de
+            400 px. */}
+        <li class="carte-survol flex flex-col gap-5 rounded-panel bg-page p-6 md:p-7">
+          <div>
+            <h3 class="text-unit text-accent-ink">{r.type}</h3>
+            {!r.disponible && (
+              <p class="mt-2 text-body text-ink-muted">{t.unavailable}</p>
+            )}
+          </div>
+
+          <dl class="flex flex-col gap-4">
+            {r.superficie && (
+              <div>
+                <dt class="sr-only">{t.superficie}</dt>
+                <dd class="num text-lead text-ink">{r.superficie}</dd>
+              </div>
+            )}
+
+            <div>
+              <dt class="text-body text-ink-muted">{r.planch ? u.from : t.prix}</dt>
+              <dd class="mt-1">
+                {r.prix ? (
+                  <>
+                    <span class="num text-stat text-ink">{r.prix}</span>
+                    <span class="text-lead text-ink-muted">{t.perMonth}</span>
+                  </>
+                ) : (
+                  <span class="text-lead text-ink">{t.onRequest}</span>
+                )}
+              </dd>
+            </div>
+
+            {r.inclusions.length > 0 && (
+              <div class="border-t border-line pt-4">
+                <dt class="text-body text-ink-muted">{t.inclus}</dt>
+                <dd>
+                  <ul class="mt-2 flex flex-col gap-1 text-body text-ink-soft">
+                    {r.inclusions.map((inc) => (
+                      <li>{inc}</li>
+                    ))}
+                  </ul>
+                </dd>
+              </div>
+            )}
+          </dl>
+
+          {r.note && <p class="text-small text-ink-muted">{r.note}</p>}
+
+          {/* L'appel à la visite, sur chaque offre. Il existait une fois par
+              page, entre les tarifs et les photos ; il est maintenant là où la
+              décision se prend — devant un type de logement et son prix. La
+              destination est la même ancre, donc le formulaire reçoit toujours
+              le contexte du projet.
+
+              `mt-auto` sur le bouton et non sur le lien : dans une rangée de
+              trois cartes de hauteurs inégales, c'est le bloc du bas qui doit
+              être poussé, pas seulement sa dernière ligne. */}
+          <div class="mt-auto flex flex-col gap-3">
+          {r.disponible && (
+            <a
+              href="#visite"
+              class="group inline-flex h-11 w-fit cursor-pointer items-center gap-2 rounded-card bg-accent px-5 text-small font-semibold text-on-accent transition-colors duration-200 hover:bg-accent-hover"
+            >
+              {t.visiter}
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                class="h-4 w-4 transition-transform duration-300 group-hover:translate-y-0.5"
+                aria-hidden="true"
+              >
+                <path d="M12 5v14M6 13l6 6 6-6" />
+              </svg>
+            </a>
+          )}
+
+          {p && (
+            <button
+              type="button"
+              data-plans-toggle={`plans-${i}`}
+              aria-controls={`plans-${i}`}
+              aria-expanded="false"
+              class="group flex w-fit cursor-pointer items-center gap-2 text-body font-semibold text-accent-ink transition-colors duration-200 hover:text-accent-hover"
+            >
+              <span class="group-aria-expanded:hidden">{t.viewPlans}</span>
+              <span class="hidden group-aria-expanded:inline">{t.hidePlans}</span>
+              <span class="num text-ink-muted group-aria-expanded:hidden">({p.length})</span>
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                class="h-4 w-4 transition-transform duration-200 group-aria-expanded:rotate-180"
+                aria-hidden="true"
+              >
+                <path d="M6 9l6 6 6-6" />
+              </svg>
+            </button>
+          )}
+          </div>
+        </li>
+
+        {/* Le panneau suit immédiatement son offre dans le DOM, et `md:order-1`
+            le renvoie après toute la rangée dès qu'il y a plusieurs colonnes.
+
+            Sans ça, sur mobile où les offres s'empilent, ouvrir les plans du
+            4 ½ faisait apparaître le carrousel après le 5 ½ — 369 px sous le
+            bouton, hors de l'écran. Le libellé passait à « Masquer » et il ne
+            se passait rien de visible.
+
+            `min-w-0` : un élément de grille a `min-width: auto`, donc il
+            s'élargit jusqu'à la taille max-content de son contenu. Le carrousel
+            mesurant 3 144 px, la page débordait d'autant — sans lui, on échange
+            un bogue contre un autre. */}
+        {p && (
+          <li
+            id={`plans-${i}`}
+            data-plans-panel
+            hidden
+            class="col-span-full mt-2 min-w-0 md:order-1 md:mt-4"
+          >
+            <PlanGrid plans={p} locale={locale} />
+          </li>
+        )}
+      </>
+      );
+    })
+  }
+</ul>
+
+{
+  hasPlans && (
+    <Lightbox
+      id="plans"
+      items={groupes.flatMap((g) => g.plans).map((p) => ({ full: p.full, alt: p.alt }))}
+      label={t.plans}
+      countTemplate={t.planLightboxCount}
+      closeLabel={t.closePhoto}
+      prevLabel={t.prevPlan}
+      nextLabel={t.nextPlan}
+    />
+  )
+}
+
+<script>
+  // Un seul panneau ouvert à la fois : ouvrir un type referme le précédent.
+  const boutons = [...document.querySelectorAll<HTMLElement>('[data-plans-toggle]')];
+
+  for (const btn of boutons) {
+    const panel = document.getElementById(btn.dataset.plansToggle!);
+    if (!panel) continue;
+
+    btn.addEventListener('click', () => {
+      const ouvre = panel.hidden;
+
+      for (const autre of boutons) {
+        const p = document.getElementById(autre.dataset.plansToggle!);
+        if (p) p.hidden = true;
+        autre.setAttribute('aria-expanded', 'false');
+      }
+
+      panel.hidden = !ouvre;
+      btn.setAttribute('aria-expanded', String(ouvre));
+    });
+  }
+</script>

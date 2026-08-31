@@ -1,0 +1,74 @@
+---
+import { translatePath, locales, ui, type Locale } from '../i18n';
+
+interface Props {
+  locale: Locale;
+  /** Segment de projet dans l'autre langue, pour les routes dynamiques. */
+  lastSegment?: string;
+  /** `nav` suit l'état de la barre (transparente sur le hero, opaque après). */
+  tone?: 'light' | 'dark' | 'nav';
+}
+const { locale, lastSegment, tone = 'light' } = Astro.props;
+
+// Ordre FIXE (fr puis en) quelle que soit la langue courante : si l'ordre
+// suivait la langue active, la paire se réordonnerait sous le curseur au
+// moment même où l'on clique dessus.
+const items = locales.map((l) => ({
+  code: l,
+  current: l === locale,
+  // Même page, autre langue — jamais l'accueil. Vérifié par src/i18n.check.ts.
+  href: translatePath(Astro.url.pathname, l, lastSegment),
+}));
+
+// En mode `nav`, les couleurs ne peuvent pas être décidées au rendu : la barre
+// bascule de transparente à opaque au défilement. On laisse donc l'attribut
+// `data-nav` du <header> trancher en CSS.
+const TONES = {
+  light: {
+    active: 'text-ink',
+    idle: 'text-ink-muted hover:text-accent-ink',
+    rule: 'bg-line-strong',
+  },
+  dark: {
+    active: 'text-on-inverse',
+    idle: 'text-on-inverse-muted hover:text-accent-on-inverse',
+    rule: 'bg-line-inverse',
+  },
+  nav: {
+    active:
+      'group-data-[nav=solid]:text-ink group-data-[nav=overlay]:text-on-inverse',
+    idle:
+      'group-data-[nav=solid]:text-ink-muted group-data-[nav=solid]:hover:text-accent-ink group-data-[nav=overlay]:text-on-inverse-muted group-data-[nav=overlay]:hover:text-accent-on-inverse',
+    rule: 'group-data-[nav=solid]:bg-line-strong group-data-[nav=overlay]:bg-on-inverse-muted',
+  },
+} as const;
+const { active, idle, rule } = TONES[tone];
+---
+
+<div class="flex items-center gap-1 text-eyebrow uppercase">
+  {
+    items.map((item, i) => (
+      <>
+        {i > 0 && <span class={`h-3 w-px ${rule}`} aria-hidden="true" />}
+        {item.current ? (
+          <span
+            aria-current="true"
+            class={`rounded-card inline-flex h-11 min-w-11 items-center justify-center font-semibold ${active}`}
+          >
+            {item.code}
+          </span>
+        ) : (
+          <a
+            href={item.href}
+            hreflang={item.code}
+            lang={item.code}
+            aria-label={ui[locale].switchTo}
+            class={`inline-flex h-11 min-w-11 cursor-pointer items-center justify-center font-semibold transition-colors duration-200 ${idle}`}
+          >
+            {item.code}
+          </a>
+        )}
+      </>
+    ))
+  }
+</div>

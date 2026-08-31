@@ -1,0 +1,92 @@
+---
+/**
+ * Pilote partagé des carrousels à calage natif.
+ *
+ * Deux composants s'en servent — les projets en location et les réalisations
+ * livrées — et un troisième carrousel (les plans) vit sur les pages projet
+ * avec sa propre mécanique. Ces deux-là partagent une page : pilotés
+ * différemment, ils obligeraient le visiteur à deviner lequel répond à quoi.
+ *
+ * Composant à script seul, comme `Reveal.astro` : Astro n'émet le script
+ * qu'une fois, quel que soit le nombre de rendus, donc aucun risque de double
+ * abonnement sur les flèches.
+ *
+ * Contrat attendu dans le balisage :
+ *   [data-carrousel] > [data-piste] (enfants = les cartes)
+ *                    > [data-controles] > [data-progression], [data-prec], [data-suiv]
+ */
+---
+
+<script>
+  const doux = window.matchMedia('(prefers-reduced-motion: reduce)');
+
+  for (const racine of document.querySelectorAll<HTMLElement>('[data-carrousel]')) {
+    const piste = racine.querySelector<HTMLElement>('[data-piste]')!;
+    const items = [...piste.children] as HTMLElement[];
+    if (items.length === 0) continue;
+
+    const controles = racine.querySelector<HTMLElement>('[data-controles]')!;
+    const progression = racine.querySelector<HTMLElement>('[data-progression]')!;
+    const prec = racine.querySelector<HTMLButtonElement>('[data-prec]')!;
+    const suiv = racine.querySelector<HTMLButtonElement>('[data-suiv]')!;
+
+    const cale = (i: number) => items[i].offsetLeft - items[0].offsetLeft;
+    const auBout = () => piste.scrollLeft >= piste.scrollWidth - piste.clientWidth - 1;
+
+    const courant = () => {
+      let best = 0;
+      let ecart = Infinity;
+      items.forEach((_, i) => {
+        const d = Math.abs(cale(i) - piste.scrollLeft);
+        if (d < ecart) {
+          ecart = d;
+          best = i;
+        }
+      });
+      return best;
+    };
+
+    /**
+     * La barre suit le défilement réel, pas le rang de la carte.
+     *
+     * Avec trois cartes de 480 px dans une piste de 1 184, il n'y a que 320 px
+     * à parcourir : un clic sur « suivant » vise la carte 2 et atteint déjà le
+     * bout. Une barre indexée sur le rang sautait alors de 33 % à 100 % pour
+     * un seul pas. Elle part donc à 1/n — jamais vide — et suit le défilement
+     * jusqu'au bout.
+     */
+    const rafraichir = () => {
+      const max = piste.scrollWidth - piste.clientWidth;
+      const avance = max <= 0 ? 1 : piste.scrollLeft / max;
+      const depart = 1 / items.length;
+      progression.style.width = `${(depart + (1 - depart) * avance) * 100}%`;
+      prec.disabled = piste.scrollLeft <= 1;
+      suiv.disabled = auBout();
+    };
+
+    const aller = (i: number) =>
+      piste.scrollTo({
+        left: cale(Math.max(0, Math.min(items.length - 1, i))),
+        behavior: doux.matches ? 'auto' : 'smooth',
+      });
+
+    prec.addEventListener('click', () => aller(courant() - 1));
+    suiv.addEventListener('click', () => aller(courant() + 1));
+
+    let attente = 0;
+    piste.addEventListener(
+      'scroll',
+      () => {
+        cancelAnimationFrame(attente);
+        attente = requestAnimationFrame(rafraichir);
+      },
+      { passive: true },
+    );
+
+    new ResizeObserver(() => {
+      const deborde = piste.scrollWidth > piste.clientWidth + 1;
+      controles.hidden = !deborde;
+      if (deborde) rafraichir();
+    }).observe(piste);
+  }
+</script>

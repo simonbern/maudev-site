@@ -1,0 +1,167 @@
+---
+import Panneau from './Panneau.astro';
+import { getCollection } from 'astro:content';
+import CompletedCard from './CompletedCard.astro';
+import Reveal from './Reveal.astro';
+import { projetsCopy } from '../copy/projets';
+import { landing } from '../copy/landing';
+import { localize, CONTACT, type Locale } from '../i18n';
+import { slugVille } from '../format';
+
+/**
+ * Page /projets — les réalisations livrées, en mosaïque éditoriale.
+ *
+ * Onze projets, onze cartes de même taille, trois par rangée. Une rangée
+ * pleine largeur par projet — le traitement de `/a-louer` — donnerait onze
+ * écrans à faire défiler pour des projets qui ne sont plus à vendre.
+ *
+ * **À taille égale, délibérément.** Une mosaïque à largeurs alternées (7-5,
+ * 5-7, 4-4-4) avait été essayée : elle donnait du rythme, et elle classait
+ * onze projets qui ne le sont pas. Une tuile deux fois plus grande que sa
+ * voisine annonce un projet plus important — ni le client ni le contenu ne le
+ * disent, et la page finissait par parler de mise en page plutôt que de
+ * bâtiments. Le rythme vient maintenant de la lecture, pas du cadrage.
+ *
+ * La dernière rangée peut rester incomplète : onze est premier. Ce n'est plus
+ * une tuile orpheline mais une carte de taille normale qui manque à la fin —
+ * ce que toute grille fait, et que personne ne lit comme un bogue.
+ *
+ * **Groupée par municipalité, et chaque groupe porte une ancre.** L'index de
+ * l'accueil (« Où MauDev bâtit ») pointe ici, une ville à la fois : sans
+ * groupes, cliquer « Huntingdon » menait à une grille de onze cartes où il
+ * fallait chercher les deux qui répondaient.
+ *
+ * Le groupement est une ancre, pas un filtre : **tout reste sur la page**. Un
+ * filtre demanderait du JavaScript pour cacher neuf cartes sur onze, et un
+ * visiteur arrivé par une ancre verrait moins de projets qu'il n'en existe.
+ * Ici il tombe sur les siens, et les autres sont juste en dessous.
+ *
+ * L'ancre porte `scroll-mt-28` : la nav est fixe et haute de 64 px, sans quoi
+ * elle recouvre le titre de groupe à l'arrivée.
+ */
+interface Props {
+  locale: Locale;
+}
+const { locale } = Astro.props;
+const t = projetsCopy[locale].realises;
+
+// Tri : les plus gros projets d'abord, à défaut de date de livraison. Le mirror
+// ne donne pas d'année exploitable pour la plupart des fiches.
+const compte = (p: { data: { faits: { label: { fr: string }; valeur: { fr: string } }[] } }) => {
+  const f = p.data.faits.find((x) => /unit|logement/i.test(x.label.fr));
+  return f ? Number(f.valeur.fr.replace(/\D/g, '')) || 0 : 0;
+};
+
+const projets = (await getCollection('projets'))
+  .filter((p) => p.data.statut === 'realise')
+  .sort((a, b) => compte(b) - compte(a));
+
+// Groupés par municipalité. Même tri que l'index de l'accueil — les plus
+// fournies d'abord, puis l'ordre alphabétique — pour que les deux listes se
+// lisent dans le même ordre. À l'intérieur d'un groupe, l'ordre par nombre de
+// logements est conservé : `getCollection` rend un tableau déjà trié.
+const parVille = new Map<string, typeof projets>();
+for (const p of projets) {
+  const nom = p.data.ville.trim();
+  parVille.set(nom, [...(parVille.get(nom) ?? []), p]);
+}
+const groupes = [...parVille]
+  .map(([nom, liste]) => ({ nom, liste, slug: slugVille(nom) }))
+  .sort((a, b) => b.liste.length - a.liste.length || a.nom.localeCompare(b.nom, locale));
+
+// Le numéro des cartes court d'un groupe à l'autre : 01 → 11, comme le total
+// annoncé en tête de page. Il décide aussi du chargement empressé des trois
+// premières images — repartir de zéro à chaque groupe redonnerait « 01 » quatre
+// fois et rendrait quatre images empressées au lieu de trois.
+let rangGlobal = 0;
+const groupesNumerotes = groupes.map((g) => {
+  const depart = rangGlobal;
+  rangGlobal += g.liste.length;
+  return { ...g, depart };
+});
+
+const villes = groupes.length;
+
+---
+
+<section class="bg-page pt-10 pb-12 md:pt-12 md:pb-14 lg:pt-14 lg:pb-16">
+  <div class="mx-auto max-w-page px-5 md:px-8 lg:px-12">
+    <div class="grid gap-y-8 md:grid-cols-12 md:gap-x-10">
+      <h1 data-reveal class="text-display text-balance text-ink md:col-span-7">{t.title}</h1>
+      <p
+        data-reveal
+        style="transition-delay:100ms"
+        class="text-lead text-ink-soft md:col-span-5 md:col-start-8 md:self-end"
+      >
+        {t.lead}
+      </p>
+    </div>
+
+    {
+      projets.length > 0 && (
+        <p data-reveal style="transition-delay:180ms" class="num mt-10 text-body text-ink-muted">
+          {t.counts(projets.length, villes)}
+        </p>
+      )
+    }
+
+    {
+      projets.length ? (
+        groupesNumerotes.map((g) => (
+          <section class="mt-14 md:mt-20">
+            {/* Même écriture que l'index de l'accueil — serif d'affichage, filet,
+                décompte à droite : qui a cliqué là-bas reconnaît la ligne ici. */}
+            <div
+              id={`ville-${g.slug}`}
+              class="flex flex-wrap items-baseline gap-x-6 gap-y-2 border-t border-line pt-6 scroll-mt-28 md:gap-x-10"
+            >
+              <h2 class="w-full font-display text-h2 text-balance text-ink sm:w-auto">{g.nom}</h2>
+              <span class="hidden h-px min-w-16 flex-1 bg-line-strong sm:block" aria-hidden="true" />
+              <p class="num text-lead text-ink-muted">{t.parVille(g.liste.length)}</p>
+            </div>
+
+            <ul class="mt-10 grid gap-x-10 gap-y-12 md:mt-12 md:grid-cols-2 md:gap-y-14 lg:grid-cols-3 lg:gap-x-12">
+              {g.liste.map((projet, i) => (
+                <CompletedCard projet={projet} locale={locale} index={g.depart + i} />
+              ))}
+            </ul>
+          </section>
+        ))
+      ) : (
+        <p class="mt-12 text-lead text-ink-muted">{t.empty}</p>
+      )
+    }
+  </div>
+</section>
+
+{/* Les réalisations servent de preuve ; l'étape suivante est de voir ce qui se
+    loue aujourd'hui. Le renvoi est donc un vrai appel, pas un lien de bas de
+    page. */}
+<section class="zone-claire bg-section-alt py-14 md:py-16 lg:py-20">
+  <Panneau>
+    <div class="flex flex-col items-start justify-between gap-8 md:flex-row md:items-end">
+      <h2 data-reveal class="max-w-narrow text-h2 text-balance text-ink">
+        {landing[locale].contact.title}
+      </h2>
+      <div data-reveal class="flex flex-wrap items-center gap-4">
+        <a
+          href={`mailto:${CONTACT.email}`}
+          class="inline-flex h-14 cursor-pointer items-center rounded-card border border-line-strong px-7 text-body font-semibold text-ink transition-colors duration-200 hover:bg-surface-hover"
+        >
+          {landing[locale].contact.cta}
+        </a>
+        <a
+          href={localize('/a-louer', locale)}
+          class="group inline-flex h-14 shrink-0 cursor-pointer items-center gap-3 rounded-card bg-accent px-7 text-body font-semibold text-on-accent transition-colors duration-200 hover:bg-accent-hover"
+        >
+          {t.toRent}
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-5 w-5 transition-transform duration-300 group-hover:translate-x-1" aria-hidden="true">
+            <path d="M5 12h14M13 6l6 6-6 6" />
+          </svg>
+        </a>
+      </div>
+    </div>
+  </Panneau>
+</section>
+
+<Reveal />

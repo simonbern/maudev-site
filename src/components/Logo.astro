@@ -1,0 +1,33 @@
+---
+/**
+ * Marque MauDev — un mot, pas un pictogramme.
+ *
+ * La plaque carrée à fenêtres a été retirée : un promoteur qui n'a qu'un seul
+ * nom n'a pas besoin de le répéter en icône juste à côté. Reste le mot, coupé
+ * en deux par la couleur — « Mau » suit le texte environnant, « Dev » porte le
+ * terracotta de la plateforme.
+ *
+ * **« Mau » n'a pas de couleur à lui.** Il hérite (`currentColor`) de ce qui
+ * l'entoure : sombre sur crème, clair sur brun, clair par-dessus une photo.
+ * C'est le parent qui décide, donc la marque suit sans qu'on ait à la prévenir.
+ *
+ * L'accent, lui, doit être nommé : la couleur des aplats (`accent`) ne passe
+ * pas en texte sur la surface sombre — 3,1:1 dans la palette d'origine. D'où
+ * `tone`, et `accent` pour les cas où la surface change au sein d'un même
+ * rendu — la nav, qui bascule au défilement.
+ */
+interface Props {
+  /** `dark` = posé sur une surface brune (footer, panneau mobile, hero). */
+  tone?: 'light' | 'dark';
+  /** Classe de couleur de « Dev », si elle doit varier à l'exécution. */
+  accent?: string;
+  class?: string;
+}
+const { tone = 'light', accent, class: className = '' } = Astro.props;
+
+const couleurAccent = accent ?? (tone === 'light' ? 'text-accent-ink' : 'text-accent-on-inverse');
+---
+
+{/* Un seul nœud de texte : les lecteurs d'écran lisent « MauDev », pas
+    « Mau Dev ». Le <span> intérieur ne porte que de la couleur. */}
+<span class={className}>Mau<span class={couleurAccent}>Dev</span></span>

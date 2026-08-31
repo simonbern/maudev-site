@@ -1,0 +1,24 @@
+# Source : client, 2026-08-28. Voir 148-route-202.yaml.
+nom: "2575 route 209"
+statut: realise
+ordre: 0
+url: { fr: 2575-route-209, en: 2575-route-209 }
+
+adresse: "2575 route 209"
+ville: "Franklin"
+
+resume:
+  fr: "Immeuble de 6 logements à Franklin."
+  en: "Six-apartment building in Franklin."
+
+description:
+  fr:
+    - "Un immeuble résidentiel de 6 logements à Franklin."
+  en:
+    - "A six-apartment residential building in Franklin."
+
+faits:
+  - label: { fr: "Programme", en: "Program" }
+    valeur: { fr: "Résidentiel", en: "Residential" }
+  - label: { fr: "Logements", en: "Apartments" }
+    valeur: { fr: "6", en: "6" }

@@ -1,0 +1,154 @@
+nom: Projet Hermine
+statut: location
+ordre: 100
+url: { fr: hermine, en: hermine }
+
+adresse: 102 rue Alphonse-Desjardins
+ville: Salaberry-de-Valleyfield
+# L'introduction du courriel client écrit « 110 Alphonse-Desjardins », alors que
+# son descriptif ET la couverture des plans Chester disent 102. Voir
+# reference/plans-mapping.md § Points à trancher.
+aConfirmer: [adresse]
+
+unites: 54
+# `unitesLouees` retiré sur demande du client (2026-08-28). Le champ existe
+# toujours au schéma ; le hero affichait « 20/54 déjà loués ».
+etages: 4
+livraison: "2026-07"
+
+resume:
+  fr: "54 logements neufs de 3 ½, 4 ½ et 5 ½ à Salaberry-de-Valleyfield, livraison en juillet 2026."
+  en: "54 new 3½, 4½ and 5½ apartments in Salaberry-de-Valleyfield, ready July 2026."
+
+description:
+  fr:
+    - "L'immeuble compte 54 unités réparties sur 4 étages, avec une livraison en juillet 2026. Les logements sont offerts en 3 ½, 4 ½ et 5 ½, afin de répondre à différents besoins résidentiels."
+    - "Avec ses finitions modernes, ses commodités incluses et son emplacement pratique, le projet Hermine offre des logements conçus pour allier confort, qualité et simplicité au quotidien."
+    - "Le 4e étage offre un attrait tout particulier : les résidents peuvent profiter d'une vue dégagée sur la ville et admirer le magnifique lac Saint-François. Un panorama qui ajoute une touche unique au quotidien et permet de profiter pleinement de l'environnement qui entoure le projet."
+  en:
+    - "The building has 54 units across 4 floors, with delivery in July 2026. Apartments come in 3½, 4½ and 5½ layouts, to suit a range of household needs."
+    - "With its modern finishes, included amenities and practical location, Projet Hermine offers apartments designed to combine comfort, quality and everyday simplicity."
+    - "The 4th floor holds a particular appeal: residents enjoy an open view over the city and out to beautiful Lac Saint-François. A panorama that adds something singular to daily life and makes the most of the setting around the project."
+
+# Fourchettes relevées sur les 19 fiches de plan (reference/plans-mapping.md).
+# Aucun prix : le client renvoie à une « liste de prix » qui n'a pas été fournie.
+logements:
+  - type: 3 ½
+    nombre: 11
+    superficieMin: 618
+    superficieMax: 690
+  - type: 4 ½
+    nombre: 33
+    superficieMin: 798
+    superficieMax: 1082
+  - type: 5 ½
+    nombre: 10
+    superficieMin: 1084
+    superficieMax: 1515
+
+inclusions:
+  - label: { fr: Thermopompe, en: Heat pump }
+    icone: wind
+  - label: { fr: Échangeur d'air, en: Air exchanger }
+    icone: air-vent
+  - label: { fr: Rangement intérieur, en: Indoor storage }
+    icone: package
+    payant: true
+  - label: { fr: 5 électroménagers, en: 5 appliances }
+    icone: refrigerator
+  - label: { fr: Ascenseur, en: Elevator }
+    icone: move-vertical
+  - label: { fr: Intercom, en: Intercom }
+    icone: bell-ring
+  - label: { fr: Wi-Fi, en: Wi-Fi }
+    icone: wifi
+  - label: { fr: Stationnement intérieur, en: Indoor parking }
+    icone: square-parking
+    payant: true
+
+# Drone livré le 2026-08-25 : 1,16 Mo, 1280×720, 9,24 s, H.264 High,
+# 1,0 Mb/s, sans piste audio, moov en tête (lecture progressive OK).
+#
+# La livraison faisait 12,0 s et contenait deux plans coupés à 9,24 s. Le
+# second était une vue aérienne où la moitié du bâtiment est encore en
+# panneaux isolants rubannés, avec nacelle, pelle mécanique et filet de
+# sécurité — un chantier en cours, sous un hero qui annonce « Disponible,
+# 20 sur 54 déjà loués ». Sur décision du client, la vidéo est coupée aux
+# 277 premières images, en copie de flux (aucun réencodage, aucune perte) :
+#   ffmpeg -i <original> -map 0:v:0 -frames:v 277 -c copy -movflags +faststart
+# L'original 12 s est conservé dans reference/NEW/HERMINE/.
+video:
+  mp4: /videos/hermine/hermine.mp4
+  poster: ../../assets/projets/hermine/video-poster.jpg
+
+# Source d'images : src/assets/projets/NEW/HERMINE (livraison 2026-08-15),
+# recadrée dans photos/. Ce jeu remplace l'ancien : 3000x2000 au lieu de
+# 2400x1600, il couvre 4 unités au lieu d'une, et il contient enfin une vraie
+# vue extérieure de rue. Les anciennes prises meublées restent dans photos/.
+# Couverture : vue de rue, choix du client. À noter que la photo montre le
+# chantier en cours — pare-intempéries DRYline à nu, balcons non finis, cônes
+# orange — alors que la carte porte un badge « Disponible ». À remplacer dès
+# qu'une vue extérieure du bâti terminé sera disponible ; les images drone du
+# 2026-08-25 n'en contiennent aucune.
+couverture:
+  src: ../../assets/projets/hermine/photos/exterieur-rue-01.jpg
+  alt:
+    fr: "Façade d'angle du projet Hermine vue de la rue Alphonse-Desjardins"
+    en: "Corner façade of Projet Hermine seen from rue Alphonse-Desjardins"
+
+photos:
+  - src: ../../assets/projets/hermine/photos/112-sejour-01.jpg
+    alt: { fr: "Salle à manger et séjour meublés, mur de bois cannelé et thermopompe murale", en: "Furnished dining and living area, slatted wood wall and wall-mounted heat pump" }
+    unite: "112"
+  - src: ../../assets/projets/hermine/photos/112-cuisine-02.jpg
+    alt: { fr: "Cuisine ouverte sur la salle à manger, comptoirs de quartz et électroménagers inclus", en: "Kitchen open to the dining area, quartz countertops and included appliances" }
+    unite: "112"
+  - src: ../../assets/projets/hermine/photos/112-chambre-01.jpg
+    alt: { fr: "Chambre meublée avec grande fenêtre", en: "Furnished bedroom with a large window" }
+    unite: "112"
+  - src: ../../assets/projets/hermine/photos/112-cuisine-01.jpg
+    alt: { fr: "Cuisine avec péninsule de quartz et lave-vaisselle, ouverte sur le séjour", en: "Kitchen with quartz peninsula and dishwasher, open to the living room" }
+    unite: "112"
+  - src: ../../assets/projets/hermine/photos/401-sejour-01.jpg
+    alt: { fr: "Aire ouverte cuisine-séjour d'un logement du 4e étage", en: "Open-plan kitchen and living area in a fourth-floor apartment" }
+    unite: "401"
+  - src: ../../assets/projets/hermine/photos/209-sejour-01.jpg
+    alt: { fr: "Aire ouverte avec porte-fenêtre donnant sur le balcon", en: "Open-plan area with a patio door onto the balcony" }
+    unite: "209"
+  - src: ../../assets/projets/hermine/photos/209-sejour-02.jpg
+    alt: { fr: "Séjour lumineux ouvrant sur le balcon", en: "Bright living room opening onto the balcony" }
+    unite: "209"
+  - src: ../../assets/projets/hermine/photos/207-sejour-01.jpg
+    alt: { fr: "Cuisine et aire ouverte, fenêtres donnant sur la verdure", en: "Kitchen and open-plan area, windows onto greenery" }
+    unite: "207"
+  - src: ../../assets/projets/hermine/photos/401-salle-de-bain-01.jpg
+    alt: { fr: "Salle de bain avec bain et douche séparés, céramique marbrée et vanité de bois", en: "Bathroom with separate tub and shower, marbled tile and wood vanity" }
+    unite: "401"
+  - src: ../../assets/projets/hermine/photos/209-salle-de-bain-01.jpg
+    alt: { fr: "Salle de bain avec bain et douche séparés", en: "Bathroom with separate tub and shower" }
+    unite: "209"
+
+# Les 19 fiches de logement, débarrassées du logo Chester (plans/).
+# L'implantation, le sous-sol, les 4 plans d'étage et les élévations existent
+# aussi été rendus mais n'ont pas de type de logement : ils demandent
+# leur propre traitement, pas cette grille.
+plans:
+  - { src: ../../assets/projets/hermine/plans/page-10.png, type: 3 ½, superficie: 682, unites: ["102", "202", "302", "402"] }
+  - { src: ../../assets/projets/hermine/plans/page-19.png, type: 3 ½, superficie: 634, unites: ["110", "210", "310", "410"] }
+  - { src: ../../assets/projets/hermine/plans/page-12.png, type: 3 ½, superficie: 690, unites: ["106"] }
+  - { src: ../../assets/projets/hermine/plans/page-23.png, type: 3 ½, superficie: 618, unites: ["213"] }
+  - { src: ../../assets/projets/hermine/plans/page-24.png, type: 3 ½, superficie: 645, unites: ["313"] }
+  - { src: ../../assets/projets/hermine/plans/page-11.png, type: 4 ½, superficie: 929, unites: ["103", "104", "105", "203", "204", "205", "303", "304", "305", "403", "404", "405"] }
+  - { src: ../../assets/projets/hermine/plans/page-22.png, type: 4 ½, superficie: 929, unites: ["211", "212", "311", "312", "411", "412"] }
+  - { src: ../../assets/projets/hermine/plans/page-20.png, type: 4 ½, superficie: 929, unites: ["111"] }
+  - { src: ../../assets/projets/hermine/plans/page-09.png, type: 4 ½, superficie: 1040, unites: ["101", "201", "301", "401"] }
+  - { src: ../../assets/projets/hermine/plans/page-16.png, type: 4 ½, superficie: 940, unites: ["207", "307", "407"] }
+  - { src: ../../assets/projets/hermine/plans/page-15.png, type: 4 ½, superficie: 940, unites: ["107"] }
+  - { src: ../../assets/projets/hermine/plans/page-14.png, type: 4 ½, superficie: 820, unites: ["306", "406"] }
+  - { src: ../../assets/projets/hermine/plans/page-13.png, type: 4 ½, superficie: 798, unites: ["206"] }
+  - { src: ../../assets/projets/hermine/plans/page-26.png, type: 4 ½, superficie: 1082, unites: ["214", "314"] }
+  - { src: ../../assets/projets/hermine/plans/page-25.png, type: 4 ½, superficie: 1082, unites: ["113"] }
+  - { src: ../../assets/projets/hermine/plans/page-18.png, type: 5 ½, superficie: 1084, unites: ["109", "209", "309", "409"] }
+  - { src: ../../assets/projets/hermine/plans/page-17.png, type: 5 ½, superficie: 1227, unites: ["108", "208", "308", "408"] }
+  - { src: ../../assets/projets/hermine/plans/page-21.png, type: 5 ½, superficie: 1242, unites: ["112"] }
+  - { src: ../../assets/projets/hermine/plans/page-27.png, type: 5 ½, superficie: 1515, unites: ["413"] }

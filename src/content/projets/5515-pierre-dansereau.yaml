@@ -1,0 +1,35 @@
+# Genere depuis reference/mirror/www.mau-dev.ca/{fr,en}/projects/5515-pierre-dansereau
+# Textes et chiffres repris tels quels de l’ancien site.
+nom: "5515 Pierre-Dansereau"
+statut: realise
+ordre: 0
+url: { fr: 5515-pierre-dansereau, en: 5515-pierre-dansereau }
+
+adresse: "5515 Pierre-Dansereau"
+ville: "Salaberry-de-Valleyfield"
+
+resume:
+  fr: "Projet construit à Salaberry-de-Valleyfield dans le volet commercial et industriel de MauDev."
+  en: "Constructed project in Salaberry-de-Valleyfield within MauDev's commercial and industrial track record."
+
+description:
+  fr:
+    - "Un bâtiment de plus grand gabarit livré en 2023 dans le volet commercial et industriel de MauDev."
+  en:
+    - "A larger-format building delivered in 2023 within MauDev's commercial and industrial portfolio."
+
+faits:
+  - label: { fr: "Statut", en: "Status" }
+    valeur: { fr: "Livré", en: "Delivered" }
+  - label: { fr: "Bâtiments", en: "Buildings" }
+    valeur: { fr: "1", en: "1" }
+  - label: { fr: "Surface du bâtiment", en: "Building area" }
+    valeur: { fr: "± 30 000 pi²", en: "± 30,000 sq. ft." }
+  - label: { fr: "Échéancier", en: "Timeline" }
+    valeur: { fr: "Construction 2023", en: "Construction 2023" }
+
+couverture:
+  src: ../../assets/projets/5515-pierre-dansereau/couverture.jpg
+  alt:
+    fr: "5515 Pierre-Dansereau — Salaberry-de-Valleyfield"
+    en: "5515 Pierre-Dansereau — Salaberry-de-Valleyfield"

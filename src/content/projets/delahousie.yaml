@@ -1,0 +1,94 @@
+# Aucune image disponible : reference/assets/DELAHOUSIE/ est vide.
+# D'où statut « a-venir », qui rend `couverture` optionnelle. Le jour où le
+# client fournit des photos, passer le statut à « location » — le schéma
+# exigera alors une couverture.
+#
+# Orthographe : CLAUDE.md et le dossier d'assets écrivent « DELAHOUSIE », le
+# courriel du client écrit « Projet Dalhousie » et « 82 rue Dalhousie », avec
+# une coquille « Dalousie » dans le corps du texte. Le nom affiché et l'adresse
+# suivent le client ; le nom de fichier suit le dossier d'assets. À trancher
+# avant la mise en ligne.
+nom: Projet Dalhousie
+statut: a-venir
+ordre: 90
+url: { fr: dalhousie, en: dalhousie }
+
+adresse: 82 rue Dalhousie
+ville: Huntingdon
+aConfirmer: [nom]
+
+unites: 34
+etages: 4
+livraison: "2026-09"
+
+phase:
+  fr: Bâtiment A, 1re phase — le projet totalisera 4 phases
+  en: Building A, phase 1 — the project will total 4 phases
+
+resume:
+  fr: "34 logements neufs de 3 ½, 4 ½ et 5 ½ à Huntingdon, livraison en septembre 2026."
+  en: "34 new 3½, 4½ and 5½ apartments in Huntingdon, ready September 2026."
+
+description:
+  fr:
+    - "L'immeuble compte 34 logements répartis sur 4 étages, avec une livraison prévue en septembre 2026. Les logements sont offerts en 3 ½, 4 ½ et 5 ½, afin de répondre à différents besoins résidentiels."
+    - "Dalhousie propose un milieu de vie moderne, confortable et paisible, dans un secteur tranquille et bien situé, à proximité de tous les services. Le nouveau Maxi ainsi que le McDonald's à venir se trouvent notamment à proximité."
+  en:
+    - "The building has 34 apartments across 4 floors, with delivery expected in September 2026. Apartments come in 3½, 4½ and 5½ layouts, to suit a range of household needs."
+    - "Dalhousie offers a modern, comfortable and peaceful place to live, in a quiet, well-situated area close to every service. The new Maxi and the McDonald's to come are both nearby."
+
+logements:
+  - type: 3 ½
+    prixMin: 895
+    inclusions:
+      - { fr: 1 stationnement, en: 1 parking space }
+      - { fr: Wi-Fi, en: Wi-Fi }
+    note:
+      fr: Les électroménagers ne sont pas inclus, mais peuvent être ajoutés en extra.
+      en: Appliances are not included, but can be added at extra cost.
+  # Prix retirés sur demande du client (2026-08-28) : seul le 3 ½ affiche
+  # « à partir de ». Les valeurs du courriel étaient 1 250 $ et 1 350 $.
+  - type: 4 ½
+    inclusions:
+      - { fr: 1 stationnement, en: 1 parking space }
+      - { fr: Wi-Fi, en: Wi-Fi }
+      - { fr: Thermopompe, en: Heat pump }
+      - { fr: 5 électroménagers, en: 5 appliances }
+  - type: 5 ½
+    inclusions:
+      - { fr: 1 stationnement, en: 1 parking space }
+      - { fr: Wi-Fi, en: Wi-Fi }
+      - { fr: Thermopompe, en: Heat pump }
+      - { fr: 5 électroménagers, en: 5 appliances }
+
+inclusions:
+  - label: { fr: Comptoirs de quartz, en: Quartz countertops }
+    icone: countertop
+  - label: { fr: Thermopompe, en: Heat pump }
+    icone: wind
+  - label: { fr: Wi-Fi, en: Wi-Fi }
+    icone: wifi
+  - label: { fr: 1 stationnement, en: 1 parking space }
+    icone: square-parking
+
+# Source : src/assets/projets/NEW/DALHOUSIE, recadrée dans dalhousie/renders/.
+# Ce sont des RENDUS 3D, pas des photos : le projet n'est pas bâti. Ils
+# alimentent donc `renders` et non `photos`, et la page les titre comme tels.
+# Version web livrée : 4,63 Mo, 1280x720, 12 s, H.264, 3,2 Mb/s, sans piste
+# audio. Le master d'origine (1,17 Go, 4K, 341 Mb/s) reste dans NEW/ et n'est
+# pas publié. Pas de WebM fourni : H.264 est lu partout, le repli suffit.
+video:
+  mp4: /videos/dalhousie/dalhousie.mp4
+  poster: ../../assets/projets/dalhousie/video-poster.jpg
+
+couverture:
+  src: ../../assets/projets/dalhousie/renders/dalhousie-rue-01.jpg
+  alt:
+    fr: "Rendu 3D des immeubles du projet Dalhousie vus depuis la rue"
+    en: "3D rendering of the Projet Dalhousie buildings seen from the street"
+
+renders:
+  - src: ../../assets/projets/dalhousie/renders/dalhousie-aerien-01.jpg
+    alt: { fr: "Rendu 3D aérien de l'ensemble : immeubles, stationnements et cour centrale", en: "Aerial 3D rendering of the whole site: buildings, parking areas and central courtyard" }
+  - src: ../../assets/projets/dalhousie/renders/dalhousie-implantation.jpg
+    alt: { fr: "Plan d'implantation en 3D vu du dessus : bâtiments, stationnements et espace vert central", en: "Top-down 3D site plan: buildings, parking areas and central green space" }

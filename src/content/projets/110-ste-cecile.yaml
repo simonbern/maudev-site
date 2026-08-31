@@ -1,0 +1,42 @@
+# Genere depuis reference/mirror/www.mau-dev.ca/{fr,en}/projects/110-ste-cecile
+# Textes et chiffres repris tels quels de l’ancien site.
+nom: "110 Ste-Cécile"
+statut: realise
+ordre: 0
+url: { fr: 110-ste-cecile, en: 110-ste-cecile }
+
+adresse: "110 Ste-Cécile"
+ville: "Salaberry-de-Valleyfield"
+
+resume:
+  fr: "Projet mixte livré à Salaberry-de-Valleyfield."
+  en: "Completed mixed-use project in Salaberry-de-Valleyfield."
+
+description:
+  fr:
+    - "Un immeuble mixte qui associe 24 logements à une composante commerciale en rez-de-chaussée."
+  en:
+    - "A mixed-use building pairing 24 residential units with a ground-floor commercial component."
+
+faits:
+  - label: { fr: "Statut", en: "Status" }
+    valeur: { fr: "Livré", en: "Delivered" }
+  - label: { fr: "Programme", en: "Program" }
+    valeur: { fr: "Mixte", en: "Mixed-use" }
+  - label: { fr: "Bâtiments", en: "Buildings" }
+    valeur: { fr: "1", en: "1" }
+  - label: { fr: "Logements", en: "Residential units" }
+    valeur: { fr: "24", en: "24" }
+  - label: { fr: "Locaux commerciaux", en: "Commercial spaces" }
+    valeur: { fr: "2", en: "2" }
+
+# Deux couvertures ont été écartées avant d'en arriver là. Celle du mirror est
+# un rendu 3D (passants, vélos) alors que l'immeuble est livré depuis
+# longtemps : ne jamais présenter une image de synthèse comme une photo du
+# réel. Un séjour a pris sa place, puis est parti à son tour.
+#
+# Aucune couverture : la livraison du client (reference/NEW/SAINTE-CÉCILE)
+# ne contient que des intérieurs et un stationnement souterrain. Une photo
+# d'intérieur ne sert jamais de couverture à une réalisation — la grille de
+# /projets montre des bâtiments. Le gabarit tient la place en attendant une
+# photo de façade.

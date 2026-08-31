@@ -1,0 +1,153 @@
+/* ══════════════════════════════════════════════════════════════════════════
+   Palette « Pin » — le vert #014421 remplace le terracotta.
+
+   Le logo garde ses deux autres couleurs : le brun #241c17 et le crème
+   #efe7db viennent de `maudev-mark.svg` et n'ont pas de raison de changer.
+   Seule la couleur d'accent bascule — « Dev », les aplats de bouton, les
+   liens, les icônes.
+
+   Ce que ce vert change, et qu'il faut savoir en le choisissant : à 10.71:1
+   sur la page, #014421 est presque aussi dense que le texte courant. Un
+   terracotta se voyait de loin ; ce vert-là se lit d'abord comme « du texte
+   très sombre », et seulement ensuite comme une couleur. C'est plus sobre et
+   plus sérieux — c'est aussi moins signalant. Les aplats (boutons, seuil au
+   survol) portent donc davantage le poids de l'accent qu'avant.
+
+   Pour revenir à la direction d'origine : dans global.css, remplacer
+       @import "./palettes/pin.css";
+   par
+       @import "./palettes/terre.css";
+   Rien d'autre. Aucun composant ne nomme une primitive.
+
+   TOUS les ratios ci-dessous ont été calculés, jamais estimés.
+   ══════════════════════════════════════════════════════════════════════════ */
+
+@theme {
+  /* ── Réinitialisation ───────────────────────────────────────────────────
+     On efface la palette Tailwind par défaut : `bg-blue-500` doit être une
+     erreur, pas une tentation. Seuls les mots-clés CSS survivent.          */
+  --color-*: initial;
+  --color-transparent: transparent;
+  --color-current: currentColor;
+  --color-white: #ffffff;
+
+  /* ── Primitives · Sand (neutres chauds) ─────────────────────────────────
+     Inchangées : dérivées du crème du logo (#efe7db = sand-200). Un neutre
+     froid aurait durci le vert ; le crème le pose sur quelque chose de
+     vivant.                                                                */
+  --color-sand-50: #fbf8f3;
+  --color-sand-100: #f5efe5;
+  --color-sand-200: #efe7db;
+  --color-sand-300: #e2d7c6;
+  --color-sand-400: #c9bba5;
+  --color-sand-500: #a99881;
+  --color-sand-600: #85735c;
+
+  /* ── Primitives · Bark (bruns) ──────────────────────────────────────────
+     Inchangées : dérivées du brun du logo (#241c17 = bark-900). Le brun et
+     le vert forêt sont la paire la plus ancienne qui soit — bois et
+     feuillage.                                                             */
+  --color-bark-500: #6b5b4c;
+  --color-bark-700: #4a3b30;
+  --color-bark-800: #33281f;
+  --color-bark-900: #241c17;
+  --color-bark-950: #171110;
+
+  /* ── Primitives · Pine (verts) ──────────────────────────────────────────
+     pine-800 est la couleur donnée. Les autres en dérivent :
+
+       pine-700  survol des aplats. Plus CLAIR que pine-800, contrairement à
+                 la convention — à cette densité, assombrir donne du noir et
+                 le survol ne se voit plus. Écart de luminance 1,47 entre les
+                 deux, contre 1,24 en assombrissant.
+       pine-400  la seule qui puisse porter du texte sur le brun : #014421
+                 sur bark-900 tombe à 1,3:1, invisible.
+       pine-100  fond de sélection et teintes légères.                      */
+  --color-pine-100: #e6efe8;
+  --color-pine-400: #8fbf9f;
+  --color-pine-700: #02602f;
+  --color-pine-800: #014421;
+
+  /* ── Primitives · Leaf (succès) ─────────────────────────────────────────
+     Un vert franchement plus clair que l'accent (2,12:1 entre les deux).
+     Avec un accent vert, un accusé de réception de la même teinte ne dirait
+     plus « réussi », il dirait « couleur de marque ».                      */
+  --color-leaf-100: #e6f2ea;
+  --color-leaf-600: #1f7a44;
+
+  /* ── Sémantiques · Surfaces ─────────────────────────────────────────────
+     Les composants utilisent CES noms, pas les primitives.                 */
+  --color-page: var(--color-sand-50);
+  --color-surface: var(--color-white);
+  --color-surface-alt: var(--color-sand-200);
+  --color-section-alt: var(--color-sand-100);
+  /* Équivalent vert du même jeton : #014421 dilué à 15 %. */
+  --color-section-accent: #dae3de;
+  --color-inverse: var(--color-bark-900);
+  --color-inverse-alt: var(--color-bark-800);
+
+  /* ── Sémantiques · Texte ────────────────────────────────────────────────
+     Ratios vérifiés sur --color-page (voir DESIGN.md § Contraste).         */
+  --color-ink: var(--color-bark-900); /* 15.81:1 */
+  --color-ink-soft: var(--color-bark-700); /* 10.12:1 */
+  --color-ink-muted: var(--color-bark-500); /*  6.14:1 */
+  --color-on-inverse: var(--color-sand-200); /* 13.66:1 */
+  --color-on-inverse-muted: var(--color-sand-400); /*  8.88:1 */
+  --color-on-accent: var(--color-sand-50); /* 10.71:1 sur pine-800 · 7.30:1 sur pine-700 */
+
+  /* ── Sémantiques · Accent ───────────────────────────────────────────────
+     Contrairement au terracotta, la couleur des aplats tient AUSSI en texte :
+     #014421 donne 10.71:1 sur la page et 9.26:1 sur surface-alt, très
+     au-dessus du seuil. `accent` et `accent-ink` pointent donc la même
+     primitive — et c'est ce qui permet au « Dev » du logo d'être exactement
+     la couleur demandée, puisque le logo consomme `accent-ink`.
+
+     Les deux jetons restent distincts : ils ne le sont plus par leur valeur,
+     mais par leur rôle. Une palette suivante pourra les séparer à nouveau
+     sans toucher à un seul composant.                                      */
+  --color-accent: var(--color-pine-800);
+  --color-accent-hover: var(--color-pine-700);
+  --color-accent-ink: var(--color-pine-800); /* 10.71:1 · 9.26:1 sur surface-alt */
+  --color-accent-tint: var(--color-pine-100); /* accent-ink dessus : 9.66:1 */
+  --color-accent-on-inverse: var(--color-pine-400); /*  8.07:1 sur inverse */
+
+  /* ── Sémantiques · Titre d'ouverture ─────────────────────────────
+     La ligne italique du titre du hero. Elle a son propre jeton depuis la
+     palette Marine, où elle prend une couleur qui n'est pas l'accent. Ici
+     elle suit l'accent sur fond sombre — il n'y a rien à distinguer.       */
+  --color-display-accent: var(--color-pine-400);
+
+  /* ── Sémantiques · Traits ───────────────────────────────────────────────
+     line / line-strong sont décoratifs (séparateurs, contours de cartes).
+     line-input est le seul qui atteint 3:1 : obligatoire sur tout champ de
+     formulaire et tout contrôle dont la bordure porte du sens.             */
+  --color-line: var(--color-sand-300);
+  --color-line-strong: var(--color-sand-400);
+  --color-line-input: var(--color-sand-600); /*  4.31:1 */
+  --color-line-inverse: var(--color-bark-700);
+
+  /* ── Sémantiques · Voiles et survols ────────────────────────────────────
+     `scrim` est la teinte posée sur une image pour rendre lisible ce qui est
+     écrit dessus (hero, visionneuse, bandeau vidéo). Toujours avec une
+     opacité : `bg-scrim/60`. C'est la primitive la plus sombre de la
+     palette, nommée pour que les composants n'aient pas à la connaître.
+
+     `surface-hover` est le fond des boutons secondaires au survol — un cran
+     plus dense que la page, jamais assez pour lire comme une surface à
+     part.                                                                  */
+  --color-scrim: var(--color-bark-950);
+  --color-surface-hover: var(--color-sand-100);
+
+  /* ── Sémantiques · Succès ───────────────────────────────────────────────
+     Un seul usage : l'accusé de réception du formulaire de visite.         */
+  --color-available: var(--color-leaf-600); /*  5.05:1 sur page */
+  --color-available-tint: var(--color-leaf-100); /* leaf-600 dessus : 4.65:1 */
+
+  /* ── Ombres ─────────────────────────────────────────────────────────────
+     Teintées de la couleur sombre de la palette, jamais noires : une ombre
+     neutre vire au gris sur un fond coloré et casse la chaleur. Elles vivent
+     donc ici et non dans global.css — changer de palette change les ombres. */
+  --shadow-soft: 0 1px 2px rgb(36 28 23 / 0.04), 0 4px 12px rgb(36 28 23 / 0.06);
+  --shadow-lift: 0 2px 4px rgb(36 28 23 / 0.05), 0 12px 28px rgb(36 28 23 / 0.1);
+  --shadow-media: 0 24px 48px -12px rgb(36 28 23 / 0.18);
+}

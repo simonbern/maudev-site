@@ -1,0 +1,35 @@
+# Genere depuis reference/mirror/www.mau-dev.ca/{fr,en}/projects/47-nicholson
+# Textes et chiffres repris tels quels de l’ancien site.
+nom: "47 Nicholson"
+statut: realise
+ordre: 0
+url: { fr: 47-nicholson, en: 47-nicholson }
+
+adresse: "47 Nicholson"
+ville: "Salaberry-de-Valleyfield"
+
+resume:
+  fr: "Actif rénové dans le portefeuille de projets antérieurs de MauDev."
+  en: "Renovated asset within MauDev's completed-project portfolio."
+
+description:
+  fr:
+    - "Un bâtiment existant repositionné grâce à une rénovation réalisée en 2022."
+  en:
+    - "An existing building repositioned through a renovation completed in 2022."
+
+faits:
+  - label: { fr: "Statut", en: "Status" }
+    valeur: { fr: "Livré", en: "Delivered" }
+  - label: { fr: "Bâtiments", en: "Buildings" }
+    valeur: { fr: "1", en: "1" }
+  - label: { fr: "Surface du bâtiment", en: "Building area" }
+    valeur: { fr: "± 12 000 pi²", en: "± 12,000 sq. ft." }
+  - label: { fr: "Échéancier", en: "Timeline" }
+    valeur: { fr: "Rénovation 2022", en: "Renovation 2022" }
+
+couverture:
+  src: ../../assets/projets/47-nicholson/couverture.jpg
+  alt:
+    fr: "47 Nicholson — Salaberry-de-Valleyfield"
+    en: "47 Nicholson — Salaberry-de-Valleyfield"

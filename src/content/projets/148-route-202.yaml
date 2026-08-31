@@ -1,0 +1,29 @@
+# Source : client, 2026-08-28. Quatre adresses ajoutées à /projets d'un coup.
+# Rien d'autre que ce qu'il a écrit — pas de statut de livraison, pas d'année,
+# pas de descriptif : il n'en a pas donné.
+nom: "148 route 202"
+statut: realise
+ordre: 0
+url: { fr: 148-route-202, en: 148-route-202 }
+
+adresse: "148 route 202"
+ville: "Huntingdon"
+
+resume:
+  fr: "Bâtiment industriel de 12 500 pi² à Huntingdon, sur un terrain industriel de 275 000 pi²."
+  en: "12,500 sq. ft. industrial building in Huntingdon, on a 275,000 sq. ft. industrial lot."
+
+description:
+  fr:
+    - "Un bâtiment industriel de 12 500 pi² à Huntingdon, implanté sur un terrain industriel de 275 000 pi²."
+  en:
+    - "A 12,500 sq. ft. industrial building in Huntingdon, set on a 275,000 sq. ft. industrial lot."
+
+# Le premier fait s'affiche sans étiquette, à côté de la municipalité.
+faits:
+  - label: { fr: "Programme", en: "Program" }
+    valeur: { fr: "Industriel", en: "Industrial" }
+  - label: { fr: "Superficie du bâtiment", en: "Building area" }
+    valeur: { fr: "12 500 pi²", en: "12,500 sq. ft." }
+  - label: { fr: "Terrain", en: "Lot" }
+    valeur: { fr: "275 000 pi²", en: "275,000 sq. ft." }

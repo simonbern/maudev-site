@@ -1,0 +1,102 @@
+---
+import { Image } from 'astro:assets';
+import type { CollectionEntry } from 'astro:content';
+import Logo from './Logo.astro';
+import { ui, type Locale } from '../i18n';
+
+/**
+ * Une réalisation dans la grille de `/projets`.
+ *
+ * Volontairement pas un lien : les projets livrés n'ont pas de page dédiée
+ * (CLAUDE.md § Structure du site), et une carte cliquable qui ne mène nulle
+ * part est pire qu'une carte inerte.
+ *
+ * **Toutes les cartes ont la même taille.** Une mosaïque à largeurs alternées
+ * avait été essayée — sept colonnes, cinq, puis un triptyque. Elle donnait du
+ * rythme, et elle classait onze projets qui ne le sont pas : une tuile deux
+ * fois plus grande que sa voisine annonce un projet plus important, ce que ni
+ * le client ni le contenu ne disent. À taille égale, c'est le projet qu'on
+ * compare, pas la place qu'on lui a donnée.
+ *
+ * **Tout le contenu reste visible en permanence.** La tentation était de
+ * cacher les faits sous un survol : ça marche à la souris, et ça les rend
+ * inatteignables au clavier — la carte n'est pas un lien, donc rien à mettre
+ * au focus. Le survol ne déplace donc rien qu'on doive lire : l'image respire,
+ * son cadre se soulève, et le numéro passe à l'accent.
+ */
+interface Props {
+  projet: CollectionEntry<'projets'>;
+  locale: Locale;
+  /** Rang dans la liste, affiché comme repère de lecture. */
+  index: number;
+}
+const { projet, locale, index } = Astro.props;
+const d = projet.data;
+const t = ui[locale];
+
+// Le premier fait est toujours « Statut ». Il ouvre la ligne de lieu, mais sans
+// étiquette : « Livré » se comprend seul, « Statut : Livré » est du remplissage.
+const [statut, ...autres] = d.faits;
+---
+
+<li data-reveal class="group flex flex-col gap-5">
+  <div class="carte-survol aspect-[3/2] overflow-hidden rounded-card bg-surface-alt">
+    {
+      d.couverture ? (
+        <Image
+          src={d.couverture.src}
+          alt={d.couverture.alt[locale]}
+          widths={[400, 700, 1000]}
+          sizes="(min-width: 1024px) 33vw, (min-width: 768px) 50vw, 100vw"
+          loading={index < 3 ? 'eager' : 'lazy'}
+          class="h-full w-full object-cover transition-transform duration-700 ease-[var(--ease-doux)] group-hover:scale-[1.04]"
+        />
+      ) : (
+        /* Gabarit. Deux réalisations n'ont reçu que des photos d'intérieur, et
+           un intérieur ne sert jamais de couverture ici : cette grille montre
+           des bâtiments. Un cadre vide dirait « image manquante » ; la marque
+           et « photos à venir » disent « pas encore livrées », ce qui est le
+           cas. Même gabarit que `ProjectCard`. */
+        <div class="flex h-full w-full flex-col items-center justify-center gap-3">
+          <Logo class="text-h2 text-ink opacity-60" />
+          <span class="text-label text-ink-muted">{t.photosSoon}</span>
+        </div>
+      )
+    }
+  </div>
+
+  <div>
+    <div class="flex items-baseline gap-4">
+      <span
+        class="num text-label text-ink-muted transition-colors duration-500 group-hover:text-accent-ink"
+        aria-hidden="true"
+      >
+        {String(index + 1).padStart(2, '0')}
+      </span>
+      <h3 class="text-h3 text-balance text-ink">{d.nom}</h3>
+    </div>
+
+    <p class="mt-2 text-body text-ink-muted">
+      {d.ville}
+      {statut && <span class="text-accent-ink"> · {statut.valeur[locale]}</span>}
+    </p>
+
+    <p class="mt-4 max-w-prose text-body text-ink-soft">{d.resume[locale]}</p>
+
+    {
+      /* Étiquette et valeur empilées. À trois colonnes, une étiquette de deux
+         mots face à une valeur de six écrase les deux sur une même ligne —
+         « Programme » / « Résidentiel avec locataire ancré » le fait déjà. */
+      autres.length > 0 && (
+        <dl class="mt-6 flex flex-col gap-3 border-t border-line pt-5 text-small">
+          {autres.map((f) => (
+            <div class="flex flex-col gap-0.5">
+              <dt class="text-ink-muted">{f.label[locale]}</dt>
+              <dd class="num text-ink-soft">{f.valeur[locale]}</dd>
+            </div>
+          ))}
+        </dl>
+      )
+    }
+  </div>
+</li>

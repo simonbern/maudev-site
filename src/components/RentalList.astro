@@ -1,0 +1,105 @@
+---
+import Panneau from './Panneau.astro';
+import { getCollection } from 'astro:content';
+import ProjectCard from './ProjectCard.astro';
+import Reveal from './Reveal.astro';
+import { projetsCopy } from '../copy/projets';
+import { landing } from '../copy/landing';
+import { CONTACT, estEnLocation, type Locale } from '../i18n';
+
+/**
+ * Liste des projets en location — conçue pour en accueillir d'autres.
+ *
+ * Reprend le langage de l'accueil : très grands titres, images pleine largeur,
+ * révélations au défilement. La page reste une liste, pas une galerie : chaque
+ * projet occupe une rangée entière, l'image alternant de côté.
+ *
+ * Chaque rangée ne porte que le nom, l'adresse et le prix de départ. Tout le
+ * reste — logements, types, superficies, livraison, plans, photos — vit sur la
+ * page du projet. Une liste qui répète la page de destination ne sert qu'à
+ * retarder le clic.
+ */
+interface Props {
+  locale: Locale;
+}
+const { locale } = Astro.props;
+const t = projetsCopy[locale].liste;
+const c = landing[locale].projets;
+
+const projets = (await getCollection('projets'))
+  .filter((p) => estEnLocation(p.data.statut))
+  .sort((a, b) => b.data.ordre - a.data.ordre);
+
+const totalLogements = projets.reduce((n, p) => n + (p.data.unites ?? 0), 0);
+const villes = new Set(projets.map((p) => p.data.ville)).size;
+---
+
+<section class="bg-page pt-12 pb-10 md:pt-16 md:pb-12 lg:pt-20 lg:pb-14">
+  <div class="mx-auto max-w-page px-5 md:px-8 lg:px-12">
+    <div class="grid gap-y-8 md:grid-cols-12 md:gap-x-10">
+      <h1 data-reveal class="text-display text-balance text-ink md:col-span-7">{t.title}</h1>
+      <p
+        data-reveal
+        style="transition-delay:100ms"
+        class="text-lead text-ink-soft md:col-span-5 md:col-start-8 md:self-end"
+      >
+        {t.lead}
+      </p>
+    </div>
+
+    {
+      projets.length > 0 && (
+        <p data-reveal style="transition-delay:180ms" class="mt-10 text-body text-ink-muted">
+          <span class="num">{c.projects(projets.length)}</span>
+          {' · '}
+          <span class="num">{c.units(totalLogements)}</span>
+          {' · '}
+          <span class="num">{c.cities(villes)}</span>
+        </p>
+      )
+    }
+
+    {
+      projets.length ? (
+        /* Une rangée par projet dès le premier : passer de 3 à 8 projets ne
+           doit rien exiger d'autre qu'un fichier de contenu. */
+        <ul class="mt-12 flex flex-col gap-14 md:mt-16 md:gap-16 lg:gap-20">
+          {projets.map((projet, i) => (
+            <ProjectCard projet={projet} locale={locale} index={i} />
+          ))}
+        </ul>
+      ) : (
+        <p class="mt-12 text-lead text-ink-muted">{t.empty}</p>
+      )
+    }
+  </div>
+</section>
+
+{/* Rappel de contact en bas de liste : qui a parcouru les projets sans cliquer
+    a probablement une question qu'aucune fiche ne couvre.
+
+    Respiration asymétrique : peu au-dessus (le panneau suit immédiatement la
+    liste), beaucoup en dessous. C'est la dernière section avant le pied de
+    page, et un panneau collé au pied de page se lit comme une erreur de
+    marge. */}
+<section class="zone-claire bg-section-alt py-14 md:py-16 lg:py-20">
+  <Panneau>
+    <div class="flex flex-col items-start justify-between gap-8 md:flex-row md:items-end">
+      <h2 data-reveal class="max-w-narrow text-h2 text-balance text-ink">
+        {landing[locale].contact.title}
+      </h2>
+      <a
+        data-reveal
+        href={`mailto:${CONTACT.email}`}
+        class="group inline-flex h-14 shrink-0 cursor-pointer items-center gap-3 rounded-card bg-accent px-7 text-body font-semibold text-on-accent transition-colors duration-200 hover:bg-accent-hover"
+      >
+        {landing[locale].contact.cta}
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-5 w-5 transition-transform duration-300 group-hover:translate-x-1" aria-hidden="true">
+          <path d="M5 12h14M13 6l6 6-6 6" />
+        </svg>
+      </a>
+    </div>
+  </Panneau>
+</section>
+
+<Reveal />

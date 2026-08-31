@@ -1,0 +1,113 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import Seuil from './Seuil.astro';
+import { projetsCopy } from '../copy/projets';
+import { deliveryDate } from '../format';
+import { localize, type Locale } from '../i18n';
+
+/**
+ * Contenu du hero d'une page projet.
+ *
+ * Extrait parce que le hero existe en deux formes — avec vidéo, avec image
+ * fixe — et que ce bloc était copié dans les deux branches. Deux copies, deux
+ * occasions d'en corriger une seule.
+ *
+ * Plus d'étiquette de statut : la date de livraison et le décompte de
+ * logements loués disent la même chose, en plus précis.
+ *
+ * **Il parle la même langue que le hero de l'accueil.** Il était plus
+ * discret — titre en `text-h1`, ville en corps de lecture, bouton à coins
+ * arrondis de 48 px de haut — et une fiche de projet s'ouvrait donc sur un
+ * ton plus bas que la page d'où l'on venait. Trois emprunts à l'accueil :
+ *
+ * · **le titre en `text-display`**, un cran sous le `text-hero` de l'accueil,
+ *   qui reste seul à le porter (§ 3) ;
+ * · **la municipalité en serif d'affichage et en couleur d'ouverture**, le
+ *   croisement des deux familles qui donne sa voix au titre de l'accueil.
+ *   L'adresse civique passe en dessous, en petit : c'est une précision, pas
+ *   une accroche ;
+ * · **le seuil à la place du bouton**, avec sa règle de remplissage et sa
+ *   flèche. C'est l'appel à l'action du site, pas un bouton de formulaire.
+ *
+ * Les révélations sont décalées comme sur l'accueil — titre, ville, chiffres,
+ * seuil — pour que l'entrée se lise dans cet ordre.
+ *
+ * **Plus de photo à côté du titre.** La couverture y a été posée un temps,
+ * pour montrer le bâtiment que le plan de drone ne montrait pas de près. Elle
+ * coupait le hero en deux et répétait, à 200 px du pli, l'image qu'on venait
+ * de voir sur la carte de `/a-louer`. Le hero ne porte plus que son texte, sur
+ * toute la largeur, comme celui de l'accueil.
+ */
+interface Props {
+  projet: CollectionEntry<'projets'>;
+  locale: Locale;
+}
+const { projet, locale } = Astro.props;
+const d = projet.data;
+const t = projetsCopy[locale].detail;
+
+const stats = [
+  d.unites !== undefined ? { value: String(d.unites), label: t.unites } : null,
+  d.etages ? { value: String(d.etages), label: t.etages } : null,
+  d.livraison ? { value: deliveryDate(d.livraison, locale), label: t.livraison } : null,
+  d.unitesLouees && d.unites ? { value: `${d.unitesLouees}/${d.unites}`, label: t.louees } : null,
+].filter((s): s is { value: string; label: string } => s !== null);
+---
+
+<a
+  href={localize('/a-louer', locale)}
+  class="mb-8 flex h-11 w-fit cursor-pointer items-center gap-2 text-small font-semibold text-on-inverse-muted transition-colors duration-200 hover:text-accent-on-inverse"
+>
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4" aria-hidden="true">
+    <path d="M19 12H5M11 18l-6-6 6-6"></path>
+  </svg>
+  {t.back}
+</a>
+
+<h1 data-reveal class="max-w-5xl text-display text-balance text-on-inverse">{d.nom}</h1>
+
+<p
+  data-reveal
+  style="transition-delay:120ms"
+  class="mt-4 font-display text-h2 font-semibold text-balance text-display-accent"
+>
+  {d.ville}
+</p>
+
+{d.adresse && (
+  <p data-reveal style="transition-delay:160ms" class="mt-3 text-lead text-on-inverse-muted">
+    {d.adresse}
+  </p>
+)}
+{d.phase && (
+  <p data-reveal style="transition-delay:180ms" class="mt-1 text-small text-on-inverse-muted">
+    {d.phase[locale]}
+  </p>
+)}
+
+<dl data-reveal style="transition-delay:220ms" class="mt-10 flex flex-wrap gap-x-12 gap-y-6 md:mt-12">
+  {
+    stats.map((s) => (
+      <div>
+        {/* Ces libellés étaient écrits pour un rendu en capitales CSS : la
+            copie dit « logements », « étages », « déjà loués » mais
+            « Livraison ». En casse normale, l'incohérence saute aux yeux.
+            `first-letter` la corrige sans toucher au contenu — `capitalize`
+            donnerait « Déjà Loués ». */}
+        <dt class="text-label text-on-inverse-muted first-letter:uppercase">{s.label}</dt>
+        <dd class="num mt-1 text-stat text-on-inverse">{s.value}</dd>
+      </div>
+    ))
+  }
+</dl>
+
+{/* Action principale de la page, à hauteur d'œil. Elle mène au formulaire en
+    bas de page plutôt qu'à un `mailto:` : l'ancre garde le visiteur sur la
+    page, et le formulaire capte le contexte que le courriel perdait.
+
+    Le seuil sort de la colonne du texte, comme sur l'accueil : il prend toute
+    la grille, et c'est ce qui le fait lire comme une limite plutôt que comme
+    un objet posé dessus. */}
+<div data-reveal style="transition-delay:280ms" class="mt-10 md:mt-12">
+  <Seuil href="#visite" label={t.visitCta} tone="inverse" />
+</div>

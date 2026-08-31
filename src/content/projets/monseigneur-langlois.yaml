@@ -1,0 +1,30 @@
+# Source : client, 2026-08-28. Voir 148-route-202.yaml.
+# Le client n'a donné que le nom de voie, sans numéro civique ni type de voie
+# (boulevard, rue). Repris tel quel, et marqué à confirmer plutôt que complété
+# au jugé — même traitement que Pierre-Paul Messier.
+nom: "Monseigneur-Langlois"
+statut: realise
+ordre: 0
+url: { fr: monseigneur-langlois, en: monseigneur-langlois }
+
+adresse: "Monseigneur-Langlois"
+ville: "Salaberry-de-Valleyfield"
+aConfirmer: [adresse]
+
+resume:
+  fr: "8 000 pi² de commercial à Salaberry-de-Valleyfield : quincaillerie et bureaux."
+  en: "8,000 sq. ft. of commercial space in Salaberry-de-Valleyfield: hardware store and offices."
+
+description:
+  fr:
+    - "Un immeuble commercial de 8 000 pi² à Salaberry-de-Valleyfield, occupé par une quincaillerie et des bureaux."
+  en:
+    - "An 8,000 sq. ft. commercial building in Salaberry-de-Valleyfield, occupied by a hardware store and offices."
+
+faits:
+  - label: { fr: "Programme", en: "Program" }
+    valeur: { fr: "Commercial", en: "Commercial" }
+  - label: { fr: "Superficie", en: "Area" }
+    valeur: { fr: "8 000 pi²", en: "8,000 sq. ft." }
+  - label: { fr: "Occupants", en: "Occupants" }
+    valeur: { fr: "Quincaillerie et bureaux", en: "Hardware store and offices" }

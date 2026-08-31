@@ -1,0 +1,54 @@
+<!DOCTYPE html><html lang="en"> <head><title>94 Saint-Louis | MauDev</title><!-- Default Meta tags --><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="description" content="Explore MauDev's delivered and upcoming projects across Salaberry-de-Valleyfield, Huntingdon, Saint-Eustache, and Sainte-Martine."><!-- Canonical URL --><link rel="canonical" href="94-saint-louis"><!-- Icons --><link rel="icon" href="../../favicon.svg" type="image/svg+xml"><link rel="icon" href="../../favicon.ico" sizes="any"><!-- OpenGraph --><meta property="og:title" content="94 Saint-Louis | MauDev"><meta property="og:description" content="Explore MauDev's delivered and upcoming projects across Salaberry-de-Valleyfield, Huntingdon, Saint-Eustache, and Sainte-Martine."><meta property="og:type" content="website"><meta property="og:url" content="https://www.mau-dev.ca/en/projects/94-saint-louis"><meta property="og:image" content="/default-og-image.jpg"><!-- Twitter Card --><meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="94 Saint-Louis | MauDev"><meta name="twitter:description" content="Explore MauDev's delivered and upcoming projects across Salaberry-de-Valleyfield, Huntingdon, Saint-Eustache, and Sainte-Martine."><meta name="twitter:image" content="/default-og-image.jpg"><!-- Robots --><meta name="robots" content="index, follow"><!-- scripts --><link rel="stylesheet" href="../../_astro/PageLayout.DMnV6Y9U.css"></head><body class="body"> <main class="main">  <header class="nav nav--light"> <div class="width nav__inner"> <a class="nav__brand" href="../../en">MauDev</a> <nav> <ul class="nav__list"> <li><a href="../projects">Projects</a></li><li><a href="../about">Our model</a></li> <li><a class="nav__lang" href="../../fr/projects/94-saint-louis">FR</a></li> </ul> </nav> </div> </header> <section class="project-detail-page" data-project-detail> <article class="project-detail-page__left"> <p class="project-detail-page__location">Saint-Eustache, QC</p> <h1> <span>94</span> <span>Saint-Louis</span> </h1> <dl class="project-detail-page__facts">  <dt>Status</dt> <dd>Delivered</dd>  <dt>Program</dt> <dd>Mixed-use</dd>  <dt>Buildings</dt> <dd>1</dd>  <dt>Residential units</dt> <dd>6</dd>  <dt>Commercial spaces</dt> <dd>2</dd>  </dl> <section class="project-detail-page__copy" aria-label="Overview"> <h2>Overview</h2> <p>Completed mixed-use project in Saint-Eustache.</p> <p>A small mixed-use building bringing together 6 homes and 2 commercial spaces in a neighborhood-scale format.</p> </section> <a class="project-detail-page__back" data-crossfade-link href="../projects">Back to projects</a> </article> <aside class="project-detail-page__right" aria-label="94 Saint-Louis"> <div class="project-detail-page__gallery"> <img src="../../images/projects/94-saint-louis.jpg" alt="Saint-Louis 1" loading="eager" decoding="async"> </div> </aside> </section>  </main> <footer class="global-footer"> <div class="global-footer__inner"> <section class="global-footer__col"> <h3>Pages</h3> <ul> <li><a href="../../en">Overview</a></li><li><a href="../about">About us</a></li><li><a href="../projects">Projects</a></li> </ul> </section> <section class="global-footer__col"> <h3>Social</h3> <ul> <li><a href="https://www.linkedin.com" target="_blank" rel="noreferrer">LinkedIn</a></li><li><a href="https://www.instagram.com" target="_blank" rel="noreferrer">Instagram</a></li><li><a href="https://www.facebook.com" target="_blank" rel="noreferrer">Facebook</a></li> </ul> </section> <section class="global-footer__col"> <h3>Contact</h3> <ul> <li><strong>Address:</strong> 47 rue Nicholson, Salaberry de Valleyfield</li> <!-- <li><strong>{text.phone}:</strong> +1 555 010 020</li> --> <li><strong>Email:</strong> info@mau-dev.ca</li> </ul> </section> </div> <div class="global-footer__copyright"> <div class="global-footer__inner">© 2026 MauDev - All rights reserved.</div> </div> </footer> </body></html> <script>
+  const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  const revealProjectDetail = () => {
+    const page = document.querySelector('[data-project-detail]');
+    if (!page) return;
+    requestAnimationFrame(() => {
+      page.classList.add('is-visible');
+    });
+  };
+
+  const setupCrossfadeLinks = () => {
+    const links = document.querySelectorAll('[data-crossfade-link]');
+    if (!links.length) return;
+
+    links.forEach((link) => {
+      link.addEventListener('click', (event) => {
+        const mouseEvent = event;
+        const anchor = link;
+
+        if (
+          mouseEvent.defaultPrevented ||
+          mouseEvent.button !== 0 ||
+          mouseEvent.metaKey ||
+          mouseEvent.ctrlKey ||
+          mouseEvent.shiftKey ||
+          mouseEvent.altKey
+        ) {
+          return;
+        }
+
+        const href = anchor.getAttribute('href');
+        if (!href) return;
+
+        mouseEvent.preventDefault();
+        document.body.classList.add('is-page-transitioning');
+
+        window.setTimeout(() => {
+          window.location.href = href;
+        }, prefersReducedMotion ? 0 : 260);
+      });
+    });
+  };
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => {
+      revealProjectDetail();
+      setupCrossfadeLinks();
+    });
+  } else {
+    revealProjectDetail();
+    setupCrossfadeLinks();
+  }
+</script>

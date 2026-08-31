@@ -1,0 +1,71 @@
+---
+/**
+ * Révélation au défilement, partagée par les pages qui en ont besoin.
+ *
+ * Ne rend aucun balisage : uniquement le script qui pilote les `[data-reveal]`
+ * de la page. Astro ne l'inclut qu'une fois même si plusieurs composants
+ * l'appellent.
+ *
+ * **L'état caché est posé par le script, jamais par le HTML.** Sans JavaScript,
+ * la page est entière. C'est l'inverse du réflexe habituel — masquer en CSS
+ * puis révéler en JS — qui laisse une page blanche quand le script ne
+ * s'exécute pas. La capture pleine page de Broccolini, presque vide, montre
+ * exactement ce que coûte l'autre choix.
+ *
+ * `data-reveal` seul : montée depuis le bas. `data-reveal="droite"` : entrée
+ * par la droite, réservée à la section du carrousel de projets.
+ */
+---
+
+<script>
+  const doux = window.matchMedia('(prefers-reduced-motion: reduce)');
+  const aReveler = [...document.querySelectorAll<HTMLElement>('[data-reveal]')];
+
+  if (aReveler.length && !doux.matches) {
+    /* `data-reveal="droite"` entre par la droite, tout le reste par le bas.
+       La classe de départ dépend donc de l'élément ; celle d'arrivée est la
+       même pour tous, puisqu'elle ne fait qu'annuler la transformation. */
+    const depart = (el: HTMLElement) =>
+      el.dataset.reveal === 'droite' ? 'reveal-pret-droite' : 'reveal-pret';
+
+    for (const el of aReveler) el.classList.add(depart(el));
+
+    const observateur = new IntersectionObserver(
+      (entrees) => {
+        for (const e of entrees) {
+          if (!e.isIntersecting) continue;
+          observateur.unobserve(e.target);
+          const el = e.target as HTMLElement;
+          el.classList.remove(depart(el));
+          el.classList.add('reveal-vu');
+        }
+      },
+      { rootMargin: '0px 0px -12% 0px', threshold: 0.1 },
+    );
+
+    /* Ce qui est déjà à l'écran au chargement ne passe pas par l'observateur.
+       Le `rootMargin` bas de 12 % l'en empêchait : l'appel à l'action du hero
+       est ancré en bas d'une section de 92svh, donc pile dans cette bande
+       morte, et il fallait défiler pour le faire apparaître — un bouton qu'on
+       ne voit pas au chargement. Cette marge sert à déclencher un peu avant
+       l'entrée réelle pendant le défilement ; au premier écran elle n'a rien à
+       retarder.
+
+       Deux `requestAnimationFrame` : la classe de départ vient d'être posée, il
+       faut qu'un style ait été calculé avec avant de la retirer, sinon le
+       navigateur fusionne les deux et l'entrée ne joue pas. Les délais inlines
+       gardent l'escalier titre → chapeau → seuil. */
+    requestAnimationFrame(() =>
+      requestAnimationFrame(() => {
+        for (const el of aReveler) {
+          if (el.getBoundingClientRect().top < window.innerHeight) {
+            el.classList.remove(depart(el));
+            el.classList.add('reveal-vu');
+          } else {
+            observateur.observe(el);
+          }
+        }
+      }),
+    );
+  }
+</script>

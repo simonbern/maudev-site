@@ -1,0 +1,167 @@
+---
+import { Image, getImage } from 'astro:assets';
+import type { CollectionEntry } from 'astro:content';
+import Lightbox from './Lightbox.astro';
+import { projetsCopy } from '../copy/projets';
+import type { Locale } from '../i18n';
+
+/**
+ * Galerie photos — un aperçu de cinq, la suite dans la visionneuse.
+ *
+ * ```
+ * ┌───────────────┬───────┬───────┐
+ * │               │   2   │   3   │
+ * │       1       ├───────┼───────┤
+ * │               │   4   │  5 ⧉10│  ← le compteur, sur la dernière
+ * └───────────────┴───────┴───────┘
+ * ```
+ *
+ * **Cinq photos, pas dix.** La grille montrait tout : dix vignettes sur
+ * quatre rangées, une section qui prenait deux écrans pour des photos qu'on
+ * parcourt en dix secondes dans la visionneuse. Un aperçu dit « il y a des
+ * photos, en voici le ton » ; le reste est à un clic.
+ *
+ * **Une grande et quatre petites**, et l'ordre décide : la première photo du
+ * YAML est celle que le client a mise en premier. C'est la seule hiérarchie
+ * du bloc, et elle vient du contenu.
+ *
+ * **Le compteur est posé sur la dernière vignette**, en bas à droite. Il dit
+ * le total, pas le reste : « 10 » et non « +5 ». Un visiteur veut savoir
+ * combien de photos existent, pas faire une soustraction.
+ *
+ * **Toutes les photos restent atteignables.** Les cinq vignettes ouvrent la
+ * visionneuse, qui reçoit la liste entière — on défile les dix au doigt ou
+ * aux flèches. Les vignettes non affichées ne sont pas dans le DOM ; seule
+ * la visionneuse connaît leurs URL, posées sur une unique balise `<img>`.
+ *
+ * `object-cover` absorbe les rapports d'origine. Le recadrage ne cache rien :
+ * la visionneuse montre l'image entière, en `object-contain`.
+ */
+interface Props {
+  photos: CollectionEntry<'projets'>['data']['photos'];
+  locale: Locale;
+  /** Distingue deux galeries sur une même page (photos vs rendus). */
+  id?: string;
+}
+const { photos, locale, id = 'photos' } = Astro.props;
+const t = projetsCopy[locale].detail;
+
+/** Nombre de vignettes affichées : une grande, quatre petites. */
+const APERCU = 5;
+
+const items = await Promise.all(
+  photos.map(async (p, i) => ({
+    src: p.src,
+    alt: p.alt[locale],
+    index: i,
+    full: (await getImage({ src: p.src, width: 1600, format: 'webp' })).src,
+  })),
+);
+const apercu = items.slice(0, APERCU);
+
+/**
+ * La mosaïque « une grande et quatre petites » suppose cinq vignettes. En
+ * dessous, elle laisse des cases vides — avec quatre rendus, le coin bas droit
+ * bâillait, et ça se lit comme une image qui n'a pas chargé. Les projets à
+ * venir en ont deux à quatre.
+ *
+ * En dessous de cinq, plus de vedette : toutes les vignettes à la même taille,
+ * sur une grille qui remplit exactement. La hiérarchie n'a de sens qu'avec
+ * assez d'images pour qu'il y ait quelque chose à hiérarchiser.
+ */
+const vedette = apercu.length >= APERCU;
+const grille = vedette
+  ? 'sm:grid-cols-4 sm:grid-rows-2'
+  : apercu.length === 4
+    ? 'sm:grid-cols-2'
+    : apercu.length === 3
+      ? 'sm:grid-cols-3'
+      : 'sm:grid-cols-2';
+---
+
+{/* **Sous `sm`, un carrousel ; au-dessus, la mosaïque.**
+    À 375 px, une mosaïque à trois colonnes donnerait des vignettes de 100 px :
+    on n'y voit ni la pièce ni la lumière, seulement qu'il y a une photo. Une
+    piste `scroll-snap` en montre une à la fois, au doigt, avec la suivante qui
+    dépasse pour dire qu'il y en a d'autres.
+
+    Aucun script : `overflow-x-auto` + `snap-x` suffisent, et le clavier garde
+    son accès — le navigateur amène lui-même dans le cadre le bouton qui prend
+    le focus.
+
+    Le bloc occupe la largeur du conteneur, comme les tarifs, la description
+    et les inclusions. Il a été bridé à `max-w-4xl` un temps — c'était le seul
+    bloc de la page à s'arrêter avant le bord, et ça se lisait comme un oubli
+    plutôt que comme un choix. Une page dont un seul élément ne s'aligne pas
+    donne l'impression d'un gabarit mal rempli. */}
+<ul
+  class:list={[
+    'no-scrollbar -mx-5 flex snap-x snap-mandatory gap-3 overflow-x-auto px-5 sm:mx-0 sm:grid sm:overflow-visible sm:px-0 md:gap-4',
+    grille,
+  ]}
+>
+  {
+    apercu.map((item, rang) => (
+      <li
+        class:list={[
+          /* Sous `sm` : une vignette par écran, calée à gauche. */
+          'shrink-0 basis-5/6 snap-start sm:basis-auto',
+          /* La première tient deux colonnes sur deux rangées ; les quatre
+             autres remplissent la moitié droite, une case chacune. */
+          rang === 0 && vedette && 'sm:col-span-2 sm:row-span-2',
+        ]}
+      >
+        <button
+          type="button"
+          data-lightbox={id}
+          data-index={item.index}
+          aria-label={t.openPhoto}
+          class="group relative block aspect-[3/2] w-full cursor-pointer overflow-hidden bg-surface-alt sm:h-full sm:aspect-auto"
+        >
+          <Image
+            src={item.src}
+            alt={item.alt}
+            widths={[400, 700, 1000]}
+            sizes={rang === 0 ? '(min-width: 640px) 40vw, 86vw' : '(min-width: 640px) 20vw, 86vw'}
+            loading={rang < 2 ? 'eager' : 'lazy'}
+            class="h-full w-full object-cover transition-transform duration-700 ease-[var(--ease-doux)] group-hover:scale-[1.04]"
+          />
+
+          {/* Le compteur, sur la dernière vignette de l'aperçu. `aria-hidden` :
+              le nom accessible du bouton dit déjà « Agrandir la photo », et la
+              visionneuse annonce « Photo 1 sur 10 » à l'ouverture. */}
+          {rang === apercu.length - 1 && items.length > apercu.length && (
+            <span
+              class="absolute right-2 bottom-2 flex items-center gap-1.5 rounded-card bg-scrim/70 px-2.5 py-1.5 text-small font-semibold text-on-inverse"
+              aria-hidden="true"
+            >
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                class="h-4 w-4 shrink-0"
+              >
+                <path d="M5 3h11a2 2 0 0 1 2 2v11" />
+                <path d="M8 8h11a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2v-9a2 2 0 0 1 2-2Z" />
+              </svg>
+              <span class="num">{items.length}</span>
+            </span>
+          )}
+        </button>
+      </li>
+    ))
+  }
+</ul>
+
+<Lightbox
+  id={id}
+  items={items.map((i) => ({ full: i.full, alt: i.alt }))}
+  label={t.photos}
+  countTemplate={t.photoCount}
+  closeLabel={t.closePhoto}
+  prevLabel={t.prevPhoto}
+  nextLabel={t.nextPhoto}
+/>

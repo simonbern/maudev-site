@@ -1,0 +1,296 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import { visite } from '../copy/visite';
+import { LEADS } from '../leads';
+import { localize, ui, CONTACT, type Locale } from '../i18n';
+
+/**
+ * Demande de visite — remplace le `mailto:` en bas de page projet.
+ *
+ * Formulaire natif de première partie : pas d'`<iframe>`, donc il s'affiche
+ * quel que soit le choix fait sur les témoins. Un formulaire GoHighLevel
+ * embarqué serait un tiers, et le principal outil de conversion du site
+ * resterait invisible tant que personne n'a accepté le bandeau.
+ *
+ * La validation est celle du navigateur (`required`, `type="email"`) : elle est
+ * traduite, accessible et gratuite. Le JavaScript ne sert qu'à l'envoi et aux
+ * états — il ne réimplémente rien de ce que le navigateur fait déjà.
+ *
+ * Les types de logement viennent de la collection : la liste suit le projet,
+ * sans saisie manuelle.
+ */
+interface Props {
+  projet: CollectionEntry<'projets'>;
+  locale: Locale;
+}
+const { projet, locale } = Astro.props;
+const d = projet.data;
+const c = visite[locale];
+const u = ui[locale];
+
+const types = [...new Set(d.logements.map((l) => l.type))];
+const actif = Boolean(LEADS.endpoint);
+
+const champ =
+  'mt-2 h-12 w-full rounded-input border border-line-input bg-surface px-4 text-body text-ink transition-colors duration-200 focus:border-accent';
+const etiquette = 'block text-body text-ink';
+const aide = 'mt-1 text-small text-ink-muted';
+---
+
+<div id="visite" class="scroll-mt-28">
+  <div class="grid gap-x-10 gap-y-8 md:grid-cols-12 lg:gap-x-14">
+    <div class="md:col-span-4">
+      <h2 class="text-h2 text-balance text-ink">{c.titre}</h2>
+      <p class="mt-4 text-lead text-ink-muted">{c.lead}</p>
+    </div>
+
+    <div class="md:col-span-7 md:col-start-6">
+      <form
+        data-visite
+        data-endpoint={LEADS.endpoint}
+        class="flex flex-col gap-6"
+      >
+        {/* Contexte, rempli côté serveur : le CRM reçoit le projet sans que
+            personne ait à le saisir. `page` est complété par le script. */}
+        <input type="hidden" name="projet" value={d.nom} />
+        <input type="hidden" name="langue" value={locale} />
+        <input type="hidden" name="page" value="" />
+
+        {/* Piège à robots : invisible et hors du parcours au clavier. Un envoi
+            qui le remplit est rejeté sans bruit. */}
+        <div class="absolute -left-[9999px]" aria-hidden="true">
+          <label>
+            Ne pas remplir
+            <input type="text" name="site" tabindex="-1" autocomplete="off" />
+          </label>
+        </div>
+
+        <div class="grid gap-6 sm:grid-cols-2">
+          {types.length > 0 && (
+            <div>
+              <label class={etiquette} for="visite-type">
+                {c.type}
+              </label>
+              <select id="visite-type" name="type" class={champ}>
+                <option value="">{c.typeIndifferent}</option>
+                {types.map((t) => (
+                  <option value={t}>{t}</option>
+                ))}
+              </select>
+            </div>
+          )}
+
+          <div>
+            <label class={etiquette} for="visite-emmenagement">
+              {c.emmenagement}
+            </label>
+            <input id="visite-emmenagement" name="emmenagement" type="date" class={champ} />
+            <p class={aide}>{c.emmenagementAide}</p>
+          </div>
+        </div>
+
+        <div>
+          <label class={etiquette} for="visite-nom">
+            {c.nom}
+          </label>
+          <input id="visite-nom" name="nom" type="text" autocomplete="name" required class={champ} />
+        </div>
+
+        <div class="grid gap-6 sm:grid-cols-2">
+          <div>
+            <label class={etiquette} for="visite-courriel">
+              {c.courriel}
+            </label>
+            <input
+              id="visite-courriel"
+              name="courriel"
+              type="email"
+              autocomplete="email"
+              required
+              class={champ}
+            />
+          </div>
+
+          <div>
+            <label class={etiquette} for="visite-telephone">
+              {c.telephone}
+            </label>
+            <input id="visite-telephone" name="telephone" type="tel" autocomplete="tel" class={champ} />
+            <p class={aide}>{c.telephoneAide}</p>
+          </div>
+        </div>
+
+        <div>
+          <label class={etiquette} for="visite-message">
+            {c.message}
+          </label>
+          <textarea
+            id="visite-message"
+            name="message"
+            rows="4"
+            class="mt-2 w-full rounded-input border border-line-input bg-surface px-4 py-3 text-body text-ink transition-colors duration-200 focus:border-accent"
+          ></textarea>
+          <p class={aide}>{c.messageAide}</p>
+        </div>
+
+        {/* Consentement LCAP : distinct de la demande, décoché par défaut. */}
+        <label class="flex cursor-pointer items-start gap-3 text-small text-ink-soft">
+          <input
+            type="checkbox"
+            name="infolettre"
+            class="mt-1 h-5 w-5 shrink-0 cursor-pointer rounded-sm border border-line-input accent-accent"
+          />
+          {c.infolettre}
+        </label>
+
+        <p class="text-small text-ink-muted">
+          {c.mention}{' '}
+          <a
+            href={localize('/confidentialite', locale)}
+            class="cursor-pointer text-accent-ink underline decoration-line underline-offset-4 transition-colors duration-200 hover:text-accent-hover hover:decoration-accent-hover"
+          >
+            {c.mentionLien}
+          </a>
+        </p>
+
+        {
+          actif ? (
+            <div class="flex flex-wrap items-center gap-4">
+              <button
+                type="submit"
+                data-visite-envoyer
+                data-envoi={c.envoiEnCours}
+                class="inline-flex h-12 cursor-pointer items-center rounded-card bg-accent px-6 text-small font-semibold text-on-accent transition-colors duration-200 hover:bg-accent-hover disabled:cursor-default disabled:opacity-60"
+              >
+                {c.envoyer}
+              </button>
+              <a
+                href={`mailto:${CONTACT.email}?subject=${encodeURIComponent(d.nom)}`}
+                class="inline-flex h-12 cursor-pointer items-center rounded-card border border-line-strong px-6 text-small font-semibold text-ink transition-colors duration-200 hover:bg-surface-hover"
+              >
+                {u.contact}
+              </a>
+            </div>
+          ) : (
+            /* Aucun endpoint configuré : on ne montre pas un bouton qui
+               n'enverrait nulle part. Voir reference/formulaire-visite.md. */
+            <p class="rounded-card border border-line bg-surface p-5 text-small text-ink-soft">
+              {c.enAttente}{' '}
+              <a
+                href={`mailto:${CONTACT.email}?subject=${encodeURIComponent(d.nom)}`}
+                class="cursor-pointer text-accent-ink underline decoration-line underline-offset-4 transition-colors duration-200 hover:text-accent-hover hover:decoration-accent-hover"
+              >
+                {CONTACT.email}
+              </a>
+            </p>
+          )
+        }
+
+        {/* Les deux états d'issue. `aria-live` les annonce sans déplacer le
+            focus, qui reste là où l'utilisateur l'a laissé. */}
+        <p
+          data-visite-succes
+          hidden
+          role="status"
+          aria-live="polite"
+          class="rounded-card border border-available bg-available-tint p-5 text-body text-ink"
+        >
+          <strong class="block text-h3">{c.succesTitre}</strong>
+          {c.succesTexte}
+        </p>
+
+        <p
+          data-visite-erreur
+          hidden
+          role="alert"
+          class="rounded-card border border-accent-ink bg-accent-tint p-5 text-body text-ink"
+        >
+          <strong class="block text-h3">{c.erreurTitre}</strong>
+          {c.erreurTexte}{' '}
+          <a
+            href={`mailto:${CONTACT.email}?subject=${encodeURIComponent(d.nom)}`}
+            class="cursor-pointer text-accent-ink underline decoration-line underline-offset-4"
+          >
+            {CONTACT.email}
+          </a>
+        </p>
+      </form>
+
+      <noscript>
+        <p class="mt-6 rounded-card border border-line bg-surface p-5 text-small text-ink-soft">
+          {c.sansJs}{' '}
+          <a
+            href={`mailto:${CONTACT.email}`}
+            class="cursor-pointer text-accent-ink underline decoration-line underline-offset-4"
+          >
+            {CONTACT.email}
+          </a>
+        </p>
+      </noscript>
+    </div>
+  </div>
+</div>
+
+<script>
+  for (const form of document.querySelectorAll<HTMLFormElement>('[data-visite]')) {
+    const endpoint = form.dataset.endpoint;
+    const succes = form.querySelector<HTMLElement>('[data-visite-succes]')!;
+    const erreur = form.querySelector<HTMLElement>('[data-visite-erreur]')!;
+    const bouton = form.querySelector<HTMLButtonElement>('[data-visite-envoyer]');
+
+    // Renseigné ici plutôt qu'au rendu : une page statique est mise en cache,
+    // et l'URL de la page est la seule chose qu'on ne peut pas connaître à la
+    // construction si le site est servi derrière un domaine différent.
+    const page = form.querySelector<HTMLInputElement>('input[name="page"]');
+    if (page) page.value = location.href;
+
+    if (!endpoint || !bouton) continue;
+
+    const libelleInitial = bouton.textContent ?? '';
+    const enCours = bouton.dataset.envoi ?? '';
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      if (!form.reportValidity()) return;
+
+      succes.hidden = true;
+      erreur.hidden = true;
+      bouton.disabled = true;
+      if (enCours) bouton.textContent = enCours;
+
+      const data = new FormData(form);
+      const charge = {
+        projet: String(data.get('projet') ?? ''),
+        type: String(data.get('type') ?? ''),
+        emmenagement: String(data.get('emmenagement') ?? ''),
+        nom: String(data.get('nom') ?? ''),
+        courriel: String(data.get('courriel') ?? ''),
+        telephone: String(data.get('telephone') ?? ''),
+        message: String(data.get('message') ?? ''),
+        infolettre: data.get('infolettre') === 'on',
+        langue: String(data.get('langue') ?? ''),
+        page: String(data.get('page') ?? ''),
+        // Relayé tel quel : c'est la fonction serverless qui rejette, pas le
+        // navigateur — un robot ne lit pas notre JavaScript de toute façon.
+        site: String(data.get('site') ?? ''),
+      };
+
+      try {
+        const r = await fetch(endpoint, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(charge),
+        });
+        if (!r.ok) throw new Error(String(r.status));
+        form.reset();
+        if (page) page.value = location.href;
+        succes.hidden = false;
+      } catch {
+        erreur.hidden = false;
+      } finally {
+        bouton.disabled = false;
+        bouton.textContent = libelleInitial;
+      }
+    });
+  }
+</script>

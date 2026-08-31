@@ -1,0 +1,9 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import Modele from '../../components/Modele.astro';
+import { modele } from '../../copy/modele';
+---
+
+<Layout locale="en" title={`${modele.en.title} — MauDev`} description={modele.en.lead}>
+  <Modele locale="en" />
+</Layout>

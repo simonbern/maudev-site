@@ -1,0 +1,13 @@
+---
+import Layout from '../layouts/Layout.astro';
+import UpcomingList from '../components/UpcomingList.astro';
+import { projetsCopy } from '../copy/projets';
+---
+
+<Layout
+  locale="fr"
+  title={`${projetsCopy.fr.aVenir.title} — MauDev`}
+  description={projetsCopy.fr.aVenir.lead}
+>
+  <UpcomingList locale="fr" />
+</Layout>

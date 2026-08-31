@@ -1,0 +1,214 @@
+---
+import Logo from './Logo.astro';
+import LanguageSwitcher from './LanguageSwitcher.astro';
+import { NAV, ui, localize, isActive, CONTACT, type Locale } from '../i18n';
+
+interface Props {
+  locale: Locale;
+  lastSegment?: string;
+  /** Landing uniquement : la nav démarre transparente par-dessus le hero. */
+  overlay?: boolean;
+}
+const { locale, lastSegment, overlay = false } = Astro.props;
+const t = ui[locale];
+const path = Astro.url.pathname;
+
+const links = NAV.map((item) => ({
+  label: item[locale],
+  href: localize(item.path, locale),
+  active: isActive(path, item.path),
+}));
+---
+
+<header
+  data-nav={overlay ? 'overlay' : 'solid'}
+  data-overlay={overlay ? '' : undefined}
+  class:list={[
+    'group z-50 transition-colors duration-300',
+    overlay ? 'fixed inset-x-0 top-0' : 'sticky top-0',
+    'data-[nav=solid]:border-b data-[nav=solid]:border-line data-[nav=solid]:bg-page',
+    'data-[nav=overlay]:bg-transparent',
+  ]}
+>
+  <nav
+    class="mx-auto flex h-16 max-w-page items-center justify-between px-5 md:h-20 md:px-8 lg:px-12"
+    aria-label={t.company}
+  >
+    <a
+      href={localize('/', locale)}
+      aria-label={t.home}
+      class="flex shrink-0 cursor-pointer items-center"
+    >
+      {/* Un seul rendu, pas un par état de la nav : la marque est du texte
+          maintenant, et deux copies feraient lire « MauDev MauDev » à un
+          lecteur d'écran. Les deux moitiés basculent par classe. */}
+      <Logo
+        accent="group-data-[nav=solid]:text-accent-ink group-data-[nav=overlay]:text-accent-on-inverse"
+        class="text-marque group-data-[nav=solid]:text-ink group-data-[nav=overlay]:text-on-inverse"
+      />
+    </a>
+
+    <!-- Desktop -->
+    <div class="hidden items-center gap-8 md:flex">
+      <ul class="flex items-center gap-7">
+        {
+          links.map((l) => (
+            <li>
+              <a
+                href={l.href}
+                aria-current={l.active ? 'page' : undefined}
+                class:list={[
+                  'inline-flex h-11 cursor-pointer items-center border-b-2 text-small font-medium transition-colors duration-200',
+                  l.active ? 'border-accent' : 'border-transparent',
+                  l.active
+                    ? 'group-data-[nav=solid]:text-ink group-data-[nav=overlay]:text-on-inverse'
+                    : 'group-data-[nav=solid]:text-ink-soft group-data-[nav=solid]:hover:text-accent-ink group-data-[nav=overlay]:text-on-inverse-muted group-data-[nav=overlay]:hover:text-accent-on-inverse',
+                ]}
+              >
+                {l.label}
+              </a>
+            </li>
+          ))
+        }
+
+        {/* « Nous joindre » au même format que les autres entrées. C'était un
+            aplat vert : le seul objet plein de la barre, il tirait l'œil plus
+            fort que la page où l'on se trouve, et il répétait le seul bouton
+            rempli que le site s'autorise encore.
+
+            Il n'a pas de `border-b-2` actif : un `mailto:` n'est pas une page,
+            on n'y « est » jamais. Il garde le même filet transparent que les
+            liens inactifs pour rester aligné avec eux. */}
+        <li>
+          <a
+            href={`mailto:${CONTACT.email}`}
+            class="inline-flex h-11 cursor-pointer items-center border-b-2 border-transparent text-small font-medium transition-colors duration-200 group-data-[nav=solid]:text-ink-soft group-data-[nav=solid]:hover:text-accent-ink group-data-[nav=overlay]:text-on-inverse-muted group-data-[nav=overlay]:hover:text-accent-on-inverse"
+          >
+            {t.contact}
+          </a>
+        </li>
+      </ul>
+      <LanguageSwitcher locale={locale} lastSegment={lastSegment} tone="nav" />
+    </div>
+
+    <!-- Mobile -->
+    <button
+      id="menu-button"
+      type="button"
+      aria-expanded="false"
+      aria-controls="menu-panel"
+      aria-label={t.menuOpen}
+      data-label-open={t.menuOpen}
+      data-label-close={t.menuClose}
+      class="group/btn rounded-card -mr-2 inline-flex h-11 w-11 cursor-pointer items-center justify-center group-data-[nav=solid]:text-ink group-data-[nav=overlay]:text-on-inverse md:hidden"
+    >
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" class="h-6 w-6 group-aria-expanded/btn:hidden" aria-hidden="true">
+        <path d="M3 6h18M3 12h18M3 18h18"></path>
+      </svg>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" class="hidden h-6 w-6 group-aria-expanded/btn:block" aria-hidden="true">
+        <path d="M5 5l14 14M19 5L5 19"></path>
+      </svg>
+    </button>
+  </nav>
+
+  <div
+    id="menu-panel"
+    hidden
+    class="fixed inset-0 top-16 z-50 flex flex-col justify-between bg-inverse px-5 pt-10 pb-12 md:hidden"
+  >
+    <ul class="flex flex-col gap-2">
+      {
+        links.map((l) => (
+          <li>
+            <a
+              href={l.href}
+              aria-current={l.active ? 'page' : undefined}
+              class:list={[
+                'flex min-h-14 items-center border-b border-line-inverse text-h3 transition-colors duration-200',
+                l.active ? 'text-accent-on-inverse' : 'text-on-inverse',
+              ]}
+            >
+              {l.label}
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+    <div class="flex items-center justify-between gap-4">
+      <LanguageSwitcher locale={locale} lastSegment={lastSegment} tone="dark" />
+      <a
+        href={`mailto:${CONTACT.email}`}
+        class="inline-flex h-12 cursor-pointer items-center rounded-card bg-page px-6 text-small font-semibold text-ink transition-colors duration-200 hover:bg-surface-alt"
+      >
+        {t.contact}
+      </a>
+    </div>
+  </div>
+</header>
+
+<script>
+  const header = document.querySelector<HTMLElement>('header[data-overlay]');
+  if (header) {
+    // La nav ne devient opaque qu'une fois le hero dépassé. `data-overlay`
+    // n'est présent que sur la landing, donc ce bloc ne coûte rien ailleurs.
+    const solidify = () => {
+      if (header.dataset.menuOpen === '') return; // menu ouvert : toujours opaque
+      header.dataset.nav = window.scrollY > 24 ? 'solid' : 'overlay';
+    };
+    solidify();
+    addEventListener('scroll', solidify, { passive: true });
+  }
+
+  const btn = document.getElementById('menu-button')!;
+  const panel = document.getElementById('menu-panel')!;
+  const FOCUSABLE = 'a[href], button:not([disabled])';
+
+  const setOpen = (open: boolean) => {
+    panel.hidden = !open;
+    btn.setAttribute('aria-expanded', String(open));
+    btn.setAttribute(
+      'aria-label',
+      btn.dataset[open ? 'labelClose' : 'labelOpen'] ?? '',
+    );
+    document.body.style.overflow = open ? 'hidden' : '';
+    // Panneau ouvert : la nav doit être lisible par-dessus, donc opaque.
+    const h = btn.closest('header') as HTMLElement;
+    if (h.dataset.overlay !== undefined) {
+      if (open) {
+        h.dataset.menuOpen = '';
+        h.dataset.nav = 'solid';
+      } else {
+        delete h.dataset.menuOpen;
+        h.dataset.nav = scrollY > 24 ? 'solid' : 'overlay';
+      }
+    }
+    if (open) panel.querySelector<HTMLElement>(FOCUSABLE)?.focus();
+    else btn.focus();
+  };
+
+  btn.addEventListener('click', () => setOpen(panel.hidden));
+
+  document.addEventListener('keydown', (e) => {
+    if (panel.hidden) return;
+    if (e.key === 'Escape') return setOpen(false);
+    if (e.key !== 'Tab') return;
+    // Piège à focus : tant que le panneau est ouvert, Tab tourne dedans.
+    const items = [...panel.querySelectorAll<HTMLElement>(FOCUSABLE)];
+    if (!items.length) return;
+    const first = items[0];
+    const last = items[items.length - 1];
+    if (e.shiftKey && document.activeElement === first) {
+      e.preventDefault();
+      last.focus();
+    } else if (!e.shiftKey && document.activeElement === last) {
+      e.preventDefault();
+      first.focus();
+    }
+  });
+
+  // Le panneau est réservé au mobile : repasser en desktop doit le refermer,
+  // sinon body reste bloqué en overflow:hidden.
+  matchMedia('(min-width: 48rem)').addEventListener('change', (e) => {
+    if (e.matches && !panel.hidden) setOpen(false);
+  });
+</script>

@@ -1,0 +1,113 @@
+---
+import { Image } from 'astro:assets';
+import type { CollectionEntry } from 'astro:content';
+import CarrouselScript from './CarrouselScript.astro';
+import { landing } from '../copy/landing';
+import type { Locale } from '../i18n';
+
+/**
+ * Réalisations livrées, en carrousel manuel.
+ *
+ * Le défilement était automatique : la liste rendue deux fois, le conteneur
+ * glissant de -50 % en boucle. Élégant à écrire, pénible à lire — on ne peut
+ * pas revenir sur un projet qui vient de passer, on ne peut pas s'arrêter sur
+ * une photo sans viser précisément pour déclencher la pause, et une page qui
+ * bouge toute seule met le visiteur en position de spectateur. Le mouvement
+ * appartient au visiteur.
+ *
+ * Reste donc un `scroll-snap` natif, les mêmes flèches et la même barre de
+ * progression que le carrousel des projets en location — deux carrousels sur
+ * une même page qui se piloteraient différemment seraient une devinette.
+ *
+ * **Des cartes, pas des vignettes légendées.** Le nom flottait sous la photo,
+ * à même le fond de section : rien ne le rattachait à son image, et onze
+ * légendes alignées dans le vide se lisaient comme une légende unique. Le fond
+ * `page` sous la photo referme chaque projet sur lui-même — la section est en
+ * `surface-alt`, la carte se détache donc sans contour ni ombre.
+ *
+ * **Toutes les photos au même format.** `3/2` pour tout le monde,
+ * `object-cover` pour absorber les rapports d'origine. Une rangée de hauteurs
+ * inégales donnerait l'impression que certains projets comptent plus.
+ */
+interface Props {
+  projets: CollectionEntry<'projets'>[];
+  locale: Locale;
+  label: string;
+}
+const { projets, locale, label } = Astro.props;
+const c = landing[locale].projets;
+const avecImage = projets.filter((p) => p.data.couverture);
+---
+
+{/* Pas de `tabindex` sur la piste : un conteneur défilant focalisable
+    déclenche `:focus-visible` au toucher dans Chrome, donc un anneau
+    terracotta autour du carrousel dès qu'on y pose le doigt. Les cartes ne
+    sont pas des liens — ce sont les flèches qui donnent l'accès clavier. */}
+<div data-carrousel class="group/bandeau">
+  <div>
+    <ul
+      data-piste
+      role="group"
+      aria-label={label}
+      class="no-scrollbar flex snap-x snap-mandatory gap-5 overflow-x-auto pb-2 md:gap-8"
+    >
+      {
+        avecImage.map((p) => (
+          <li class="w-[78%] max-w-[26rem] shrink-0 snap-start sm:w-[22rem]">
+            <figure class="h-full bg-page">
+              <div class="aspect-[3/2] overflow-hidden bg-surface-alt">
+                <Image
+                  src={p.data.couverture!.src}
+                  alt={p.data.couverture!.alt[locale]}
+                  widths={[400, 700]}
+                  sizes="(min-width: 640px) 22rem, 78vw"
+                  loading="lazy"
+                  class="h-full w-full object-cover"
+                />
+              </div>
+              <figcaption class="px-5 py-5">
+                <span class="block text-h3 text-ink">{p.data.nom}</span>
+                <span class="mt-1 block text-small text-ink-muted">{p.data.ville}</span>
+              </figcaption>
+            </figure>
+          </li>
+        ))
+      }
+    </ul>
+
+    <div data-controles class="mt-8 flex items-center gap-4" hidden={avecImage.length < 2}>
+      <span class="h-px flex-1 bg-line-strong/40" aria-hidden="true">
+        <span data-progression class="block h-px bg-accent transition-[width] duration-500"></span>
+      </span>
+      {/* Flèches visibles à toutes les largeurs, contrairement au carrousel des
+          projets en location. Là-bas les cartes sont des liens : le clavier
+          les atteint et le navigateur fait défiler la piste. Ici ce sont des
+          figures, rien n'y est focalisable — sans flèches sous `md`, un
+          visiteur au clavier ne pourrait pas voir les projets 4 à 11. */}
+      <div class="flex items-center gap-2">
+        <button
+          type="button"
+          data-prec
+          aria-label={c.precedent}
+          class="rounded-card inline-flex h-12 w-12 cursor-pointer items-center justify-center border border-line-strong/40 text-ink transition-colors duration-200 hover:border-line-strong hover:bg-page disabled:cursor-default disabled:opacity-35"
+        >
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-5 w-5" aria-hidden="true">
+            <path d="M15 18l-6-6 6-6" />
+          </svg>
+        </button>
+        <button
+          type="button"
+          data-suiv
+          aria-label={c.suivant}
+          class="rounded-card inline-flex h-12 w-12 cursor-pointer items-center justify-center border border-line-strong/40 text-ink transition-colors duration-200 hover:border-line-strong hover:bg-page disabled:cursor-default disabled:opacity-35"
+        >
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-5 w-5" aria-hidden="true">
+            <path d="M9 18l6-6-6-6" />
+          </svg>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<CarrouselScript />

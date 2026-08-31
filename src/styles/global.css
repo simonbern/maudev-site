@@ -1,0 +1,443 @@
+@import "tailwindcss" source(none);
+
+/* `source(none)` coupe la détection automatique, `@source` la remplace par le
+   seul dossier qui contient du code. Sans ça Tailwind scanne tout le projet :
+   il lisait le mirror de l'ancien site à chaque build, et il générait
+   `bg-[#b4552d]` — ramassé dans DESIGN.md, où c'est justement l'exemple de ce
+   qu'il ne faut PAS écrire. */
+@source "../";
+
+/* La palette vit dans son propre fichier : en changer une revient à changer
+   cette ligne. `palettes/terre.css` garde la direction d'origine. */
+@import "./palettes/marine.css";
+
+/* ══════════════════════════════════════════════════════════════════════════
+   MauDev — tokens du design system.
+   Couleurs : voir src/styles/palettes/. Le reste — typographie, espacements,
+   rayons, ombres, mouvement — est indépendant de la palette et vit ici.
+   Voir DESIGN.md pour le raisonnement et les patterns de composants.
+
+   Règle : aucun composant ne contient de valeur hex ni de valeur arbitraire.
+   Tout passe par les utilitaires générés ci-dessous.
+   ══════════════════════════════════════════════════════════════════════════ */
+
+@theme {
+
+  /* ── Typographie ────────────────────────────────────────────────────────
+     Une seule famille. --font-switzer est injectée par astro:fonts
+     (voir astro.config.mjs) et inclut déjà les fallbacks métriques.
+     Le repli sur --font-inter couvre la période où les fichiers Switzer
+     ne sont pas encore dans src/assets/fonts/ — voir le README de ce
+     dossier. Le repli passe par l'argument de secours de `var()`, jamais
+     par une liste : une variable non définie au milieu d'une liste rend
+     TOUTE la déclaration invalide, alors que `var(a, b)` bascule sur b.   */
+  --font-sans: var(--font-switzer, var(--font-inter, system-ui)), system-ui, sans-serif;
+  /* Serif d'accent, pour les mots italiques d'un grand titre. Jamais un
+     paragraphe : sa raison d'être est le contraste avec la grotesque.        */
+  --font-display: var(--font-spectral, 'Times New Roman', Georgia), serif;
+  --font-mono: ui-monospace, monospace;
+
+  /* Échelle fluide : les plus grands corps se redimensionnent seuls entre
+     375px et 1440px, ce qui évite d'empiler des variantes md:/lg:.
+
+     L'écart entre les extrêmes est délibérément large. Une échelle resserrée
+     — h1 à 3rem, h2 à 2.25rem, corps à 1rem — donne des pages où tout a
+     presque la même importance : c'est la signature d'un gabarit. Ici un
+     titre de section fait six fois le corps de texte, et on le voit.       */
+  /* Hero de l'accueil uniquement : le plus grand corps du site, et le seul
+     qui dépasse --text-display.
+
+     Descendu d'un cran — il était à `clamp(3rem, 0.5rem + 10.5vw, 9rem)`, soit
+     144 px à 1 440. À cette taille il pesait plus que la vidéo derrière lui.
+     Il fait maintenant 120 px, et reste le plus grand corps du site avec 25 %
+     d'avance sur --text-display.
+
+     Le plancher est à 52 px. Il a d'abord été tenu à 46 — la dernière valeur
+     qui gardait quatre lignes à 375 px — puis la cinquième ligne a été
+     acceptée : le titre est ce que le téléphone voit en premier, et quatre
+     lignes tièdes disent moins qu'un titre qui remplit l'écran. Ce qui décide
+     la limite n'est plus le compte de lignes mais la place restante sous le
+     titre — le seuil doit tenir dans le premier écran, vérifié à 375×667.  */
+  --text-hero: clamp(3.25rem, 0.9rem + 7.32vw, 7.5rem);
+  --text-hero--line-height: 0.92;
+  --text-hero--letter-spacing: -0.04em;
+  --text-hero--font-weight: 700;
+
+  --text-display: clamp(2.75rem, 1.1rem + 7vw, 6rem);
+  --text-display--line-height: 0.98;
+  --text-display--letter-spacing: -0.035em;
+  --text-display--font-weight: 700;
+
+  --text-h1: clamp(2.25rem, 1.1rem + 4.9vw, 4.25rem);
+  --text-h1--line-height: 1.02;
+  --text-h1--letter-spacing: -0.032em;
+  --text-h1--font-weight: 700;
+
+  --text-h2: clamp(1.875rem, 1.15rem + 3.1vw, 3.125rem);
+  --text-h2--line-height: 1.08;
+  --text-h2--letter-spacing: -0.028em;
+  --text-h2--font-weight: 700;
+
+  --text-h3: 1.375rem;
+  --text-h3--line-height: 1.3;
+  --text-h3--letter-spacing: -0.01em;
+  --text-h3--font-weight: 600;
+
+  /* La marque. Un pas à elle plutôt qu'un titre emprunté : « MauDev » n'est
+     pas un h3, et le suivre aurait fait changer le logo chaque fois qu'on
+     touche à la hiérarchie des titres. 28 px sur mobile, 36 px à partir de
+     ~1 280 — la barre de nav fait 64 px puis 80, il reste 18 px de marge de
+     chaque côté au plus serré.                                                */
+  --text-marque: clamp(1.75rem, 1.3rem + 1.4vw, 2.25rem);
+  --text-marque--line-height: 1.2;
+  --text-marque--letter-spacing: -0.02em;
+  --text-marque--font-weight: 700;
+
+  --text-lead: 1.1875rem;
+  --text-lead--line-height: 1.6;
+
+  --text-body: 1rem;
+  --text-body--line-height: 1.65;
+
+  --text-small: 0.875rem;
+  --text-small--line-height: 1.55;
+
+  /* Capitales espacées. RÉSERVÉ au sélecteur de langue, où « FR » et « EN »
+     sont des codes ISO et non des mots : la capitale y est intrinsèque.
+     Partout ailleurs, utiliser --text-label. Voir DESIGN.md § Typographie. */
+  --text-eyebrow: 0.75rem;
+  --text-eyebrow--line-height: 1.2;
+  --text-eyebrow--letter-spacing: 0.09em;
+  --text-eyebrow--font-weight: 600;
+
+  /* Libellés courants : entêtes de tableau, légendes de données, colonnes
+     de pied de page. Casse normale, pas d'interlettrage.                   */
+  --text-label: 0.8125rem;
+  --text-label--line-height: 1.4;
+  --text-label--letter-spacing: 0;
+  --text-label--font-weight: 500;
+
+  /* Prix et chiffres mis en avant : tabular-nums via .num (voir plus bas). */
+  /* Les quatre chiffres de l'accueil, et eux seuls.
+
+     Il n'existait rien entre --text-h1 (68 px) et --text-display (96 px), et
+     la bonne taille est au milieu : à 68 le chiffre ne domine pas sa tuile, à
+     96 il la remplit trop. Un jeton de rôle plutôt qu'un palier de plus dans
+     l'échelle générale — c'est déjà ce que font --text-stat, --text-numeral et
+     --text-unit, qui sont tous des tailles de chiffre à usage nommé.
+
+     Même pente que --text-h1, mais un plancher ET un plafond plus hauts.
+
+     Le plafond (84 px) sert les grands écrans ; le plancher (56 px) sert le
+     téléphone, où la tuile fait 150 px et le chiffre n'en occupait que 36.
+
+     Le plancher a d'abord été bloqué à 48 px par un point unique : à 640 px,
+     la grille passait à quatre colonnes et la tuile tombait à 131 px, soit
+     moins qu'à 375. Ce palier a été reporté à `md` (Chiffres.astro), et le
+     plancher a pu monter d'autant. Le point serré est maintenant 768 px, où
+     la tuile fait 157 px pour 135 de contenu.                               */
+  --text-chiffre: clamp(3.5rem, 1.1rem + 4.9vw, 5.25rem);
+  --text-chiffre--line-height: 1;
+  --text-chiffre--letter-spacing: -0.032em;
+  --text-chiffre--font-weight: 700;
+
+  --text-stat: clamp(1.75rem, 1.5rem + 1.2vw, 2.375rem);
+  --text-stat--line-height: 1.05;
+  --text-stat--letter-spacing: -0.02em;
+  --text-stat--font-weight: 700;
+
+  /* Chiffres traités comme des éléments graphiques : la numérotation des
+     piliers de « Notre modèle ». Assez gros pour tenir une colonne.
+
+     Interligne à 1 et non 0.8 : sous 1, le demi-interligne devient négatif et
+     remonte le glyphe hors de sa boîte — 12 px à 120 px. Le chiffre flottait
+     alors au-dessus du titre qu'il accompagne. À 1, le haut de boîte suit le
+     haut d'em, et `items-start` suffit à aligner les hauteurs de capitale.   */
+  --text-numeral: clamp(3.25rem, 1rem + 9vw, 7.5rem);
+  --text-numeral--line-height: 1;
+  --text-numeral--letter-spacing: -0.05em;
+  --text-numeral--font-weight: 700;
+
+  /* Type de logement dans le tableau des tarifs : c'est l'information qu'on
+     cherche en premier, elle domine la ligne.                              */
+  --text-unit: clamp(2rem, 1.35rem + 2.8vw, 3.25rem);
+  --text-unit--line-height: 1;
+  --text-unit--letter-spacing: -0.035em;
+  --text-unit--font-weight: 700;
+
+  /* ── Espacement ─────────────────────────────────────────────────────────
+     On garde l'échelle 4px de Tailwind : elle fonctionne, la réécrire ne
+     rapporterait rien. Le rythme vertical des sections est une convention
+     d'utilitaires documentée dans DESIGN.md, pas un token — un token ne
+     peut pas être responsive.                                             */
+
+  /* ── Largeurs ───────────────────────────────────────────────────────────*/
+  --container-page: 80rem; /* 1280px — grille principale        */
+  --container-narrow: 56rem; /*  896px — sections de contenu      */
+  --container-prose: 38rem; /*  608px — ~70 caractères par ligne */
+
+  /* ── Rayons ─────────────────────────────────────────────────────────────
+     **Les commandes sont arrondies, les images ne le sont pas.** La séparation
+     porte du sens : un bouton est un objet qu'on manipule, une photo est un
+     cadrage. Tout mettre à angle vif avait été essayé — les boutons carrés
+     durcissaient une page qui vend un milieu de vie.
+
+     `card` couvre les boutons et les deux panneaux flottants (bandeau de
+     témoins, encart de confidentialité) ; aucune photo ne le porte.
+     `media` reste à zéro : cadres de plan et encart de carte suivent les
+     images qu'ils contiennent.                                              */
+  --radius-input: 0.5rem;
+  --radius-card: 0.625rem;
+  --radius-media: 0;
+  --radius-panel: 1rem;
+
+  /* ── Mouvement ──────────────────────────────────────────────────────────*/
+  --ease-out-natural: cubic-bezier(0.22, 0.61, 0.36, 1);
+  --ease-doux: cubic-bezier(0.16, 1, 0.3, 1);
+  --animate-rise: rise 0.4s var(--ease-out-natural) both;
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(0.75rem);
+  }
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   Base
+   ══════════════════════════════════════════════════════════════════════════ */
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    background-color: var(--color-page);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    font-size: var(--text-body);
+    line-height: var(--text-body--line-height);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* Pas de surbrillance au toucher : Android peint un rectangle par-dessus
+     tout élément tapé. Ce n'est pas un indicateur de focus — il apparaît et
+     disparaît avant qu'on ait vu quoi que ce soit, et il ignore la palette. */
+  * {
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  /* L'anneau de focus doit rester visible sur crème ET sur brun.
+     `:focus-visible` et non `:focus` : le navigateur ne l'affiche qu'à la
+     navigation clavier. Il ne sert à rien à la souris ou au doigt, où l'on
+     voit déjà ce qu'on vise. */
+  :focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 3px;
+    /* Pas de `border-radius` ici : il déformerait les éléments à angle vif
+       (images, seuils) au moment où ils prennent le focus. Les commandes
+       arrondies portent déjà leur propre rayon, et l'anneau le suit. */
+  }
+
+  .bg-inverse :focus-visible,
+  .bg-inverse-alt :focus-visible {
+    outline-color: var(--color-accent-on-inverse);
+  }
+
+  ::selection {
+    background-color: var(--color-accent-tint);
+    color: var(--color-accent-ink);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   Utilitaires
+   ══════════════════════════════════════════════════════════════════════════ */
+
+/* Prix, superficies, numéros d'unité : chiffres de largeur fixe pour que les
+   colonnes de tableaux s'alignent. */
+@utility num {
+  font-variant-numeric: tabular-nums;
+}
+
+/* ── Révélation au défilement ───────────────────────────────────────
+
+   L'état caché est posé par le script, jamais par le HTML : sans JavaScript,
+   rien ne disparaît. C'est l'inverse du réflexe habituel — masquer en CSS puis
+   révéler en JS — qui laisse une page blanche quand le script ne s'exécute pas.
+
+   La capture pleine page de Broccolini en est la démonstration : leurs sections
+   étaient vides parce que rien ne les avait révélées.                        */
+@utility reveal-pret {
+  opacity: 0;
+  transform: translateY(1.5rem);
+}
+
+/* Variante latérale : l'élément arrive de la droite au lieu du bas. Réservée
+   à la section des projets en location, dont le contenu est un carrousel
+   horizontal — le geste d'entrée annonce l'axe de lecture. Ailleurs, la
+   montée verticale reste la règle : deux directions de plus feraient une
+   page qui gigote. */
+@utility reveal-pret-droite {
+  opacity: 0;
+  transform: translateX(3rem);
+}
+
+@utility reveal-vu {
+  opacity: 1;
+  transform: none;
+  transition:
+    opacity 0.7s var(--ease-doux),
+    transform 0.7s var(--ease-doux);
+}
+
+/* Carrousels. La barre de défilement native fait doublon avec la barre de
+   progression et casse le rythme des vignettes. Le défilement reste entier :
+   molette, doigt, boutons, et Tab sur les cartes — le navigateur amène
+   lui-même la carte focalisée dans le cadre. On ne masque qu'un ornement,
+   jamais une capacité. */
+@utility no-scrollbar {
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+/* Survol d'un bloc de contenu — la même réaction partout.
+
+   Les blocs posés sur une section (piliers, arguments, chiffres, types de
+   logement) ne sont pas des liens : ils ne peuvent pas prendre le focus et
+   n'ont rien à ouvrir. Ils réagissent quand même, parce qu'un site où
+   seuls les liens bougent se lit comme un document.
+
+   La réaction est décorative, donc elle ne dit rien qu'on ne puisse lire :
+   le bloc monte de 6 px et prend l'ombre de lévitation, rien d'autre. Un
+   bloc qui révélerait une information au survol la rendrait inatteignable
+   au clavier et au doigt.
+
+   Écrit ici plutôt qu'en classes utilitaires répétées : cinq composants
+   partagent la recette, et une recette copiée cinq fois diverge. */
+@utility carte-survol {
+  transition:
+    transform 0.5s var(--ease-doux),
+    box-shadow 0.5s var(--ease-doux),
+    background-color 0.35s var(--ease-doux);
+
+  &:hover {
+    transform: translateY(-0.375rem);
+    box-shadow: var(--shadow-lift);
+  }
+
+  /* Mouvement réduit : la couleur suffit à accuser le survol. */
+  @media (prefers-reduced-motion: reduce) {
+    transition: background-color 0.35s ease;
+
+    &:hover {
+      transform: none;
+      box-shadow: none;
+    }
+  }
+}
+
+/* L'icône d'un bloc au survol. Séparée de `carte-survol` parce qu'elle vit
+   sur un enfant : c'est le parent qui porte `group`. */
+@utility icone-survol {
+  transition: transform 0.5s var(--ease-doux);
+
+  .group:hover & {
+    transform: translateY(-0.25rem) scale(1.08);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+
+    .group:hover & {
+      transform: none;
+    }
+  }
+}
+
+/* Zone claire — la moitié pâle de l'alternance.
+
+   Le site alterne entre le vert profond du client et une sauge pâle. Le fond
+   n'est que la partie visible du changement : passer de l'un à l'autre inverse
+   l'encre, les filets, la couleur d'accent et le texte des boutons. Sept
+   jetons basculent d'un coup.
+
+   **C'est un utilitaire et non une variante de composant.** Les jetons du
+   thème sont des variables CSS, donc les redéfinir sur un conteneur suffit :
+   `text-ink` compile en `color: var(--color-ink)` et suit la cascade. Aucun
+   composant n'a besoin de savoir sur quel fond il est posé — il écrit
+   `text-ink` et `bg-accent` comme partout ailleurs. L'alternative aurait été
+   une prop `tone` sur chacun des vingt composants concernés, à passer de
+   parent en enfant.
+
+   **L'accent redevient le vert profond.** Le saumon est l'accent des zones
+   sombres, où il est la seule des sept couleurs qui tranche. Sur une sauge
+   pâle il perd sa silhouette : un aplat saumon sur ce fond ne donne que
+   1,55:1, sous le seuil de 3:1 exigé d'un contrôle. Le vert du client y donne
+   7,95:1. La règle se dit en une phrase : **l'accent est toujours la couleur
+   que le fond n'est pas.**
+
+   Ratios calculés sur les trois fonds clairs — `section-alt`, `section-accent`
+   et les blocs — et jamais sous 4,88:1 pour le texte le plus discret.
+
+   **Un jeton hérité ne bascule pas.** `zone-claire` redéfinit des variables ;
+   `text-ink` les lit **là où la classe est écrite**. Un élément qui n'a pas de
+   classe de couleur hérite d'une couleur déjà calculée plus haut — hors de la
+   zone — et garde donc la valeur de l'autre fond. Vu une fois : le logo en
+   filigrane d'un gabarit d'image, blanc cassé sur sauge pâle, 1,40:1. Le
+   correctif tient en un mot : écrire `text-ink` sur l'élément plutôt que de
+   compter sur l'héritage. C'est le balayage de contraste qui l'a trouvé, pas
+   l'œil.
+
+   **Cet utilitaire appartient à `marine`.** Ses valeurs sont celles d'une
+   palette sombre qui alterne ; sur `terre` ou `pin`, qui sont claires, il
+   éclaircirait une section déjà claire. Une palette claire n'en a pas besoin —
+   son `section-alt` suffit — mais si elle en veut une, elle réécrit ce bloc
+   avec ses propres primitives.                                              */
+@utility zone-claire {
+  /* `page` est ici PLUS CLAIR que la section, alors qu'il est plus sombre
+     qu'elle en zone sombre. C'est le jeton des cartes posées sur une section
+     — les types de logement, par exemple. À la même valeur que le fond, elles
+     disparaîtraient : vérifié, les trois cartes de tarifs n'avaient plus de
+     contour. Le sens du jeton ne change pas, seulement sa direction : ce qui
+     est posé sur une surface s'en détache. */
+  --color-page: var(--color-mist-600);
+  --color-surface: var(--color-mist-600);
+  --color-surface-alt: var(--color-mist-300);
+  --color-surface-hover: var(--color-mist-600);
+  --color-inverse: var(--color-teal-900);
+  --color-inverse-alt: var(--color-teal-800);
+
+  --color-ink: var(--color-teal-900); /*  9.64:1 au pire (sur les blocs)  */
+  --color-ink-soft: var(--color-teal-700); /*  6.83:1 au pire             */
+  --color-ink-muted: #3a5c53; /*  4.88:1 au pire                          */
+  --color-on-accent: var(--color-mist-50); /*  9.30:1 sur l'aplat vert    */
+
+  --color-accent: var(--color-teal-700);
+  --color-accent-hover: var(--color-teal-500);
+  --color-accent-ink: var(--color-teal-700); /*  6.83:1 au pire           */
+  --color-accent-tint: #d9e8df;
+
+  --color-line: #b6ccc3;
+  --color-line-strong: #97b4a9;
+  --color-line-input: #52766c; /*  3.32:1 au pire, seuil des bordures     */
+}

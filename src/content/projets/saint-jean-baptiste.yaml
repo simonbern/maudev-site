@@ -1,0 +1,198 @@
+# Source : reference/client-brief.md § « 116 rue St-Jean-Baptiste ». Tout ce
+# qui suit — 32 unités, 4 étages, livraison d'octobre 2026, types de logement,
+# inclusions, vue sur le parc Salaberry, distances à pied — vient de ce
+# paragraphe. Rien n'est déduit sauf la municipalité, voir `aConfirmer`.
+#
+# Médias : reference/assets/ST JEAN BAPTISTE (9 photos, 4 vidéos 4K).
+nom: 116 Saint-Jean-Baptiste
+statut: location
+# Après Hermine (100) et Dalhousie (90) : l'ordre suit les dates de livraison,
+# juillet puis septembre puis octobre 2026.
+ordre: 85
+url: { fr: saint-jean-baptiste, en: saint-jean-baptiste }
+
+adresse: 116 rue Saint-Jean-Baptiste
+# Le brief ne nomme pas la municipalité. Les trois repères qu'il donne — le
+# parc Salaberry, le Cégep de Valleyfield, l'Hôpital du Suroît — sont tous à
+# Salaberry-de-Valleyfield, et le drone montre le centre-ville. La déduction
+# est sûre, mais elle reste une déduction : à confirmer au client.
+ville: Salaberry-de-Valleyfield
+aConfirmer: [ville]
+
+unites: 32
+etages: 4
+livraison: "2026-10"
+
+resume:
+  fr: "32 logements neufs de 3 ½, 4 ½ et 6 ½ à Salaberry-de-Valleyfield, livraison en octobre 2026."
+  en: "32 new 3½, 4½ and 6½ apartments in Salaberry-de-Valleyfield, ready October 2026."
+
+description:
+  fr:
+    - "L'immeuble compte 32 unités réparties sur 4 étages, avec des logements de 3 ½, 4 ½ et 6 ½, pour une livraison en octobre 2026."
+    - "Le projet offre une magnifique vue sur la ville et le parc Salaberry, particulièrement appréciable depuis les étages supérieurs. Les logements ont été conçus avec des matériaux de qualité et plusieurs inclusions pour assurer confort et commodité."
+    - "Le 116 rue Saint-Jean-Baptiste se distingue par son emplacement privilégié, ses espaces généreux et ses finitions modernes. À environ 5 minutes à pied du Cégep de Valleyfield et de l'Hôpital du Suroît, c'est un milieu de vie idéal pour profiter du confort d'un logement neuf tout en étant à quelques minutes des principaux services."
+  en:
+    - "The building has 32 units across 4 floors, with 3½, 4½ and 6½ apartments, for delivery in October 2026."
+    - "The project offers a fine view over the city and parc Salaberry, especially from the upper floors. The apartments were designed with quality materials and several inclusions, for comfort and convenience."
+    - "116 rue Saint-Jean-Baptiste stands out for its location, its generous spaces and its modern finishes. About a five-minute walk from Cégep de Valleyfield and Hôpital du Suroît, it is an ideal place to enjoy a new apartment while staying minutes from every service."
+
+# Aucun prix : le brief renvoie à une « liste de prix » qui n'a pas été
+# fournie. Le gabarit affiche donc « Sur demande ».
+#
+# Nombres et superficies relevés sur les 19 fiches du cahier de location
+# (voir `plans` plus bas). Les trois totaux — 16 + 13 + 3 — font les 32 unités
+# que le brief annonce : les deux sources se recoupent.
+#
+# Les superficies sont celles du **total**, balcon compris, comme sur les
+# fiches. Le brief dit « environ 1 600 pi² » pour le 6 ½ ; les plans donnent
+# 1 545 à 1 680, ce qui l'encadre.
+logements:
+  - type: 3 ½
+    nombre: 16
+    superficieMin: 626
+    superficieMax: 876
+    note:
+      fr: "Différentes options disponibles selon les besoins et les inclusions."
+      en: "Several options available, depending on needs and inclusions."
+  - type: 4 ½
+    nombre: 13
+    superficieMin: 888
+    superficieMax: 970
+    note:
+      fr: "Différentes options disponibles selon les besoins et les inclusions."
+      en: "Several options available, depending on needs and inclusions."
+  # Pas de liste d'inclusions ici : sur une carte, la même information tient en
+  # une phrase et n'ajoute pas cinq lignes à la hauteur. Rien n'est perdu —
+  # tout ce que le brief dit du 6 ½ est dans la note.
+  - type: 6 ½
+    nombre: 3
+    superficieMin: 1545
+    superficieMax: 1680
+    note:
+      fr: "Un logement exceptionnellement spacieux avec 2 salles de bains et 2 balcons. Stationnement intérieur, électroménagers et rangement inclus."
+      en: "An exceptionally spacious apartment with 2 bathrooms and 2 balconies. Indoor parking, appliances and storage included."
+
+inclusions:
+  - label: { fr: Comptoirs de quartz, en: Quartz countertops }
+    icone: countertop
+  - label: { fr: Laveuse et sécheuse, en: Washer and dryer }
+    icone: washing-machine
+  - label: { fr: Wi-Fi, en: Wi-Fi }
+    icone: wifi
+  - label: { fr: Ascenseur, en: Elevator }
+    icone: move-vertical
+  - label: { fr: Rangement intérieur, en: Indoor storage }
+    icone: package
+    payant: true
+  - label: { fr: Stationnement intérieur, en: Indoor parking }
+    icone: square-parking
+    payant: true
+
+# Drone de la livraison client (SJB00000438.mp4 : 3840x2160, 60 i/s,
+# 112 Mb/s, 28,8 s, 405 Mo). Douze secondes à partir de la sixième, ramenées à
+# 1280x720 et 30 i/s, sans piste audio : 2,17 Mo. Même recette que les autres
+# clips du site.
+video:
+  mp4: /videos/saint-jean-baptiste/saint-jean-baptiste.mp4
+  poster: ../../assets/projets/saint-jean-baptiste/video-poster.jpg
+
+# Aucune photo d'extérieur dans la livraison : les neuf JPEG sont des
+# intérieurs de chantier. Les vues du bâtiment viennent donc des vidéos. Ce
+# sont des photographies du réel, pas des rendus — la règle du site porte sur
+# la synthèse, pas sur le conteneur du fichier.
+#
+# La première couverture était tirée de SJB02355804 à 1,5 s : une camionnette
+# noire traverse le plan et s'arrête au milieu du cadre, juste devant
+# l'immeuble. Celle-ci vient de SJB02357178, plus près et sans véhicule.
+couverture:
+  src: ../../assets/projets/saint-jean-baptiste/photos/exterieur-facade.jpg
+  alt:
+    fr: "Façade d'angle du 116 Saint-Jean-Baptiste en construction, balcons de bois"
+    en: "Corner façade of 116 Saint-Jean-Baptiste under construction, wooden balconies"
+
+# Les photos montrent un chantier — cloisons de gypse, planchers non posés,
+# portes et boîtes de plancher en attente. Les alternatives le disent : la
+# livraison est en octobre 2026, et présenter ces pièces comme finies serait
+# faux. Ordre choisi pour l'aperçu de cinq : les deux cuisines, la façade, la
+# vue du balcon, une pièce éclairée.
+photos:
+  - src: ../../assets/projets/saint-jean-baptiste/photos/sjb-03.jpg
+    alt:
+      fr: "Aire ouverte d'un logement en chantier : cuisine avec îlot et armoires posées"
+      en: "Open-plan area under construction: kitchen with island and cabinets installed"
+  - src: ../../assets/projets/saint-jean-baptiste/photos/sjb-02.jpg
+    alt:
+      fr: "Cuisine en cours de finition, armoires en place et plancher non posé"
+      en: "Kitchen being finished, cabinets in place and flooring not yet laid"
+  - src: ../../assets/projets/saint-jean-baptiste/photos/exterieur-rue.jpg
+    alt:
+      fr: "Le 116 Saint-Jean-Baptiste vu de la rue, quatre étages en construction"
+      en: "116 Saint-Jean-Baptiste from the street, four storeys under construction"
+  - src: ../../assets/projets/saint-jean-baptiste/photos/balcon-vue.jpg
+    alt:
+      fr: "Vue sur le quartier depuis un balcon des étages supérieurs"
+      en: "View over the neighbourhood from an upper-floor balcony"
+  - src: ../../assets/projets/saint-jean-baptiste/photos/sjb-08.jpg
+    alt:
+      fr: "Chambre en chantier, fenêtre donnant sur les arbres"
+      en: "Bedroom under construction, window onto the trees"
+  - src: ../../assets/projets/saint-jean-baptiste/photos/sjb-04.jpg
+    alt:
+      fr: "Entrée d'un logement, portes intérieures posées"
+      en: "Apartment entrance, interior doors installed"
+  - src: ../../assets/projets/saint-jean-baptiste/photos/sjb-09.jpg
+    alt:
+      fr: "Aire ouverte d'angle, portes et boîtes de plancher en attente de pose"
+      en: "Corner open-plan area, doors and flooring boxes waiting to be installed"
+  - src: ../../assets/projets/saint-jean-baptiste/photos/sjb-07.jpg
+    alt:
+      fr: "Grande pièce en chantier, portes et lattes de plancher entreposées"
+      en: "Large room under construction, doors and floor planks stored"
+  - src: ../../assets/projets/saint-jean-baptiste/photos/sjb-05.jpg
+    alt:
+      fr: "Logement en chantier, portes intérieures appuyées contre les cloisons"
+      en: "Apartment under construction, interior doors leaning against the partitions"
+  - src: ../../assets/projets/saint-jean-baptiste/photos/sjb-06.jpg
+    alt:
+      fr: "Portes et matériaux de finition entreposés dans un logement"
+      en: "Doors and finishing materials stored in an apartment"
+  - src: ../../assets/projets/saint-jean-baptiste/photos/sjb-01.jpg
+    alt:
+      fr: "Panneau de chantier MauDev devant l'immeuble en construction"
+      en: "MauDev site sign in front of the building under construction"
+
+# Cahier de location Chester, 27 pages, rendu à 150 dpi (1 650 × 1 275).
+#
+# Le logo Chester figurait en haut à gauche des 19 fiches d'unité : même
+# gabarit que le cahier d'Hermine, même boîte (x 76-481, y 76-147), peinte en
+# blanc au rendu après vérification que son pourtour l'est déjà. Publier une
+# marque tierce sur chaque plan agrandi du site de MauDev n'irait pas.
+#
+# Non publiées : la page 1
+# (couverture 100 % Chester, écartée) et les pages 2 à 8 — implantation,
+# sous-sol, les quatre étages, élévations. Ce ne sont pas des plans de
+# logement et le schéma n'a qu'un tableau `plans[]` ; elles mériteraient leur
+# propre traitement, comme chez Hermine.
+#
+# Triées par type puis par superficie croissante.
+plans:
+  - { src: ../../assets/projets/saint-jean-baptiste/plans/page-15.png, type: 3 ½, superficie: 626, unites: ["107", "207", "307"] }
+  - { src: ../../assets/projets/saint-jean-baptiste/plans/page-11.png, type: 3 ½, superficie: 658, unites: ["103", "203", "303"] }
+  - { src: ../../assets/projets/saint-jean-baptiste/plans/page-12.png, type: 3 ½, superficie: 663, unites: ["104"] }
+  - { src: ../../assets/projets/saint-jean-baptiste/plans/page-19.png, type: 3 ½, superficie: 667, unites: ["204", "304"] }
+  - { src: ../../assets/projets/saint-jean-baptiste/plans/page-25.png, type: 3 ½, superficie: 669, unites: ["402"] }
+  - { src: ../../assets/projets/saint-jean-baptiste/plans/page-13.png, type: 3 ½, superficie: 698, unites: ["105"] }
+  - { src: ../../assets/projets/saint-jean-baptiste/plans/page-18.png, type: 3 ½, superficie: 748, unites: ["202", "302"] }
+  - { src: ../../assets/projets/saint-jean-baptiste/plans/page-10.png, type: 3 ½, superficie: 782, unites: ["102"] }
+  - { src: ../../assets/projets/saint-jean-baptiste/plans/page-16.png, type: 3 ½, superficie: 797, unites: ["108"] }
+  - { src: ../../assets/projets/saint-jean-baptiste/plans/page-09.png, type: 3 ½, superficie: 876, unites: ["101"] }
+  - { src: ../../assets/projets/saint-jean-baptiste/plans/page-20.png, type: 4 ½, superficie: 888, unites: ["205", "305"] }
+  - { src: ../../assets/projets/saint-jean-baptiste/plans/page-21.png, type: 4 ½, superficie: 925, unites: ["206", "306"] }
+  - { src: ../../assets/projets/saint-jean-baptiste/plans/page-22.png, type: 4 ½, superficie: 936, unites: ["208", "308", "405"] }
+  - { src: ../../assets/projets/saint-jean-baptiste/plans/page-17.png, type: 4 ½, superficie: 943, unites: ["201", "301"] }
+  - { src: ../../assets/projets/saint-jean-baptiste/plans/page-14.png, type: 4 ½, superficie: 955, unites: ["106"] }
+  - { src: ../../assets/projets/saint-jean-baptiste/plans/page-23.png, type: 4 ½, superficie: 970, unites: ["209", "309", "406"] }
+  - { src: ../../assets/projets/saint-jean-baptiste/plans/page-26.png, type: 6 ½, superficie: 1545, unites: ["403"] }
+  - { src: ../../assets/projets/saint-jean-baptiste/plans/page-27.png, type: 6 ½, superficie: 1548, unites: ["404"] }
+  - { src: ../../assets/projets/saint-jean-baptiste/plans/page-24.png, type: 6 ½, superficie: 1680, unites: ["401"] }

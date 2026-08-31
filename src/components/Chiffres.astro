@@ -1,0 +1,150 @@
+---
+import Icon from './Icon.astro';
+import type { Locale } from '../i18n';
+
+/**
+ * Les chiffres de MauDev, comptés à l'entrée dans l'écran.
+ *
+ * Toutes les valeurs viennent de la collection : ajouter un projet les met à
+ * jour sans que personne édite un fichier de contenu.
+ *
+ * **Le chiffre final est dans le HTML**, et le script part de zéro pour y
+ * revenir. C'est l'inverse du réflexe habituel — écrire `0` puis compter — qui
+ * laisse quatre zéros sur la page quand le script ne s'exécute pas, et qui
+ * ment aux moteurs de recherche.
+ *
+ * **Section pleine largeur, chiffres contenus.** La bande était un panneau
+ * posé sur le fond de page ; elle est redevenue une section à part entière, et
+ * ce sont les quatre chiffres qui sont désormais des blocs.
+ *
+ * **Ces blocs sont pâles.** Ils ont été sombres : quatre aplats foncés au
+ * milieu d'une page claire, c'est un bloc de nuit sur le chemin, et la page en
+ * portait deux (celui-ci et l'appel à la visite d'une fiche projet). La règle
+ * tient maintenant sur tout le site : hors du hero et du pied de page, une
+ * surface sombre est un accident, pas une respiration. Le contraste vient du
+ * cran de teinte entre la section et ses blocs — c'est celui du panneau
+ * « Une question sur un logement », qui sert de référence.
+ *
+ * **La respiration haute est courte.** Sur l'accueil, la section suit
+ * immédiatement les projets réalisés et partage leur nuance : les deux ne font
+ * qu'un mouvement. À pleine hauteur des deux côtés, la bande vide entre elles
+ * était de leur propre couleur, et les chiffres semblaient appartenir à autre
+ * chose.
+ *
+ * **Quatre chiffres, une rangée, une hauteur d'œil.** La section demandait un
+ * écran entier : titre détaché, deux rangées de deux jusqu'à `lg`, et des
+ * respirations de page complète pour quatre nombres qui se lisent d'un coup.
+ * Le titre passe donc à côté des chiffres plutôt qu'au-dessus, et la grille
+ * passe à quatre colonnes dès `sm` — à 375 px elle reste à deux, sinon
+ * « 100 » et son libellé se retrouvent à 80 px de large.
+ *
+ * **Chaque chiffre porte une icône.** Quatre nombres alignés se ressemblent :
+ * on lit « 2 », « 88 », « 4 », « 11 » et il faut redescendre au libellé pour
+ * savoir de quoi on parle. Deux immeubles, une porte, un repère, une coche :
+ * chaque bloc a une silhouette qu'on retient avant d'avoir lu.
+ *
+ * L'icône est petite (28 px) et **dans le coin haut droit**, hors flux. À
+ * 56 px, comme dans la grille d'inclusions, elle aurait disputé la place au
+ * nombre ; au milieu du carré — sa position précédente, sur la ligne du
+ * nombre — elle n'avait de rapport avec aucun bord. En coin, elle marque la
+ * tuile au lieu d'accompagner le chiffre.
+ *
+ * Elle ne coûte plus rien en hauteur non plus, ce qui laisse le nombre
+ * grandir. Il porte son propre jeton, `--text-chiffre` : il n'existait rien
+ * entre `--text-h1` (68 px) et `--text-display` (96 px), et la bonne taille
+ * est au milieu — 84 px. À 68 le chiffre ne domine pas sa tuile, à 96 il la
+ * remplit trop.
+ *
+ * Le jeton a **la même pente que `--text-h1` et un plafond plus haut** : sous
+ * 1 030 px les deux donnent la même valeur. Ça compte, parce que le carré est
+ * à son plus serré entre 1 024 et 1 279 px (154 px de côté, 7 px de marge) ;
+ * l'écart ne s'ouvre qu'au-delà, où la tuile a la place. Un `aspect-ratio`
+ * est une taille préférée, pas un plafond : sans cette précaution, la tuile
+ * cesserait d'être carrée plutôt que de rogner.
+ *
+ * **La tuile est un carré, et tout tient dedans.** Les quatre blocs étaient
+ * des rectangles de hauteur égale, chacun de la largeur que la grille lui
+ * laissait. En carré, la hauteur est dictée par la largeur — et à 154 px de
+ * côté (le cas de 1 024 px), une icône de 28, un nombre de 68 et un libellé
+ * sur deux lignes font 179 px avec le rembourrage. Le libellé est d'abord
+ * sorti de la boîte ; il y est revenu quand l'icône est passée **à droite du
+ * nombre**. Deux éléments côte à côte ne coûtent que la hauteur du plus
+ * grand : la ligne retombe à 68 px, et il reste de la marge partout.
+ *
+ * **Le point serré est 1 024 px**, et lui seul : c'est là que `text-h1`
+ * atteint son maximum de 68 px alors que le carré est à son plus petit dans
+ * la disposition à neuf colonnes. Un rembourrage de 20 px y demandait 155 px
+ * de contenu pour 154 de côté — une tuile sur quatre cessait d'être carrée,
+ * `aspect-ratio` étant une taille préférée et non un plafond. D'où `p-4`
+ * jusqu'à `xl`, qui rend 7 px de marge, et `p-6` au-delà où il y a la place.
+ *
+ * C'est aussi la limite à connaître avant d'allonger un libellé : à 1 024 px,
+ * une troisième ligne ne rentre pas.
+ */
+interface Props {
+  titre: string;
+  valeurs: { valeur: number; label: string; icone: string }[];
+  locale: Locale;
+}
+const { titre, valeurs, locale } = Astro.props;
+const fmt = new Intl.NumberFormat(locale === 'fr' ? 'fr-CA' : 'en-CA');
+---
+
+<section class="zone-claire bg-section-alt pt-6 pb-14 md:pt-8 md:pb-16 lg:pb-20">
+  <div class="mx-auto max-w-page px-5 md:px-8 lg:px-12">
+    <div class="grid gap-y-10 lg:grid-cols-12 lg:gap-x-10">
+      {/* `self-center` : le titre s'aligne sur le milieu de la rangée de
+          carrés. Il était sur `self-end`, donc calé sur leur bas — ce qui se
+          voyait comme un défaut d'alignement plutôt que comme un choix. */}
+      <h2 data-reveal class="text-h2 text-balance text-ink lg:col-span-3 lg:self-center">
+        {titre}
+      </h2>
+
+      {/* Neuf colonnes et non huit : un carré ne se laisse pas comprimer. À
+          huit, la tuile tombait à 166 px à 1 440 et à 138 px à 1 024, où le
+          nombre seul en fait déjà 68. */}
+      {/* L'icône partage sa ligne avec le nombre au lieu d'avoir la sienne.
+          Empilés, icône (28) + nombre (68) + libellé sur deux lignes (43) font
+          179 px — 25 de trop dans le carré de 154 px que donne un écran de
+          1 024, ce qui avait forcé le libellé hors de la boîte. Côte à côte,
+          la ligne ne coûte que la hauteur du nombre, et tout rentre.
+
+          `flex-col-reverse` : le `<dt>` vient en premier dans le DOM, comme la
+          spécification l'exige, et se rend sous son nombre. L'axe étant
+          inversé, `justify-start` ancre le contenu **en bas** du carré — c'est
+          le nombre qu'on lit, il ne doit pas flotter au milieu. */}
+      {/* Quatre colonnes à partir de `md` et non de `sm`. À 640 px, le passage
+          à quatre donnait des tuiles de 131 px — **plus petites qu'à 375** (150),
+          où il n'y en a que deux. C'était le point le plus serré de toute la
+          plage, et il plafonnait la taille du chiffre partout ailleurs. */}
+      <dl class="grid grid-cols-2 gap-5 md:grid-cols-4 lg:col-span-9 lg:col-start-4">
+        {
+          valeurs.map((v, i) => (
+            <div
+              data-reveal
+              style={`transition-delay:${i * 90}ms`}
+              class="group carte-survol relative flex aspect-square flex-col-reverse justify-start bg-surface-alt p-4 hover:bg-accent-tint xl:p-6"
+            >
+              {/* L'icône est hors flux, dans le coin haut droit. Elle partageait
+                  sa ligne avec le nombre : ça tenait, mais ça la posait au
+                  milieu du carré, sans rapport avec ses bords. En coin, elle
+                  marque la tuile au lieu d'accompagner le chiffre — et surtout
+                  elle ne coûte plus rien en hauteur, ce qui laisse le nombre
+                  grandir. */}
+              <Icon
+                name={v.icone}
+                class="icone-survol absolute top-4 right-4 h-7 w-7 text-accent-ink xl:top-6 xl:right-6"
+              />
+
+              <dt class="mt-1 text-small text-balance text-ink-muted">{v.label}</dt>
+
+              <dd class="num block text-chiffre text-accent-ink">
+                {fmt.format(v.valeur)}
+              </dd>
+            </div>
+          ))
+        }
+      </dl>
+    </div>
+  </div>
+</section>

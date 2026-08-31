@@ -1,0 +1,37 @@
+# Genere depuis reference/mirror/www.mau-dev.ca/{fr,en}/projects/pierre-paul-messier
+# Textes et chiffres repris tels quels de l’ancien site.
+nom: "Pierre-Paul Messier"
+statut: realise
+ordre: 0
+url: { fr: pierre-paul-messier, en: pierre-paul-messier }
+
+adresse: "Pierre-Paul Messier"
+ville: "Salaberry-de-Valleyfield"
+
+resume:
+  fr: "Projet phasé à Salaberry-de-Valleyfield."
+  en: "Phased project in Salaberry-de-Valleyfield."
+
+description:
+  fr:
+    - "Un développement résidentiel phasé conçu pour croître sur plusieurs bâtiments, avec deux phases déjà complétées."
+  en:
+    - "A phased residential development designed to scale across multiple buildings, with two phases already completed."
+
+faits:
+  - label: { fr: "Statut", en: "Status" }
+    valeur: { fr: "2 phases livrées", en: "2 phases delivered" }
+  - label: { fr: "Programme", en: "Program" }
+    valeur: { fr: "Résidentiel phasé", en: "Phased residential" }
+  - label: { fr: "Bâtiments", en: "Buildings" }
+    valeur: { fr: "6", en: "6" }
+  - label: { fr: "Unités par phase", en: "Units per phase" }
+    valeur: { fr: "32", en: "32" }
+  - label: { fr: "Phases terminées", en: "Completed phases" }
+    valeur: { fr: "2", en: "2" }
+
+couverture:
+  src: ../../assets/projets/pierre-paul-messier/couverture.jpg
+  alt:
+    fr: "Pierre-Paul Messier — Salaberry-de-Valleyfield"
+    en: "Pierre-Paul Messier — Salaberry-de-Valleyfield"

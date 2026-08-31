@@ -1,0 +1,217 @@
+---
+import { Image } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
+import { projetsCopy } from '../copy/projets';
+import { area } from '../format';
+import type { Locale } from '../i18n';
+
+/**
+ * Carrousel de plans d'un type de logement — DESIGN.md § 5.
+ *
+ * En liste verticale, dix plans de 4 ½ produisent deux écrans de défilement
+ * pour une information qu'on parcourt, pas qu'on lit : on cherche la bonne
+ * superficie, on compare deux dispositions. L'axe horizontal correspond à ce
+ * geste, et il garde la section à hauteur constante quel que soit le type.
+ *
+ * `scroll-snap` natif, aucune bibliothèque. Le navigateur apporte déjà
+ * l'inertie tactile, le calage sur la vignette, le défilement à la molette et
+ * les flèches du clavier sur un conteneur focusable. Le JavaScript ne fait que
+ * deux choses qu'il n'apporte pas : les boutons de desktop et l'indicateur de
+ * position.
+ *
+ * Traitement de l'image volontairement opposé à celui des photos :
+ * `object-contain` sur fond blanc. Un plan est un document technique, il ne se
+ * recadre pas et il a besoin de son propre fond neutre.
+ *
+ * Composant passif : c'est `UnitTable` qui numérote les plans et prépare leurs
+ * grandes versions, parce que la même grille est rendue deux fois dans la page
+ * — une fois dans le tableau ≥ md, une fois dans les cartes < md. L'index vient
+ * donc de l'appelant et reste stable entre les deux rendus.
+ */
+export interface PlanItem {
+  src: ImageMetadata;
+  type: string;
+  superficie?: number;
+  unites: string[];
+  /** Rang dans la visionneuse « plans » de la page. */
+  index: number;
+  alt: string;
+}
+
+interface Props {
+  plans: PlanItem[];
+  locale: Locale;
+}
+const { plans, locale } = Astro.props;
+const t = projetsCopy[locale].detail;
+---
+
+<div data-carousel class="w-full">
+  {/* Barre de contrôle. Masquée par le script quand tout tient sans défiler. */}
+  <div
+    data-controls
+    class="mb-4 flex items-center justify-end gap-4"
+    hidden={plans.length < 2}
+  >
+    <p class="num text-label text-ink-muted">
+      <span data-counter>1</span> / {plans.length}
+    </p>
+
+    <span class="hidden h-px w-20 bg-line md:block" aria-hidden="true">
+      <span
+        data-progress
+        class="block h-px bg-accent transition-[width] duration-300"
+        style={`width:${(100 / plans.length).toFixed(2)}%`}></span>
+    </span>
+
+    <div class="hidden items-center gap-2 md:flex">
+      <button
+        type="button"
+        data-prev
+        aria-label={t.prevPlan}
+        class="rounded-card inline-flex h-10 w-10 cursor-pointer items-center justify-center border border-line text-ink transition-colors duration-200 hover:border-line-strong hover:bg-surface disabled:cursor-default disabled:opacity-35 disabled:hover:border-line disabled:hover:bg-transparent"
+      >
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4" aria-hidden="true">
+          <path d="M15 18l-6-6 6-6"></path>
+        </svg>
+      </button>
+      <button
+        type="button"
+        data-next
+        aria-label={t.nextPlan}
+        class="rounded-card inline-flex h-10 w-10 cursor-pointer items-center justify-center border border-line text-ink transition-colors duration-200 hover:border-line-strong hover:bg-surface disabled:cursor-default disabled:opacity-35 disabled:hover:border-line disabled:hover:bg-transparent"
+      >
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4" aria-hidden="true">
+          <path d="M9 18l6-6-6-6"></path>
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  {/* Pas de `tabindex` : un conteneur défilant focalisable déclenche
+      `:focus-visible` **au toucher** dans Chrome, donc un anneau terracotta
+      autour du carrousel entier dès qu'on y pose le doigt. Les vignettes sont
+      des boutons — le clavier les atteint une à une et le navigateur fait
+      défiler la piste jusqu'à elles. */}
+  <ul
+    data-track
+    role="group"
+    aria-label={`${t.plans} ${plans[0]?.type ?? ''}`}
+    class="no-scrollbar flex snap-x snap-mandatory gap-4 overflow-x-auto pb-1 md:gap-5"
+  >
+    {
+      plans.map((p) => (
+        <li class="w-[80vw] max-w-[32rem] shrink-0 snap-start sm:w-[24rem] lg:w-[30rem]">
+          <div class="flex h-full flex-col overflow-hidden rounded-media border border-line bg-surface">
+            <button
+              type="button"
+              data-lightbox="plans"
+              data-index={p.index}
+              aria-label={`${t.openPlan} ${p.type}`}
+              class="group cursor-pointer bg-surface"
+            >
+              <Image
+                src={p.src}
+                alt={p.alt}
+                widths={[600, 1000, 1400]}
+                sizes="(min-width: 1024px) 30rem, (min-width: 640px) 24rem, 80vw"
+                loading="lazy"
+                class="aspect-[4/3] w-full bg-surface object-contain p-3 transition-transform duration-500 group-hover:scale-[1.03]"
+              />
+            </button>
+            <div class="flex flex-1 flex-col gap-1 border-t border-line px-5 py-4">
+              <p class="flex items-baseline gap-3">
+                <span class="text-h3 text-ink">{p.type}</span>
+                {p.superficie && (
+                  <span class="num text-small text-ink-muted">{area(p.superficie, locale)}</span>
+                )}
+              </p>
+              {p.unites.length > 0 && (
+                <p class="num text-small text-ink-muted">
+                  {t.planUnits} {p.unites.join(', ')}
+                </p>
+              )}
+            </div>
+          </div>
+        </li>
+      ))
+    }
+  </ul>
+</div>
+
+<script>
+  // Une page porte plusieurs carrousels : trois types de logement, et chacun
+  // rendu deux fois (tableau ≥ md, cartes < md). Chacun se pilote seul.
+  const doux = window.matchMedia('(prefers-reduced-motion: reduce)');
+
+  for (const root of document.querySelectorAll<HTMLElement>('[data-carousel]')) {
+    const track = root.querySelector<HTMLElement>('[data-track]')!;
+    const items = [...track.children] as HTMLElement[];
+    if (items.length === 0) continue;
+
+    const controls = root.querySelector<HTMLElement>('[data-controls]')!;
+    const counter = root.querySelector<HTMLElement>('[data-counter]')!;
+    const progress = root.querySelector<HTMLElement>('[data-progress]')!;
+    const prev = root.querySelector<HTMLButtonElement>('[data-prev]')!;
+    const next = root.querySelector<HTMLButtonElement>('[data-next]')!;
+
+    // Position de calage de la vignette i, mesurée par rapport à la première :
+    // `offsetLeft` seul dépend de l'ancêtre positionné, qui n'est pas le
+    // conteneur défilant.
+    const cale = (i: number) => items[i].offsetLeft - items[0].offsetLeft;
+
+    const courant = () => {
+      let best = 0;
+      let ecart = Infinity;
+      items.forEach((_, i) => {
+        const d = Math.abs(cale(i) - track.scrollLeft);
+        if (d < ecart) {
+          ecart = d;
+          best = i;
+        }
+      });
+      return best;
+    };
+
+    // Marge d'un pixel : les navigateurs arrondissent scrollLeft.
+    const auBout = () => track.scrollLeft >= track.scrollWidth - track.clientWidth - 1;
+
+    const rafraichir = () => {
+      // En fin de course, la dernière vignette est entièrement visible mais son
+      // point de calage reste hors d'atteinte : le plus proche est l'avant-
+      // dernière, et le compteur afficherait à jamais « 9 / 10 ».
+      const i = auBout() ? items.length - 1 : courant();
+      counter.textContent = String(i + 1);
+      progress.style.width = `${((i + 1) / items.length) * 100}%`;
+      prev.disabled = track.scrollLeft <= 1;
+      next.disabled = auBout();
+    };
+
+    const aller = (i: number) => {
+      const cible = Math.max(0, Math.min(items.length - 1, i));
+      track.scrollTo({ left: cale(cible), behavior: doux.matches ? 'auto' : 'smooth' });
+    };
+
+    prev.addEventListener('click', () => aller(courant() - 1));
+    next.addEventListener('click', () => aller(courant() + 1));
+
+    let attente = 0;
+    track.addEventListener(
+      'scroll',
+      () => {
+        cancelAnimationFrame(attente);
+        attente = requestAnimationFrame(rafraichir);
+      },
+      { passive: true },
+    );
+
+    // Le carrousel naît replié dans un `<details>` : toutes ses mesures valent
+    // zéro tant qu'il est masqué. Un ResizeObserver se déclenche au moment où
+    // il devient visible, ce qu'aucun événement de chargement ne fait.
+    new ResizeObserver(() => {
+      const deborde = track.scrollWidth > track.clientWidth + 1;
+      controls.hidden = !deborde;
+      if (deborde) rafraichir();
+    }).observe(track);
+  }
+</script>

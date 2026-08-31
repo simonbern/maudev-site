@@ -1,0 +1,9 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import RentalList from '../../components/RentalList.astro';
+import { projetsCopy } from '../../copy/projets';
+---
+
+<Layout locale="fr" title={`${projetsCopy.fr.liste.title} — MauDev`} description={projetsCopy.fr.liste.lead}>
+  <RentalList locale="fr" />
+</Layout>

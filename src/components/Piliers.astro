@@ -1,0 +1,52 @@
+---
+import Icon from './Icon.astro';
+
+/**
+ * Les trois métiers réunis sous un même toit.
+ *
+ * Remplace la rangée de trois cartes numérotées 01 / 02 / 03, qui est le
+ * pattern le plus reconnaissable qui soit : trois colonnes égales, un chiffre
+ * en capitales espacées, une carte à bord arrondi. On le voit sur la moitié des
+ * sites d'entreprise, et il aplatit trois idées qui ne se valent pas.
+ *
+ * **Une icône plutôt qu'un chiffre.** Le grand numéro disait l'ordre, et
+ * seulement l'ordre — trois fois la même forme, qu'on ne pouvait pas
+ * distinguer d'un coup d'œil. Un repère planté, un casque de chantier, une clé
+ * remise : chaque métier a maintenant une silhouette. L'ordre, lui, n'est pas
+ * perdu — c'est toujours un `<ol>`, et les trois entrées suivent le cycle réel
+ * d'un projet (acquérir, construire, administrer).
+ *
+ * Les icônes vivent ici et non dans la copie : ce sont des éléments de mise en
+ * page, pas de la donnée client. Elles suivent l'ordre des piliers.
+ *
+ * **Un seul consommateur : `/notre-modele`.** L'accueil en portait une copie
+ * resserrée, en rangée de trois sous le lien qui mène ici — les mêmes mots,
+ * à un clic de distance. Une page d'accueil qui résume la page suivante
+ * retarde le clic sans rien ajouter. Avec elle sont partis le mode `compact`
+ * et la disposition en rangée : deux variantes qui n'avaient plus personne.
+ *
+ * La liste est donc une **pile**, à côté du rendu. Trois blocs côte à côte
+ * dans une demi-largeur donneraient des colonnes de 180 px.
+ *
+ * Aucune marge haute : la liste ouvre une colonne de grille au lieu de suivre
+ * un titre, et sa marge s'ajouterait à la gouttière du conteneur.
+ */
+interface Props {
+  piliers: readonly { readonly titre: string; readonly texte: string }[];
+}
+const { piliers } = Astro.props;
+
+const ICONES = ['map-pin', 'hard-hat', 'key-round'];
+---
+
+<ol class="grid gap-6">
+  {
+    piliers.map((p, i) => (
+      <li class="group carte-survol flex flex-col rounded-panel bg-surface-alt p-8 hover:bg-accent-tint md:p-10">
+        <Icon name={ICONES[i] ?? 'dot'} class="icone-survol h-12 w-12 shrink-0 text-accent-ink" />
+        <h3 class="mt-6 text-h2 text-balance text-ink">{p.titre}</h3>
+        <p class="mt-5 max-w-prose text-lead text-ink-soft">{p.texte}</p>
+      </li>
+    ))
+  }
+</ol>

@@ -1,0 +1,35 @@
+# Genere depuis reference/mirror/www.mau-dev.ca/{fr,en}/projects/4a-b-henderson
+# Textes et chiffres repris tels quels de l’ancien site.
+nom: "4A-B Henderson"
+statut: realise
+ordre: 0
+url: { fr: 4a-b-henderson, en: 4a-b-henderson }
+
+adresse: "4A-B Henderson"
+ville: "Huntingdon"
+
+resume:
+  fr: "Projet résidentiel livré à Huntingdon."
+  en: "Completed residential project in Huntingdon."
+
+description:
+  fr:
+    - "Un projet résidentiel de deux bâtiments dimensionné pour répondre à la demande locative locale."
+  en:
+    - "A two-building residential project sized to serve local rental demand."
+
+faits:
+  - label: { fr: "Statut", en: "Status" }
+    valeur: { fr: "Livré", en: "Delivered" }
+  - label: { fr: "Programme", en: "Program" }
+    valeur: { fr: "Résidentiel", en: "Residential" }
+  - label: { fr: "Bâtiments", en: "Buildings" }
+    valeur: { fr: "2", en: "2" }
+  - label: { fr: "Unités résidentielles", en: "Residential units" }
+    valeur: { fr: "32", en: "32" }
+
+couverture:
+  src: ../../assets/projets/4a-b-henderson/couverture.jpg
+  alt:
+    fr: "4A-B Henderson — Huntingdon"
+    en: "4A-B Henderson — Huntingdon"
