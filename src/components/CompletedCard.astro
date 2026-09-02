@@ -2,14 +2,42 @@
 import { Image } from 'astro:assets';
 import type { CollectionEntry } from 'astro:content';
 import Logo from './Logo.astro';
-import { ui, type Locale } from '../i18n';
+import { localize, realiseAvecFiche, ui, type Locale } from '../i18n';
 
 /**
  * Une réalisation dans la grille de `/projets`.
  *
- * Volontairement pas un lien : les projets livrés n'ont pas de page dédiée
- * (CLAUDE.md § Structure du site), et une carte cliquable qui ne mène nulle
- * part est pire qu'une carte inerte.
+ * **Certaines cartes sont des liens, pas toutes.** Elles étaient toutes
+ * inertes tant que les projets livrés n'avaient pas de page dédiée — une carte
+ * cliquable qui ne mène nulle part est pire qu'une carte inerte. Les cahiers
+ * de location du 2026-09-02 ont apporté de quoi remplir trois fiches, et
+ * `/projets/[projet]` existe pour celles-là.
+ *
+ * Les douze autres restent inertes : leur page n'aurait rien montré que cette
+ * carte ne montre déjà. Le prédicat est `realiseAvecFiche`, partagé avec les
+ * deux routes — voir `i18n.ts` pour la règle et sa raison d'être unique.
+ *
+ * Le lien enveloppe le titre, pas la carte entière : la couverture porte déjà
+ * un `alt`, et un bloc de 400 px cliquable annonce mal ce qu'on ouvre. Le
+ * `group` et l'`absolute inset-0` gardent tout de même la carte entière
+ * cliquable à la souris, sans doubler la cible au clavier ni au lecteur
+ * d'écran — un seul lien, sur le nom du projet.
+ *
+ * **Ce qui distingue les deux à l'œil.** Une carte muette et une carte
+ * cliquable ne peuvent pas se ressembler : sans signe, on clique les douze
+ * pour découvrir que trois répondent. Trois choses ne sont donc données qu'aux
+ * cartes qui mènent quelque part —
+ *
+ * · **la ligne « Voir le projet » et sa flèche**, la même grammaire que le
+ *   pied de `ProjectCard` sur `/a-louer` et que « Voir les plans » dans
+ *   `UnitTable` : libellé en accent, flèche qui glisse au survol ;
+ * · **le soulèvement de la carte** (`carte-survol`) et **l'agrandissement de
+ *   l'image**, qui promettaient un clic sur les douze cartes muettes ;
+ * · **le numéro qui passe à l'accent** au survol.
+ *
+ * Une carte muette garde donc son image et ses faits, immobiles. C'est la
+ * différence entre une fiche et une vignette, et elle se voit sans être
+ * expliquée.
  *
  * **Toutes les cartes ont la même taille.** Une mosaïque à largeurs alternées
  * avait été essayée — sept colonnes, cinq, puis un triptyque. Elle donnait du
@@ -34,13 +62,63 @@ const { projet, locale, index } = Astro.props;
 const d = projet.data;
 const t = ui[locale];
 
+// Cliquable seulement si la page existe. Même prédicat que les deux routes :
+// une carte qui mène à un 404 ne se verrait pas au build.
+const lien = realiseAvecFiche(d) ? `${localize('/projets', locale)}/${d.url[locale]}` : null;
+
 // Le premier fait est toujours « Statut ». Il ouvre la ligne de lieu, mais sans
 // étiquette : « Livré » se comprend seul, « Statut : Livré » est du remplissage.
 const [statut, ...autres] = d.faits;
 ---
 
-<li data-reveal class="group flex flex-col gap-5">
-  <div class="carte-survol aspect-[3/2] overflow-hidden rounded-card bg-surface-alt">
+<li data-reveal class="group relative flex flex-col gap-5">
+  <div
+    class:list={[
+      'relative aspect-[3/2] overflow-hidden rounded-card bg-surface-alt',
+      lien && 'carte-survol',
+    ]}
+  >
+    {/* La pastille d'ouverture. Elle est apparue après coup : la ligne « Voir
+        le projet » sous les faits disait bien qu'on pouvait cliquer, mais elle
+        le disait au douzième centimètre de lecture, en bas d'une carte qu'on
+        parcourt du regard par le haut. On ne lit pas une grille, on la
+        balaie.
+
+        D'où l'aplat saumon, dans le coin de l'image : c'est la couleur
+        d'action du site — celle des boutons pleins — et c'est le seul endroit
+        de la grille où elle apparaît. Une carte qui la porte se repère sans
+        être lue, et les douze qui ne la portent pas se repèrent aussi.
+
+        **Pleine au repos, pas au survol.** Le contour seul, se remplissant au
+        survol, était plus discret et ne servait à rien : au doigt il n'y a pas
+        de survol, et c'est justement le moment où il faut savoir quoi toucher.
+
+        La flèche monte vers la droite plutôt que d'aller tout droit. Le site
+        écrit « → » pour avancer dans une liste et « ↓ » pour descendre la
+        page ; « ↗ » dit qu'on quitte la grille pour une autre page.
+
+        `aria-hidden` : le lien du titre porte déjà le nom accessible. */}
+    {
+      lien && (
+        <span
+          class="absolute top-3 right-3 z-10 inline-flex h-11 w-11 items-center justify-center rounded-full bg-accent text-on-accent shadow-lift transition-transform duration-500 ease-[var(--ease-doux)] group-hover:scale-110 md:top-4 md:right-4"
+          aria-hidden="true"
+        >
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            class="h-5 w-5"
+          >
+            <path d="M7 17 17 7" />
+            <path d="M8 7h9v9" />
+          </svg>
+        </span>
+      )
+    }
     {
       d.couverture ? (
         <Image
@@ -49,7 +127,10 @@ const [statut, ...autres] = d.faits;
           widths={[400, 700, 1000]}
           sizes="(min-width: 1024px) 33vw, (min-width: 768px) 50vw, 100vw"
           loading={index < 3 ? 'eager' : 'lazy'}
-          class="h-full w-full object-cover transition-transform duration-700 ease-[var(--ease-doux)] group-hover:scale-[1.04]"
+          class:list={[
+            'h-full w-full object-cover transition-transform duration-700 ease-[var(--ease-doux)]',
+            lien && 'group-hover:scale-[1.04]',
+          ]}
         />
       ) : (
         /* Gabarit. Deux réalisations n'ont reçu que des photos d'intérieur, et
@@ -65,15 +146,31 @@ const [statut, ...autres] = d.faits;
     }
   </div>
 
-  <div>
+  <div class="flex flex-1 flex-col">
     <div class="flex items-baseline gap-4">
       <span
-        class="num text-label text-ink-muted transition-colors duration-500 group-hover:text-accent-ink"
+        class:list={[
+          'num text-label text-ink-muted transition-colors duration-500',
+          lien && 'group-hover:text-accent-ink',
+        ]}
         aria-hidden="true"
       >
         {String(index + 1).padStart(2, '0')}
       </span>
-      <h3 class="text-h3 text-balance text-ink">{d.nom}</h3>
+      <h3 class="text-h3 text-balance text-ink">
+        {
+          lien ? (
+            <a
+              href={lien}
+              class="cursor-pointer transition-colors duration-200 before:absolute before:inset-0 before:content-[''] group-hover:text-accent-ink"
+            >
+              {d.nom}
+            </a>
+          ) : (
+            d.nom
+          )
+        }
+      </h3>
     </div>
 
     <p class="mt-2 text-body text-ink-muted">
@@ -96,6 +193,36 @@ const [statut, ...autres] = d.faits;
             </div>
           ))}
         </dl>
+      )
+    }
+
+    {/* Le signe qu'il y a autre chose derrière. Même grammaire que le pied de
+        `ProjectCard` et que « Voir les plans » : libellé en accent, flèche qui
+        glisse. Pas de filet au-dessus — la liste de faits en pose déjà un, et
+        DESIGN.md rappelle qu'un second traçage dessine surtout les trous.
+
+        `aria-hidden` sur toute la ligne : le lien du titre porte déjà le nom
+        accessible, et un lecteur d'écran n'a pas besoin d'entendre « Voir le
+        projet » après « 110 Ste-Cécile, lien ». C'est un repère visuel. */}
+    {
+      lien && (
+        <p
+          class="mt-auto flex items-center gap-2 pt-6 text-body font-semibold text-accent-ink"
+          aria-hidden="true"
+        >
+          {t.viewProject}
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            class="h-4 w-4 transition-transform duration-500 ease-[var(--ease-doux)] group-hover:translate-x-1"
+          >
+            <path d="M5 12h14M13 6l6 6-6 6" />
+          </svg>
+        </p>
       )
     }
   </div>

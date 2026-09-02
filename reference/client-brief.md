@@ -125,3 +125,18 @@ RDC:
 301 – 4 ½ : 1 570 $/mois
 302 – 4 ½ : 1 580 $/mois
 303 – 4 ½, côté bord de l’eau : 1 660 $/mois
+
+_____________________________________________________________________________________________________________
+
+# Deuxième courriel — 2026-09-02
+
+Salut les gars,
+
+Voici les cahiers de locations pour les projets que je mentionnais (Ridge 1, 2, 3, 4, Henderson, Ste-Cecile). Ridge phase 3 et 4 sont identiques et henderson les deux bâtiments aussi. Je vous joint aussi les photos, elles viennent du facebook de Chester sans leur permission FYI.
+
+Merci!
+Alex
+
+*Pièces jointes : `reference/NewInfo/` — 5 cahiers PDF et 18 photos. Relevé
+complet dans `reference/newinfo-mapping.md`.*
+

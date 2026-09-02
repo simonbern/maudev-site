@@ -232,12 +232,34 @@ const chiffres = [
        disponibilité ; une carte par projet promettrait de quoi cliquer sur
        chacun, alors que tout ce qu'on en sait tient sur la page suivante.
 
-       Sombre, comme la section « À louer » qui la précède : les deux parlent
-       des mêmes bâtiments à deux moments, et l'alternance repart à la section
-       suivante. */}
-<section class="bg-page pb-14 md:pb-16 lg:pb-20">
+       **Sur le même vert clair que « Où MauDev bâtit », juste en dessous.**
+       Elle a été sombre, comme « À louer » au-dessus, et seul un filet les
+       séparait : trois sections de suite sur le même fond, dont deux qui
+       parlent de bâtiments, et le changement de sujet ne se voyait qu'à la
+       lecture du titre. Un filet ne découpe pas une page, il souligne une
+       ligne.
+
+       Le vert clair fait ce travail-là tout seul, et il le fait avant qu'on
+       lise : ce qui est sur fond sombre se loue aujourd'hui, ce qui est sur
+       fond clair n'est pas encore là — les chantiers, puis les villes où ils
+       sortent de terre. Deux sujets, deux fonds, une frontière franche à
+       l'endroit exact où le propos change.
+
+       Le filet est parti avec le fond sombre : il tombait pile sur la limite
+       des deux couleurs, à répéter en gris ce que la couleur venait de dire.
+       Son `pt` est passé à la section.
+
+       **Aucun `pb`.** Les deux sections partagent un fond : entre elles il n'y
+       a plus de limite, seulement de l'espace, et cet espace était compté deux
+       fois — le bas de celle-ci plus le haut de « Où MauDev bâtit », soit le
+       double de tous les autres intervalles de la page. Le `pt` de la voisine
+       suffit, et il vaut exactement son `pb` : la légende du rendu est
+       maintenant à la même distance de « Où MauDev bâtit » que « Saint-Eustache »
+       l'est du vert sombre qui ferme le bloc. Un champ de couleur, deux
+       sujets, une seule respiration entre eux. */}
+<section class="zone-claire bg-section-accent pt-14 md:pt-16 lg:pt-20">
   <div class="mx-auto max-w-page px-5 md:px-8 lg:px-12">
-    <div class="grid gap-x-10 gap-y-10 border-t border-line pt-12 md:grid-cols-12 md:pt-14">
+    <div class="grid gap-x-10 gap-y-10 md:grid-cols-12">
       {/* Le titre et son lien sur la même ligne, aux deux bouts de la grille.
           Le lien vivait sous le chapeau, à droite et tout en bas de la
           section : il fallait avoir lu la colonne entière pour tomber dessus.
@@ -247,10 +269,18 @@ const chiffres = [
           différemment.
 
           `items-end` : le lien s'aligne sur la ligne de base du titre, pas sur
-          son haut. Un titre en `text-h1` fait trois fois la hauteur d'un lien ;
-          centrés, ils ne se rapportent visiblement à rien. */}
+          son haut. Un titre d'affichage fait trois fois la hauteur d'un lien ;
+          centrés, ils ne se rapportent visiblement à rien.
+
+          **`text-display`, comme « Où MauDev bâtit ».** Il était en `text-h1`,
+          d'un cran plus petit. Tant que les deux sections avaient des fonds
+          différents, l'écart passait ; sur le même vert clair, les deux titres
+          se suivent dans le même champ et l'un avait l'air d'un sous-titre de
+          l'autre. C'est aussi la taille de « À louer » et de « Projets
+          réalisés » — « Notre modèle » reste seul en `text-h1`, et pour une
+          raison écrite plus bas. */}
       <div class="flex flex-wrap items-end justify-between gap-x-8 gap-y-4 md:col-span-12">
-        <h2 data-reveal class="text-h1 text-balance text-ink">{c.aVenir.titre}</h2>
+        <h2 data-reveal class="text-display text-balance text-ink">{c.aVenir.titre}</h2>
         <a
           data-reveal
           style="transition-delay:80ms"

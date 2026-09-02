@@ -53,8 +53,8 @@ import { localize, type Locale } from '../i18n';
  * d'OpenStreetMap en fond. Elle marchait, et elle n'a pas convaincu. Sont
  * partis avec elle `src/geo.ts`, `src/villes.ts` et `scripts/carte/`.
  *
- * Aucune boîte, aucune photo. La section vient juste après le carrousel des
- * projets et juste avant la photo d'intérieur : c'est elle qui les sépare.
+ * Aucune boîte, aucune photo. Elle vient juste après « À venir », avec qui
+ * elle partage son fond vert clair, et juste avant la photo d'intérieur.
  */
 interface Props {
   titre: string;
@@ -67,10 +67,14 @@ const { titre, villes, locale } = Astro.props;
 const projetsUrl = localize('/projets', locale);
 ---
 
-{/* La seule section teintée de l'accent du site. Elle est prise entre deux
-    sections crème — les projets à louer au-dessus, la plateforme en dessous —
-    et c'est ce qui lui donne son rôle : une respiration colorée au milieu de
-    la page, là où elle change de sujet. `section-alt` l'en séparait à peine.
+{/* Le vert clair de l'accueil. Il tient sur deux sections et non plus une :
+    « À venir » l'a rejointe au-dessus (voir `Landing.astro`), et les deux
+    forment maintenant un seul champ clair entre le carrousel des projets à
+    louer et « Une seule plateforme intégrée », tous deux sombres.
+
+    C'est ce contraste qui donne son rôle au bloc — une respiration colorée au
+    milieu de la page, là où le propos passe de ce qui se loue aujourd'hui à ce
+    qui n'existe pas encore. `section-alt` l'en séparait à peine.
 
     Le vert part du #789C9A du client, dilué puis poussé vers le vert : assez teinté
     pour se lire comme un vert, assez pâle pour porter le texte courant. */}

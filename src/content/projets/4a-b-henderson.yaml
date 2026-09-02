@@ -1,5 +1,6 @@
-# Genere depuis reference/mirror/www.mau-dev.ca/{fr,en}/projects/4a-b-henderson
-# Textes et chiffres repris tels quels de l’ancien site.
+# Généré depuis reference/mirror/www.mau-dev.ca/{fr,en}/projects/4a-b-henderson
+# Enrichi le 2026-09-02 avec le cahier de location du client
+# (reference/NewInfo, relevé dans reference/newinfo-mapping.md).
 nom: "4A-B Henderson"
 statut: realise
 ordre: 0
@@ -15,8 +16,12 @@ resume:
 description:
   fr:
     - "Un projet résidentiel de deux bâtiments dimensionné pour répondre à la demande locative locale."
+    - "Les deux immeubles, le 4A et le 4B, sont identiques : seize logements chacun, répartis sur quatre niveaux — sous-sol habité, rez-de-chaussée, deuxième et troisième étage — à raison de quatre logements par palier."
+    - "Le projet ne compte qu'un seul type de logement : le 5 ½. Trois chambres, une salle de bain, une salle de lavage privative et un balcon dans chacun des trente-deux logements. C'est le seul projet du portefeuille bâti entièrement en grands logements."
   en:
     - "A two-building residential project sized to serve local rental demand."
+    - "The two buildings, 4A and 4B, are identical: sixteen apartments each, across four levels — a lived-in basement, ground floor, second and third storey — four apartments per level."
+    - "The project has a single apartment type: the 5 ½. Three bedrooms, a bathroom, a private laundry room and a balcony in each of the thirty-two units. It is the only project in the portfolio built entirely of large apartments."
 
 faits:
   - label: { fr: "Statut", en: "Status" }
@@ -28,8 +33,45 @@ faits:
   - label: { fr: "Unités résidentielles", en: "Residential units" }
     valeur: { fr: "32", en: "32" }
 
+# Un seul type sur les trente-deux logements. Deux plans se répètent d'un
+# niveau à l'autre : 1 090 p.c. + 60 de balcon pour les unités 01 et 02,
+# 1 100 + 53 pour les 03 et 04. D'où une fourchette de 1 150 à 1 153.
+logements:
+  - type: "5 ½"
+    nombre: 32
+    superficieMin: 1150
+    superficieMax: 1153
+    note:
+      fr: "Trois chambres, salle de lavage privative et balcon. Seize logements par bâtiment, quatre par niveau."
+      en: "Three bedrooms, private laundry room and balcony. Sixteen apartments per building, four per level."
+
 couverture:
   src: ../../assets/projets/4a-b-henderson/couverture.jpg
   alt:
     fr: "4A-B Henderson — Huntingdon"
     en: "4A-B Henderson — Huntingdon"
+
+photos:
+  - src: ../../assets/projets/4a-b-henderson/photos/exterieur-facade-01.jpg
+    alt:
+      fr: "Façade d'un des deux bâtiments Henderson, brique et revêtement foncé, stationnement au premier plan"
+      en: "Front of one of the two Henderson buildings, brick and dark cladding, parking lot in the foreground"
+    categorie: exterieur
+  - src: ../../assets/projets/4a-b-henderson/photos/cuisine-01.jpg
+    alt:
+      fr: "Cuisine à îlot de quartz, armoires blanches et bois, ouverte sur l'aire de vie"
+      en: "Quartz island kitchen, white and wood cabinets, open to the living area"
+  - src: ../../assets/projets/4a-b-henderson/photos/salle-de-bain-01.jpg
+    alt:
+      fr: "Salle de bain avec douche vitrée à céramique marbrée et robinetterie noire"
+      en: "Bathroom with a glass shower in marbled tile and black fixtures"
+
+# Couverture remplacée le 2026-09-02. L'ancienne (celle du mirror) montrait le
+# second bâtiment encore sous membrane Tyvek, avec des cônes de chantier :
+# lisible, mais c'était un chantier sur une page de réalisations. La livraison
+# « NewInfo » apporte une façade terminée, de face, plein soleil. Portrait à
+# l'origine (1024 × 1227), recadrée en 3:2 sur le bâtiment — les quatre
+# niveaux (sous-sol, RDC, 2e, 3e) restent dans le cadre.
+#
+# La même photo ouvre la galerie, en portrait cette fois : la couverture est
+# recadrée pour la grille, la galerie peut montrer le cadrage complet.

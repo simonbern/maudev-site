@@ -17,6 +17,39 @@ export const estEnLocation = (statut: string) =>
   (EN_LOCATION as readonly string[]).includes(statut);
 
 /**
+ * Une réalisation a-t-elle assez de matière pour mériter sa propre page ?
+ *
+ * Quinze projets sont livrés ; trois seulement ont reçu du client de quoi
+ * remplir une fiche — photos et superficies unité par unité (Ridge, Henderson,
+ * Ste-Cécile, cahiers du 2026-09-02). Les douze autres n'ont qu'un nom, une
+ * ville, un résumé d'une ligne et quatre paires étiquette/valeur : tout ce que
+ * la carte de `/projets` montre déjà. Leur ouvrir une page donnerait un hero
+ * plein écran suivi de ce qu'on venait de lire, et un clic pour rien.
+ *
+ * Le critère est le contenu, pas une liste de slugs : le jour où le client
+ * envoie les photos du 145 Salaberry, sa carte devient cliquable et sa page
+ * apparaît, sans qu'on ait à y penser.
+ *
+ * Écrit ici, à côté d'`estEnLocation`, et pour la même raison : la règle sert
+ * à trois endroits — les deux `getStaticPaths` et la carte. Si la carte et la
+ * route divergeaient, on aurait soit des cartes qui mènent à un 404, soit des
+ * pages qu'aucun lien n'atteint. Le build ne dirait rien ni dans un cas ni
+ * dans l'autre.
+ */
+export const realiseAvecFiche = (d: {
+  statut: string;
+  photos: readonly unknown[];
+  logements: readonly unknown[];
+  plans: readonly unknown[];
+  renders: readonly unknown[];
+}) =>
+  d.statut === 'realise' &&
+  (d.photos.length > 0 ||
+    d.logements.length > 0 ||
+    d.plans.length > 0 ||
+    d.renders.length > 0);
+
+/**
  * Segments d'URL traduits. La clé est toujours le segment FR — le français est
  * la langue par défaut et n'a pas de préfixe (voir astro.config.mjs).
  * Ajouter une page = ajouter une ligne ici.
@@ -113,6 +146,7 @@ export const ui = {
     soon: 'Bientôt',
     available: 'Disponible',
     photosSoon: 'Photos à venir',
+    viewProject: 'Voir le projet',
     unitsWord: 'logements',
     delivery: 'Livraison',
     from: 'À partir de',
@@ -140,6 +174,7 @@ export const ui = {
     soon: 'Coming soon',
     available: 'Available',
     photosSoon: 'Photos coming',
+    viewProject: 'View the project',
     unitsWord: 'apartments',
     delivery: 'Delivery',
     from: 'From',

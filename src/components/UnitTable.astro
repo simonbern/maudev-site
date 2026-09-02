@@ -33,8 +33,18 @@ interface Props {
   logements: CollectionEntry<'projets'>['data']['logements'];
   plans?: CollectionEntry<'projets'>['data']['plans'];
   locale: Locale;
+  /**
+   * Afficher le loyer et le bouton de visite. Faux sur une réalisation : le
+   * bâtiment est livré et loué, il n'a plus de prix affichable ni de visite à
+   * prendre. Le repli « Sur demande » serait pire que rien — il laisse croire
+   * qu'un appel donnerait un chiffre.
+   *
+   * Les types et les superficies, eux, restent vrais : c'est ce que les
+   * cahiers de location donnent, et ce que la fiche montre.
+   */
+  prix?: boolean;
 }
-const { logements, plans = [], locale } = Astro.props;
+const { logements, plans = [], locale, prix = true } = Astro.props;
 const t = projetsCopy[locale].detail;
 const u = ui[locale];
 
@@ -130,19 +140,21 @@ const sansJs =
               </div>
             )}
 
-            <div>
-              <dt class="text-body text-ink-muted">{r.planch ? u.from : t.prix}</dt>
-              <dd class="mt-1">
-                {r.prix ? (
-                  <>
-                    <span class="num text-stat text-ink">{r.prix}</span>
-                    <span class="text-lead text-ink-muted">{t.perMonth}</span>
-                  </>
-                ) : (
-                  <span class="text-lead text-ink">{t.onRequest}</span>
-                )}
-              </dd>
-            </div>
+            {prix && (
+              <div>
+                <dt class="text-body text-ink-muted">{r.planch ? u.from : t.prix}</dt>
+                <dd class="mt-1">
+                  {r.prix ? (
+                    <>
+                      <span class="num text-stat text-ink">{r.prix}</span>
+                      <span class="text-lead text-ink-muted">{t.perMonth}</span>
+                    </>
+                  ) : (
+                    <span class="text-lead text-ink">{t.onRequest}</span>
+                  )}
+                </dd>
+              </div>
+            )}
 
             {r.inclusions.length > 0 && (
               <div class="border-t border-line pt-4">
@@ -170,7 +182,7 @@ const sansJs =
               trois cartes de hauteurs inégales, c'est le bloc du bas qui doit
               être poussé, pas seulement sa dernière ligne. */}
           <div class="mt-auto flex flex-col gap-3">
-          {r.disponible && (
+          {prix && r.disponible && (
             <a
               href="#visite"
               class="group inline-flex h-11 w-fit cursor-pointer items-center gap-2 rounded-card bg-accent px-5 text-small font-semibold text-on-accent transition-colors duration-200 hover:bg-accent-hover"

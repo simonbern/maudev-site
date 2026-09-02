@@ -1,5 +1,5 @@
 /**
- * Libellés des pages /a-louer et /a-louer/[projet].
+ * Libellés des pages /a-louer, /projets et de leurs pages de projet.
  * Aucun contenu de projet ici — celui-là vient de la collection.
  */
 export const projetsCopy = {
@@ -39,6 +39,17 @@ export const projetsCopy = {
     },
     detail: {
       back: 'Tous les projets à louer',
+      // Une réalisation ne se loue plus : le retour mène à la grille des
+      // réalisations, pas à celle des logements disponibles.
+      backRealises: 'Toutes les réalisations',
+      // « Les logements et tarifs » sur une réalisation annoncerait des prix
+      // qui n'existent plus. Le contenu est le même — types et superficies —
+      // le titre ne promet que ça.
+      logementsRealise: 'Les logements',
+      faits: 'En bref',
+      realiseContactTitle: 'Un projet comme celui-ci ?',
+      realiseContactLead:
+        "Ce projet est livré et loué. Écrivez-nous pour parler d'un projet à venir, ou voyez ce qui se loue en ce moment.",
       unites: 'logements',
       etages: 'étages',
       livraison: 'Livraison',
@@ -120,6 +131,12 @@ export const projetsCopy = {
     },
     detail: {
       back: 'All projects for rent',
+      backRealises: 'All completed projects',
+      logementsRealise: 'The apartments',
+      faits: 'At a glance',
+      realiseContactTitle: 'Looking for something like this?',
+      realiseContactLead:
+        'This project is delivered and fully leased. Write to us about an upcoming project, or see what is leasing right now.',
       unites: 'apartments',
       etages: 'floors',
       livraison: 'Delivery',

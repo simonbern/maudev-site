@@ -65,6 +65,7 @@ Remake complet du site de Mau-Dev, promoteur immobilier québécois. Le nouveau 
 - `/a-louer` — Liste des projets en cours. Un seul pour l'instant (Hermine), la page doit être conçue pour en accueillir d'autres sans refonte.
 - `/a-louer/[projet]` — Page dédiée par projet en cours. Layout inspiré de `reference/inspo/project-page-example.png`.
 - `/projets` — Projets réalisés (Delahousie et autres). Infos et photos récupérables du mirror de l'ancien site.
+- `/projets/[projet]` — Page dédiée d'une réalisation, ajoutée le 2026-09-02. **Seulement pour celles qui ont de la matière** : photos, logements, plans ou rendus. Le prédicat est `realiseAvecFiche` dans `src/i18n.ts`, partagé par les deux routes et par la carte de la grille — les projets sans rien de plus que leur carte ne sont pas cliquables.
 - `/notre-modele` — Même contenu que la page correspondante de l'ancien site.
 
 Chaque page existe en FR et EN.

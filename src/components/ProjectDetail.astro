@@ -11,11 +11,22 @@ import ProjectHeroContent from './ProjectHeroContent.astro';
 import Reveal from './Reveal.astro';
 import { projetsCopy } from '../copy/projets';
 import { money } from '../format';
-import type { Locale } from '../i18n';
+import { CONTACT, localize, type Locale } from '../i18n';
 
 /**
  * Corps d'une page projet — layout inspiré de
  * reference/inspo/project-page-example.png.
+ *
+ * **Deux familles de pages, un seul corps.** `/a-louer/[projet]` décrit un
+ * immeuble qu'on peut louer ; `/projets/[projet]` décrit un immeuble livré.
+ * Ils montrent le même bâtiment de la même façon — hero, chiffres, logements,
+ * photos, description, carte — et ne divergent que là où la location parle :
+ * les loyers, l'appel à la visite et le formulaire. Ces trois-là sont derrière
+ * `realise`.
+ *
+ * Un second composant aurait recopié six sections pour en retirer trois, et
+ * chaque retouche de mise en page se serait ensuite faite deux fois — ou une
+ * seule, ce qui est pire.
  *
  * Toutes les sections après le hero sont conditionnelles : Dalhousie n'a ni
  * photos, ni plans, ni superficies. Une section vide ne doit jamais s'afficher
@@ -35,6 +46,9 @@ interface Props {
 const { projet, locale } = Astro.props;
 const d = projet.data;
 const t = projetsCopy[locale].detail;
+
+// Une réalisation est livrée et louée : ni loyer, ni visite, ni formulaire.
+const realise = d.statut === 'realise';
 
 const hasMedia = d.photos.length > 0 || d.plans.length > 0 || d.renders.length > 0;
 
@@ -101,13 +115,38 @@ const heroPoster = d.video?.poster ?? d.couverture?.src;
   )
 }
 
+<!-- En bref — seulement sur une réalisation. `faits[]` porte ce qui distingue
+     un projet livré d'un autre : programme, nombre de bâtiments, surface
+     commerciale. Ces paires n'apparaissaient que sur la carte de `/projets`,
+     tronquées à trois lignes de petits caractères. Le premier fait est
+     toujours « Statut » et le hero le dit déjà autrement — on l'écarte. -->
+{
+  realise && d.faits.length > 1 && (
+    <section class="bg-page py-12 md:py-14 lg:py-16">
+      <div class="mx-auto max-w-page px-5 md:px-8 lg:px-12">
+        <h2 class="mb-8 text-h2 text-balance text-ink md:mb-10">{t.faits}</h2>
+        <dl class="grid gap-x-10 gap-y-8 sm:grid-cols-2 lg:grid-cols-4">
+          {d.faits.slice(1).map((f) => (
+            <div class="border-t border-line pt-5">
+              <dt class="text-label text-ink-muted first-letter:uppercase">{f.label[locale]}</dt>
+              <dd class="num mt-2 text-stat text-ink">{f.valeur[locale]}</dd>
+            </div>
+          ))}
+        </dl>
+      </div>
+    </section>
+  )
+}
+
 <!-- Logements et tarifs -->
 {
   d.logements.length > 0 && (
     <section class="zone-claire bg-section-alt py-14 md:py-16 lg:py-20">
       <div class="mx-auto max-w-page px-5 md:px-8 lg:px-12">
-        <h2 class="mb-8 text-h2 text-balance text-ink md:mb-10">{t.logements}</h2>
-        <UnitTable logements={d.logements} plans={d.plans} locale={locale} />
+        <h2 class="mb-8 text-h2 text-balance text-ink md:mb-10">
+          {realise ? t.logementsRealise : t.logements}
+        </h2>
+        <UnitTable logements={d.logements} plans={d.plans} locale={locale} prix={!realise} />
 
         {d.options.length > 0 && (
           <div class="mt-12 max-w-narrow">
@@ -224,7 +263,9 @@ const heroPoster = d.video?.poster ?? d.couverture?.src;
      nuit. Le bouton d'accent suffit à faire le point de fixation ; le bloc,
      lui, n'a qu'à se distinguer du fond de section, ce qu'un cran de teinte
      fait très bien. -->
-<section class="zone-claire bg-section-alt py-14 md:py-16 lg:py-20">
+{
+  !realise && (
+    <section class="zone-claire bg-section-alt py-14 md:py-16 lg:py-20">
   <div class="mx-auto max-w-page px-5 md:px-8 lg:px-12">
     <div class="flex flex-col items-start justify-between gap-8 rounded-panel bg-surface-alt p-7 md:flex-row md:items-center md:p-9">
       <div>
@@ -242,7 +283,9 @@ const heroPoster = d.video?.poster ?? d.couverture?.src;
       </a>
     </div>
   </div>
-</section>
+    </section>
+  )
+}
 
 <!-- Rendus 3D — projets pas encore bâtis. Galerie distincte des photos :
      ce ne sont pas des clichés du réel, et le titre le dit. -->
@@ -257,8 +300,15 @@ const heroPoster = d.video?.poster ?? d.couverture?.src;
   )
 }
 
-<!-- Demande de visite. Sur `page` et non `inverse` : le footer est déjà brun,
-     et DESIGN.md interdit deux sections sombres consécutives. -->
+<!-- Fin de page. Sur `page` et non `inverse` : le footer est déjà brun,
+     et DESIGN.md interdit deux sections sombres consécutives.
+
+     Deux fins différentes. En location, le formulaire de visite — c'est
+     l'action de la page. Sur une réalisation, il n'y a rien à visiter : le
+     bâtiment est livré et loué. Lui laisser le formulaire ferait remplir un
+     rendez-vous impossible, et le retirer sans rien mettre laisserait la page
+     s'arrêter sur une galerie. D'où un renvoi : écrire à MauDev, ou aller voir
+     ce qui se loue vraiment. C'est aussi la cible du seuil du hero. -->
 <section class="bg-page py-10 md:py-12 lg:py-14">
   <div class="mx-auto max-w-page px-5 md:px-8 lg:px-12">
     {
@@ -267,7 +317,39 @@ const heroPoster = d.video?.poster ?? d.couverture?.src;
       !hasMedia && <p class="mb-12 max-w-prose text-lead text-ink-muted">{t.noMedia}</p>
     }
     <div class="border-t border-line-strong pt-14 md:pt-20">
-      <FormulaireVisite projet={projet} locale={locale} />
+      {
+        realise ? (
+          <div id="contact" class="flex scroll-mt-28 flex-col items-start justify-between gap-8 md:flex-row md:items-end">
+            <div>
+              <h2 data-reveal class="max-w-narrow text-h2 text-balance text-ink">
+                {t.realiseContactTitle}
+              </h2>
+              <p data-reveal class="mt-3 max-w-prose text-body text-ink-soft">
+                {t.realiseContactLead}
+              </p>
+            </div>
+            <div data-reveal class="flex flex-wrap items-center gap-4">
+              <a
+                href={`mailto:${CONTACT.email}`}
+                class="inline-flex h-14 cursor-pointer items-center rounded-card border border-line-strong px-7 text-body font-semibold text-ink transition-colors duration-200 hover:bg-surface-hover"
+              >
+                {t.contactCta}
+              </a>
+              <a
+                href={localize('/a-louer', locale)}
+                class="group inline-flex h-14 shrink-0 cursor-pointer items-center gap-3 rounded-card bg-accent px-7 text-body font-semibold text-on-accent transition-colors duration-200 hover:bg-accent-hover"
+              >
+                {projetsCopy[locale].realises.toRent}
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-5 w-5 transition-transform duration-300 group-hover:translate-x-1" aria-hidden="true">
+                  <path d="M5 12h14M13 6l6 6-6 6" />
+                </svg>
+              </a>
+            </div>
+          </div>
+        ) : (
+          <FormulaireVisite projet={projet} locale={locale} />
+        )
+      }
     </div>
   </div>
 </section>

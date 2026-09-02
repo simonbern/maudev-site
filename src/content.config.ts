@@ -127,11 +127,17 @@ const projets = defineCollection({
               src: image(),
               alt: bilingue,
               unite: z.string().optional(), // « 112 »
-              // Pas de catégorie « commun » : le client n'a fourni aucune
-              // photo de hall, corridor, ascenseur ou stationnement
-              // intérieur. La rajouter le jour où ces photos arrivent.
+              // « commun » et « drone » ajoutées le 2026-09-02 : la
+              // livraison NewInfo apporte les premières photos d'espaces
+              // communs du site (palier d'ascenseur, stationnement
+              // souterrain, tous deux au 110 Ste-Cécile) et une vue aérienne.
+              // La catégorie était prévue « le jour où ces photos arrivent ».
+              //
+              // Rien ne la lit encore côté rendu — la galerie affiche les
+              // photos dans l'ordre du YAML. C'est de la donnée juste en
+              // attendant un filtre, pas un filtre déguisé.
               categorie: z
-                .enum(['exterieur', 'interieur', 'detail'])
+                .enum(['exterieur', 'interieur', 'detail', 'commun', 'drone'])
                 .default('interieur'),
             }),
           )

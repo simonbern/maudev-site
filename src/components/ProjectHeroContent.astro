@@ -46,6 +46,15 @@ const { projet, locale } = Astro.props;
 const d = projet.data;
 const t = projetsCopy[locale].detail;
 
+// Une réalisation vient de `/projets` et n'a pas de formulaire de visite : on
+// ne visite pas un immeuble livré et loué. Le retour et l'appel à l'action
+// changent donc de destination — le reste du hero est identique, c'est le même
+// bâtiment décrit de la même façon.
+const realise = d.statut === 'realise';
+const retour = realise
+  ? { href: localize('/projets', locale), label: t.backRealises }
+  : { href: localize('/a-louer', locale), label: t.back };
+
 const stats = [
   d.unites !== undefined ? { value: String(d.unites), label: t.unites } : null,
   d.etages ? { value: String(d.etages), label: t.etages } : null,
@@ -55,13 +64,13 @@ const stats = [
 ---
 
 <a
-  href={localize('/a-louer', locale)}
+  href={retour.href}
   class="mb-8 flex h-11 w-fit cursor-pointer items-center gap-2 text-small font-semibold text-on-inverse-muted transition-colors duration-200 hover:text-accent-on-inverse"
 >
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4" aria-hidden="true">
     <path d="M19 12H5M11 18l-6-6 6-6"></path>
   </svg>
-  {t.back}
+  {retour.label}
 </a>
 
 <h1 data-reveal class="max-w-5xl text-display text-balance text-on-inverse">{d.nom}</h1>
@@ -109,5 +118,9 @@ const stats = [
     la grille, et c'est ce qui le fait lire comme une limite plutôt que comme
     un objet posé dessus. */}
 <div data-reveal style="transition-delay:280ms" class="mt-10 md:mt-12">
-  <Seuil href="#visite" label={t.visitCta} tone="inverse" />
+  <Seuil
+    href={realise ? '#contact' : '#visite'}
+    label={realise ? t.contactCta : t.visitCta}
+    tone="inverse"
+  />
 </div>

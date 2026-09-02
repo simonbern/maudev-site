@@ -1,5 +1,6 @@
-# Genere depuis reference/mirror/www.mau-dev.ca/{fr,en}/projects/110-ste-cecile
-# Textes et chiffres repris tels quels de l’ancien site.
+# Généré depuis reference/mirror/www.mau-dev.ca/{fr,en}/projects/110-ste-cecile
+# Enrichi le 2026-09-02 avec le cahier de location du client
+# (reference/NewInfo, relevé dans reference/newinfo-mapping.md).
 nom: "110 Ste-Cécile"
 statut: realise
 ordre: 0
@@ -8,6 +9,16 @@ url: { fr: 110-ste-cecile, en: 110-ste-cecile }
 adresse: "110 Ste-Cécile"
 ville: "Salaberry-de-Valleyfield"
 
+# Le cahier de location du client s'intitule « 106 rue Sainte-Cécile » et
+# étiquette le bâtiment #106 sur le plan d'implantation. Le site, le mirror de
+# l'ancien site et le premier courriel disent 110. Même ville, même décompte,
+# même immeuble : c'est un écart d'adresse, pas un second projet.
+#
+# Deuxième fois que ça arrive — Hermine était 102 ou 110 (plans-mapping.md
+# § 5), et c'est le cahier qui avait raison. On garde 110, qui reste la valeur
+# de trois sources sur quatre, et on marque le champ. À confirmer avec Alex.
+aConfirmer: [adresse]
+
 resume:
   fr: "Projet mixte livré à Salaberry-de-Valleyfield."
   en: "Completed mixed-use project in Salaberry-de-Valleyfield."
@@ -15,8 +26,12 @@ resume:
 description:
   fr:
     - "Un immeuble mixte qui associe 24 logements à une composante commerciale en rez-de-chaussée."
+    - "Les logements occupent les trois étages supérieurs, huit par palier, et se répartissent exactement moitié-moitié entre 3 ½ et 4 ½. Le rez-de-chaussée accueille deux suites commerciales de 1 762 et 1 506 pieds carrés."
+    - "L'immeuble compte un ascenseur, un stationnement intérieur au sous-sol et des rangements au rez-de-chaussée. Il fait face à la rivière Saint-Charles et à l'hôtel de ville de Salaberry-de-Valleyfield."
   en:
     - "A mixed-use building pairing 24 residential units with a ground-floor commercial component."
+    - "The apartments occupy the three upper floors, eight per level, split exactly half and half between 3 ½ and 4 ½. The ground floor holds two commercial suites of 1,762 and 1,506 square feet."
+    - "The building has an elevator, underground parking and ground-floor storage lockers. It faces the Saint-Charles river and the Salaberry-de-Valleyfield city hall."
 
 faits:
   - label: { fr: "Statut", en: "Status" }
@@ -30,13 +45,86 @@ faits:
   - label: { fr: "Locaux commerciaux", en: "Commercial spaces" }
     valeur: { fr: "2", en: "2" }
 
-# Deux couvertures ont été écartées avant d'en arriver là. Celle du mirror est
-# un rendu 3D (passants, vélos) alors que l'immeuble est livré depuis
-# longtemps : ne jamais présenter une image de synthèse comme une photo du
-# réel. Un séjour a pris sa place, puis est parti à son tour.
+# Huit plans-types répétés à l'identique sur les 2e, 3e et 4e étages : douze
+# 3 ½ et douze 4 ½. Superficies totales, balcon compris.
+logements:
+  - type: "3 ½"
+    nombre: 12
+    superficieMin: 643
+    superficieMax: 758
+  - type: "4 ½"
+    nombre: 12
+    superficieMin: 906
+    superficieMax: 982
+
+inclusions:
+  - label: { fr: "Ascenseur", en: "Elevator" }
+    icone: move-vertical
+  - label: { fr: "Stationnement intérieur", en: "Indoor parking" }
+    icone: square-parking
+  - label: { fr: "Rangement intérieur", en: "Indoor storage" }
+    icone: package
+  - label: { fr: "Comptoirs de quartz", en: "Quartz countertops" }
+    icone: countertop
+  - label: { fr: "Thermopompe", en: "Heat pump" }
+    icone: wind
+
+couverture:
+  src: ../../assets/projets/110-ste-cecile/couverture.jpg
+  alt:
+    fr: "110 Ste-Cécile — Salaberry-de-Valleyfield"
+    en: "110 Ste-Cécile — Salaberry-de-Valleyfield"
+
+# Trois couvertures ont été écartées avant celle-ci. Celle du mirror était un
+# rendu 3D (passants, vélos) alors que l'immeuble est livré depuis longtemps :
+# ne jamais présenter une image de synthèse comme une photo du réel. Deux
+# intérieurs ont pris sa place tour à tour, et une photo d'intérieur ne sert
+# jamais de couverture à une réalisation.
 #
-# Aucune couverture : la livraison du client (reference/NEW/SAINTE-CÉCILE)
-# ne contient que des intérieurs et un stationnement souterrain. Une photo
-# d'intérieur ne sert jamais de couverture à une réalisation — la grille de
-# /projets montre des bâtiments. Le gabarit tient la place en attendant une
-# photo de façade.
+# Résolu le 2026-09-02 : la livraison « NewInfo » apporte une vue de drone —
+# les quatre étages, la rivière Saint-Charles et l'hôtel de ville dans le
+# cadre. Elle situe le projet, ce qu'aucun intérieur ne faisait.
+#
+# Les deux photos d'espaces communs (palier du 4e, stationnement souterrain)
+# sont les premières du site. `categorie: commun` a été rajoutée au schéma
+# pour elles — elle y était prévue « le jour où ces photos arrivent ».
+photos:
+  - src: ../../assets/projets/110-ste-cecile/photos/drone-01.jpg
+    alt:
+      fr: "Vue aérienne de l'immeuble, la rivière Saint-Charles et l'hôtel de ville de Salaberry-de-Valleyfield à l'arrière-plan"
+      en: "Aerial view of the building, with the Saint-Charles river and the Salaberry-de-Valleyfield city hall behind"
+    categorie: drone
+  - src: ../../assets/projets/110-ste-cecile/photos/sejour-01.jpg
+    alt:
+      fr: "Aire ouverte d'angle meublée, îlot de quartz et fenêtres sur deux murs"
+      en: "Furnished corner open-plan area, quartz island and windows on two walls"
+  - src: ../../assets/projets/110-ste-cecile/photos/sejour-02.jpg
+    alt:
+      fr: "Cuisine et séjour meublés, table dressée et thermopompe murale"
+      en: "Furnished kitchen and living room, table set and wall-mounted heat pump"
+  - src: ../../assets/projets/110-ste-cecile/photos/cuisine-01.jpg
+    alt:
+      fr: "Cuisine à îlot de quartz avec colonne de rangement, logement vide"
+      en: "Quartz island kitchen with a tall storage unit, empty apartment"
+  - src: ../../assets/projets/110-ste-cecile/photos/chambre-01.jpg
+    alt:
+      fr: "Chambre meublée avec vue sur les toits du quartier"
+      en: "Furnished bedroom looking over the neighbourhood rooftops"
+  - src: ../../assets/projets/110-ste-cecile/photos/bureau-01.jpg
+    alt:
+      fr: "Coin bureau avec vue sur les clochers de l'église"
+      en: "Desk nook with a view of the church spires"
+  - src: ../../assets/projets/110-ste-cecile/photos/salle-de-bain-01.jpg
+    alt:
+      fr: "Salle de bain avec bain-douche vitré et céramique marbrée"
+      en: "Bathroom with a glass tub-shower and marbled tile"
+  - src: ../../assets/projets/110-ste-cecile/photos/commun-palier-04.jpg
+    alt:
+      fr: "Palier d'ascenseur du quatrième étage, signalétique des unités 401 à 408"
+      en: "Fourth-floor elevator landing, signage for units 401 to 408"
+    categorie: commun
+  - src: ../../assets/projets/110-ste-cecile/photos/commun-stationnement-01.jpg
+    alt:
+      fr: "Stationnement intérieur au sous-sol, colonnes de béton et lignage jaune"
+      en: "Underground parking, concrete columns and yellow line markings"
+    categorie: commun

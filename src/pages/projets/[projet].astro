@@ -1,0 +1,54 @@
+---
+import type { GetStaticPaths } from 'astro';
+import { getCollection } from 'astro:content';
+import Layout from '../../layouts/Layout.astro';
+import ProjectDetail from '../../components/ProjectDetail.astro';
+import { realiseAvecFiche } from '../../i18n';
+
+/**
+ * Page d'une réalisation.
+ *
+ * Jumelle de `/a-louer/[projet]`, à un filtre près : `realise` au lieu de
+ * `estEnLocation`. Le corps est le même composant — voir `ProjectDetail`, qui
+ * porte les trois différences (loyers, visite, formulaire).
+ *
+ * Ajoutée le 2026-09-02, quand le client a livré les cahiers de location de
+ * Ridge, Henderson et Sainte-Cécile : superficies unité par unité, plans
+ * d'étage, élévations. Une carte de grille n'a de place ni pour un tableau de
+ * logements ni pour une galerie, et la donnée n'avait donc nulle part où
+ * aller. Voir `reference/newinfo-mapping.md`.
+ *
+ * **Seules les réalisations qui ont de la matière ont une page.** Le filtre
+ * est `realiseAvecFiche`, pas `statut === 'realise'` : sur quinze projets
+ * livrés, trois ont reçu des photos et des superficies. Les douze autres
+ * n'auraient eu qu'un hero suivi de leur résumé d'une ligne — soit très
+ * exactement ce que leur carte de `/projets` montre déjà, en plus long.
+ *
+ * La carte n'est donc cliquable que pour ces trois-là, et elle lit le même
+ * prédicat. Le voir passer à quatre ne demande rien d'autre que des photos
+ * dans le YAML.
+ */
+export const getStaticPaths = (async () => {
+  const projets = await getCollection('projets');
+  return projets
+    .filter((p) => realiseAvecFiche(p.data))
+    .map((projet) => ({
+      params: { projet: projet.data.url.fr },
+      // `autre` alimente le sélecteur de langue : le segment d'URL diffère
+      // d'une langue à l'autre et ne peut pas se déduire d'une table statique.
+      props: { projet, autre: projet.data.url.en },
+    }));
+}) satisfies GetStaticPaths;
+
+const { projet, autre } = Astro.props;
+---
+
+<Layout
+  locale="fr"
+  overlay
+  lastSegment={autre}
+  title={`${projet.data.nom} — MauDev`}
+  description={projet.data.resume.fr}
+>
+  <ProjectDetail projet={projet} locale="fr" />
+</Layout>

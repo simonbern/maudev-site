@@ -1,5 +1,6 @@
-# Genere depuis reference/mirror/www.mau-dev.ca/{fr,en}/projects/2055-61-chemin-ridge
-# Textes et chiffres repris tels quels de l’ancien site.
+# Généré depuis reference/mirror/www.mau-dev.ca/{fr,en}/projects/2055-61-chemin-ridge
+# Enrichi le 2026-09-02 avec les trois cahiers de location du client
+# (reference/NewInfo, relevé dans reference/newinfo-mapping.md).
 nom: "2055-61 Chemin Ridge"
 statut: realise
 ordre: 0
@@ -8,15 +9,30 @@ url: { fr: 2055-61-chemin-ridge, en: 2055-61-chemin-ridge }
 adresse: "2055-61 Chemin Ridge"
 ville: "Huntingdon"
 
+# Un seul projet, quatre phases. Le client parle de « Ridge 1, 2, 3, 4 » et
+# fournit un cahier par phase, mais les quatre immeubles se suivent sur le
+# même terrain, portent le même programme et se sont livrés en un an. Les
+# séparer en quatre fiches donnerait quatre cartes presque identiques dans la
+# grille de /projets. Les dates sont dans `phase`, le détail dans le texte.
+phase:
+  fr: "Livré en quatre phases, de juillet 2024 à juillet 2025"
+  en: "Delivered in four phases, July 2024 to July 2025"
+
 resume:
   fr: "Projet mixte livré à Huntingdon."
   en: "Completed mixed-use project in Huntingdon."
 
 description:
   fr:
-    - "Un ensemble mixte qui répartit logements et espaces commerciaux sur quatre bâtiments distincts."
+    - "Un ensemble mixte qui répartit logements et espaces commerciaux sur quatre bâtiments distincts, aux 2055, 2057, 2059 et 2061, chemin Ridge."
+    - "Le 2055 compte douze logements. Les trois autres immeubles en comptent dix chacun, au-dessus de deux espaces commerciaux au rez-de-chaussée dont la façade donne sur le chemin Ridge. Chaque bâtiment fait trois étages."
+    - "Le projet a été développé en quatre phases : le 2055 en juillet 2024, le 2057 en septembre 2024, le 2059 en mai 2025 et le 2061 en juillet 2025."
+    - "Les logements sont majoritairement des 4 ½. Les 3 ½ se trouvent au rez-de-chaussée des deux premières phases, les 5 ½ à celui des deux dernières. Tous ont des comptoirs de quartz, une thermopompe, un bain et une douche séparés, un stationnement et le Wi-Fi inclus."
   en:
-    - "A mixed-use cluster that distributes homes and commercial space across four distinct buildings."
+    - "A mixed-use cluster that distributes homes and commercial space across four distinct buildings, at 2055, 2057, 2059 and 2061 chemin Ridge."
+    - "2055 holds twelve apartments. The other three hold ten each, above two ground-floor commercial spaces fronting onto chemin Ridge. Every building is three storeys."
+    - "The project was built in four phases: 2055 in July 2024, 2057 in September 2024, 2059 in May 2025 and 2061 in July 2025."
+    - "Most apartments are 4 ½. The 3 ½ units sit on the ground floor of the first two phases, the 5 ½ units on that of the last two. All have quartz countertops, a heat pump, a separate tub and shower, one parking space and Wi-Fi included."
 
 faits:
   - label: { fr: "Statut", en: "Status" }
@@ -30,11 +46,95 @@ faits:
   - label: { fr: "Espaces commerciaux", en: "Commercial spaces" }
     valeur: { fr: "6", en: "6" }
 
-# Deux couvertures ont été écartées avant d'en arriver là. Celle du mirror
-# montrait un ensemble de maisons en rangée vues du ciel, sans rapport avec
-# les quatre immeubles du chemin Ridge. Un séjour meublé a pris sa place, puis
-# est parti à son tour.
+# Par type, pas par unité : 42 logements pour 8 plans-types répétés d'un
+# bâtiment à l'autre. Les superficies sont les totales des fiches, balcon
+# compris — c'est la convention du schéma et celle des cahiers.
 #
-# Aucune couverture : les dix-neuf photos livrées (reference/NEW/RIDGE) sont
-# toutes des intérieurs. Même règle qu'au 110 Ste-Cécile — gabarit en
-# attendant une photo de façade.
+# Aucun prix. Le projet est loué ; « Sur demande » laisserait croire qu'un
+# appel donnerait un chiffre. Le seul loyer que le client mentionne encore
+# (4 ½ à 1 250 $/mois) concerne les logements qui se libèrent, pas le projet
+# livré — il n'a pas sa place sur une page de réalisation.
+logements:
+  - type: "3 ½"
+    nombre: 3
+    superficieMin: 842
+    superficieMax: 914
+    note:
+      fr: "Au rez-de-chaussée des phases 1 et 2 (2055 et 2057)."
+      en: "Ground floor of phases 1 and 2 (2055 and 2057)."
+  - type: "4 ½"
+    nombre: 35
+    superficieMin: 970
+    superficieMax: 1145
+    note:
+      fr: "Le type dominant du projet, présent sur les trois étages des quatre bâtiments."
+      en: "The project's dominant layout, on all three floors of all four buildings."
+  - type: "5 ½"
+    nombre: 4
+    superficieMin: 1282
+    superficieMax: 1282
+    note:
+      fr: "Au rez-de-chaussée des phases 3 et 4 (2059 et 2061), deux par immeuble."
+      en: "Ground floor of phases 3 and 4 (2059 and 2061), two per building."
+
+inclusions:
+  - label: { fr: "Stationnement inclus", en: "Parking included" }
+    icone: square-parking
+  - label: { fr: "Wi-Fi inclus", en: "Wi-Fi included" }
+    icone: wifi
+  - label: { fr: "Thermopompe", en: "Heat pump" }
+    icone: wind
+  - label: { fr: "Comptoirs de quartz", en: "Quartz countertops" }
+    icone: countertop
+  - label: { fr: "Bain et douche séparés", en: "Separate tub and shower" }
+    icone: waves
+  - label: { fr: "Intercom", en: "Intercom" }
+    icone: bell-ring
+
+couverture:
+  src: ../../assets/projets/2055-61-chemin-ridge/couverture.jpg
+  alt:
+    fr: "2055-61 Chemin Ridge — Huntingdon"
+    en: "2055-61 Chemin Ridge — Huntingdon"
+
+# Trois couvertures ont été écartées avant celle-ci. Celle du mirror montrait
+# un ensemble de maisons en rangée, sans rapport avec les quatre immeubles du
+# chemin Ridge ; deux intérieurs meublés ont pris sa place tour à tour, et une
+# photo d'intérieur ne sert jamais de couverture à une réalisation.
+#
+# Résolu le 2026-09-02 : la livraison « NewInfo » apporte enfin une façade —
+# le 2057, numéro civique lisible, rez-de-chaussée commercial en brique et
+# deux étages de logements. C'est la phase 2 des quatre, mais c'est le
+# bâtiment type de l'ensemble (2057, 2059 et 2061 sont bâtis sur le même
+# programme).
+#
+# La façade ouvre la galerie : sur une réalisation, on veut d'abord voir le
+# bâtiment. Aucun numéro d'unité n'est déclaré — les photos viennent du
+# Facebook de Chester et ne portent aucune identification d'unité, et on
+# n'invente pas un numéro pour remplir un champ.
+photos:
+  - src: ../../assets/projets/2055-61-chemin-ridge/photos/exterieur-facade-2057.jpg
+    alt:
+      fr: "Façade du 2057, chemin Ridge : rez-de-chaussée commercial en brique et deux étages de logements"
+      en: "Front of 2057 chemin Ridge: brick commercial ground floor and two residential storeys"
+    categorie: exterieur
+  - src: ../../assets/projets/2055-61-chemin-ridge/photos/sejour-01.jpg
+    alt:
+      fr: "Aire ouverte meublée : cuisine à îlot, séjour et coin repas donnant sur le balcon"
+      en: "Furnished open-plan area: island kitchen, living room and dining nook opening onto the balcony"
+  - src: ../../assets/projets/2055-61-chemin-ridge/photos/cuisine-01.jpg
+    alt:
+      fr: "Aire ouverte vide, cuisine à îlot de quartz et fenêtres donnant sur les champs"
+      en: "Empty open-plan area, quartz island kitchen and windows onto the fields"
+  - src: ../../assets/projets/2055-61-chemin-ridge/photos/sejour-02.jpg
+    alt:
+      fr: "Séjour meublé vers la cuisine, thermopompe murale au-dessus du rangement"
+      en: "Furnished living room looking toward the kitchen, wall-mounted heat pump above the storage"
+  - src: ../../assets/projets/2055-61-chemin-ridge/photos/salle-a-manger-01.jpg
+    alt:
+      fr: "Coin repas meublé et porte-balcon, cuisine à l'arrière-plan"
+      en: "Furnished dining nook and balcony door, kitchen in the background"
+  - src: ../../assets/projets/2055-61-chemin-ridge/photos/chambre-01.jpg
+    alt:
+      fr: "Chambre avec grande fenêtre donnant sur les champs"
+      en: "Bedroom with a large window onto the fields"
