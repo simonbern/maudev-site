@@ -56,7 +56,17 @@ const imageADroite = index % 2 === 1;
 
 <li
   data-reveal
-  class="group relative grid items-center gap-8 border-t border-line pt-10 md:grid-cols-12 md:gap-x-12 md:pt-14 lg:gap-x-20"
+  class:list={[
+    'group relative grid items-center gap-8 pt-10 md:grid-cols-12 md:gap-x-12 md:pt-14 lg:gap-x-20',
+    /* Le filet sépare deux rangées de projets. La première n'en a pas :
+       au-dessus d'elle il n'y a pas de rangée mais la fin de l'en-tête vert
+       pâle, et le changement de fond sépare déjà. Le filet y répétait en gris,
+       quelques dizaines de pixels plus bas, ce que la couleur venait de dire.
+
+       Le `pt`, lui, reste sur toutes les cartes : c'est l'espace de la rangée,
+       pas celui du filet. */
+    index > 0 && 'border-t border-line',
+  ]}
 >
   <div
     class:list={[

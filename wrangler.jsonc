@@ -1,0 +1,32 @@
+{
+  // Déploiement Cloudflare Workers — site statique, sans code serveur.
+  //
+  // Cloudflare a replié « Pages » dans « Workers » : la création d'un projet
+  // depuis un dépôt Git passe maintenant par Workers Builds, qui lance
+  // `npx wrangler deploy` après la construction. Sans ce fichier, wrangler ne
+  // sait pas quoi déployer et s'arrête — c'est l'échec du 2026-09-02.
+  //
+  // Aucun `main` : le site n'a pas de code serveur. Astro produit du HTML
+  // statique dans `dist/`, et un Worker « assets seuls » suffit à le servir.
+  // Le jour où le formulaire de visite aura besoin de son relais vers GHL
+  // (voir reference/hebergement.md et src/leads.ts), il faudra ajouter un
+  // `main` et une route — pas avant.
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "maudev-site",
+  "compatibility_date": "2025-01-01",
+
+  "assets": {
+    "directory": "./dist",
+
+    // Astro génère des dossiers : `/projets` est `dist/projets/index.html`.
+    // `auto-trailing-slash` sert l'un pour l'autre, dans les deux sens, sans
+    // rediriger — sinon chaque lien interne du site tomberait sur un 404.
+    "html_handling": "auto-trailing-slash",
+
+    // Le site n'a pas de page 404. `none` renvoie la réponse 404 nue de
+    // Cloudflare plutôt que de servir l'accueil à la place d'une page
+    // manquante : une adresse fausse qui affiche la page d'accueil avec un
+    // code 200 est indexée comme une page réelle.
+    "not_found_handling": "none"
+  }
+}
