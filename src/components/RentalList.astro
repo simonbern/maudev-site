@@ -34,7 +34,7 @@ const totalLogements = projets.reduce((n, p) => n + (p.data.unites ?? 0), 0);
 const villes = new Set(projets.map((p) => p.data.ville)).size;
 ---
 
-{/* En-tête, sur le vert pâle du site.
+{/* En-tête, sur le vert sombre.
 
     Titre, chapeau, décompte et les trois rangées de projets tenaient dans une
     seule section `bg-page`, et seul le rappel de contact, tout en bas,
@@ -42,11 +42,11 @@ const villes = new Set(projets.map((p) => p.data.ville)).size;
     de début, elle commençait juste plus bas que le titre — un filet, celui de
     la première carte, faisait tout le travail de séparation.
 
-    Le vert pâle donne son bord à l'en-tête. Il porte ce qui décrit la page ;
-    les projets gardent le fond sombre, où leurs photos ressortent. C'est le
-    couple de fonds de l'accueil, dans le même ordre, et il dit la même chose
-    ici : ce qui annonce d'un côté, ce qu'on regarde de l'autre. */}
-<section class="zone-claire bg-section-accent pt-12 pb-12 md:pt-16 md:pb-14 lg:pt-20 lg:pb-16">
+    La page est donc coupée en deux fonds. L'en-tête garde le vert sombre : il
+    prolonge la barre de navigation, et le titre y entre sans marche.
+
+    C'est la liste qui passe au vert pâle — voir la section suivante. */}
+<section class="bg-page pt-12 pb-12 md:pt-16 md:pb-14 lg:pt-20 lg:pb-16">
   <div class="mx-auto max-w-page px-5 md:px-8 lg:px-12">
     <div class="grid gap-y-8 md:grid-cols-12 md:gap-x-10">
       <h1 data-reveal class="text-display text-balance text-ink md:col-span-7">{t.title}</h1>
@@ -73,14 +73,20 @@ const villes = new Set(projets.map((p) => p.data.ville)).size;
   </div>
 </section>
 
-{/* Les projets, sur le fond sombre.
+{/* Les projets, sur le vert pâle.
 
-    Le `pt` de la section remplace le `mt` que portait la liste. Il éloigne
-    aussi le filet de la première carte de la limite des deux verts : posé
-    dessus, il aurait répété en gris ce que le changement de fond venait de
-    dire. À 48 px en dessous, il redevient ce qu'il est — le séparateur entre
-    deux rangées de projets, la première comprise. */}
-<section class="bg-page pt-12 pb-10 md:pt-16 md:pb-12 lg:pt-20 lg:pb-14">
+    C'est la partie longue de la page — trois rangées pleine largeur, et
+    davantage à mesure que le portefeuille grandit. La laisser sur le vert
+    sombre, c'était laisser presque toute la page dessus ; le fond clair est
+    donc là où il y en a le plus à regarder.
+
+    `zone-claire` retourne les jetons de couleur : les noms de projet passent
+    au vert profond, les filets s'assombrissent, la flèche du pied de carte
+    prend l'accent sombre. Aucune classe de `ProjectCard` ne change — elles
+    lisent toutes des jetons, et c'est précisément ce que ce système permet.
+
+    Le `pt` de la section remplace le `mt` que portait la liste. */}
+<section class="zone-claire bg-section-accent pt-12 pb-10 md:pt-16 md:pb-12 lg:pt-20 lg:pb-14">
   <div class="mx-auto max-w-page px-5 md:px-8 lg:px-12">
     {
       projets.length ? (
