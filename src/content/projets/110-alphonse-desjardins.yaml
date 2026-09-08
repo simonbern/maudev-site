@@ -1,5 +1,9 @@
-# Genere depuis reference/mirror/www.mau-dev.ca/{fr,en}/projects/110-alphonse-desjardins
-# Textes et chiffres repris tels quels de l’ancien site.
+# Généré depuis reference/mirror/www.mau-dev.ca/{fr,en}/projects/110-alphonse-desjardins
+# Textes et chiffres repris tels quels de l'ancien site.
+#
+# Enrichi le 2026-09-08 : le client a livré quatre photos professionnelles
+# (reference/NewInfo/110 alphonse-Desjardins). Elles ouvrent une page de projet
+# — voir `realiseAvecFiche` dans src/i18n.ts.
 nom: "110 Alphonse-Desjardins"
 statut: realise
 ordre: 0
@@ -12,11 +16,20 @@ resume:
   fr: "Projet résidentiel livré à Salaberry-de-Valleyfield."
   en: "Completed residential project in Salaberry-de-Valleyfield."
 
+# Le premier paragraphe vient du mirror. Les deux suivants décrivent ce que
+# montrent les photos du client — la façade, le stationnement couvert, les
+# finitions — et rien d'autre. Décrire une image livrée n'est pas inventer du
+# contenu ; annoncer un loyer ou une superficie qu'aucune source ne donne le
+# serait.
 description:
   fr:
     - "Un immeuble résidentiel compact de 23 unités qui s'inscrit dans la présence croissante de MauDev à Valleyfield."
+    - "Trois étages sur rue, en brique rouge et revêtement clair, avec des balcons à chaque niveau et une entrée commune au centre de la façade. Une partie du rez-de-chaussée est ouverte en stationnement couvert, sous les logements."
+    - "Les logements s'organisent en aire ouverte : cuisine à îlot ouverte sur le séjour, grandes fenêtres, et une salle de bain avec bain et douche séparés."
   en:
     - "A compact 23-unit residential building that strengthens MauDev's growing presence in Valleyfield."
+    - "Three storeys on the street, in red brick and light cladding, with balconies on every level and a shared entrance at the centre of the front. Part of the ground floor is open as covered parking, beneath the apartments."
+    - "The apartments are open-plan: an island kitchen opening onto the living area, large windows, and a bathroom with a separate tub and shower."
 
 faits:
   - label: { fr: "Statut", en: "Status" }
@@ -33,3 +46,50 @@ couverture:
   alt:
     fr: "110 Alphonse-Desjardins — Salaberry-de-Valleyfield"
     en: "110 Alphonse-Desjardins — Salaberry-de-Valleyfield"
+
+# La seule photo d'extérieur du lot sert de couverture ET ouvre la galerie :
+# sur une réalisation, on veut d'abord voir le bâtiment.
+#
+# Recadrée en 1200 × 800 à partir du 2000 × 1334 d'origine, en trois passes.
+# La photo est prise depuis le trottoir d'en face : l'immeuble n'occupe que le
+# tiers supérieur du cadre, le reste est chaussée puis trottoir.
+#
+# **Le cadre est calé sur le bâtiment.** Il court de y=190 à y=740 dans
+# l'original, donc son centre est à 465 ; la fenêtre de 800 px part de 65 pour
+# l'y centrer exactement, et laisse 125 px de ciel au-dessus, 125 px de
+# chaussée en dessous. Le trottoir est hors cadre.
+#
+# **Le bord droit est à 1497, juste avant les bacs à ordures** (mesurés à
+# x=1498 → 1660). Les sortir par le recadrage plutôt que par une retouche
+# garde la photo intacte : c'est le bâtiment tel qu'il a été photographié.
+#
+# Le client a proposé une version où les bacs avaient été effacés par IA
+# générative. Écartée : la comparaison pixel à pixel montre que la retouche a
+# aussi **régénéré toute l'extrémité droite du bâtiment** — balcon, ouverture
+# du rez-de-chaussée, poteau — et l'a rendue en 1264 × 843 au lieu de
+# 2000 × 1334. DESIGN.md et CLAUDE.md interdisent de présenter comme photo ce
+# qui n'en est plus une ; c'est la règle qui avait déjà fait écarter le rendu
+# 3D du 110 Ste-Cécile. Le fichier reste dans reference/NewInfo/ si le client
+# tranche autrement.
+#
+# Pas d'agrandissement à 1500 px comme les autres couvertures : 1200 px est la
+# largeur réelle du recadrage, et interpoler pour atteindre une convention
+# n'ajoute aucun détail.
+photos:
+  - src: ../../assets/projets/110-alphonse-desjardins/photos/exterieur-rue-01.jpg
+    alt:
+      fr: "Façade sur rue du 110 Alphonse-Desjardins : trois étages en brique et revêtement clair, balcons et entrée commune"
+      en: "Street front of 110 Alphonse-Desjardins: three storeys in brick and light cladding, balconies and shared entrance"
+    categorie: exterieur
+  - src: ../../assets/projets/110-alphonse-desjardins/photos/sejour-01.jpg
+    alt:
+      fr: "Aire ouverte vide : cuisine à îlot au fond, séjour et grande fenêtre"
+      en: "Empty open-plan area: island kitchen at the back, living room and a large window"
+  - src: ../../assets/projets/110-alphonse-desjardins/photos/cuisine-01.jpg
+    alt:
+      fr: "Cuisine avec armoires claires, cuisinière et hotte, réfrigérateur en acier inoxydable"
+      en: "Kitchen with light cabinets, range and hood, stainless steel refrigerator"
+  - src: ../../assets/projets/110-alphonse-desjardins/photos/salle-de-bain-01.jpg
+    alt:
+      fr: "Salle de bain avec bain et douche vitrée séparés, céramique marbrée et vanité claire"
+      en: "Bathroom with a separate tub and glass shower, marbled tile and a light vanity"

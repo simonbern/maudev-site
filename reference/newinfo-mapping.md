@@ -257,6 +257,78 @@ Décisions prises avec l'équipe le 2026-09-02 :
   projet est loué, et « Sur demande » laisserait croire qu'un appel donnerait
   un chiffre. Types et superficies restent, eux sont vrais.
 
+---
+
+## Troisième livraison — 2026-09-08 · photos professionnelles
+
+Cinq dossiers déposés dans `reference/NewInfo/`, **37 photos** au total. Rien
+d'écrit ne les accompagne : ce sont des photos seules, sans cahier ni courriel.
+
+| Dossier | Photos | Projet | Ce que ça a débloqué |
+|---|---|---|---|
+| `110 alphonse-Desjardins/` | 4 | `110-alphonse-desjardins` | couverture + **page** |
+| `142 rue St-Joseph/` | 7 | `142-saint-joseph` | couverture + **page** |
+| `145 rue Salaberry/` | 6 | `145-salaberry` | couverture + **page** |
+| `Franklin/` | 7 | `2575-route-209` | **première couverture** + **page** |
+| `4A-4B Henderson/` | 10 | `4a-b-henderson` | couverture et galerie **refaites** |
+
+Les 37 ont été ouvertes une à une. Toutes sont en 3:2 (2573 × 1716 ou
+2000 × 1334) — aucune n'a demandé de recadrage de format, seulement deux
+recadrages de contenu (voir plus bas).
+
+**Quatre pages de projet sont nées sans une ligne de code.** `realiseAvecFiche`
+teste la présence de photos ; les déclarer dans le YAML suffit. Le site passe
+de 3 à 7 réalisations avec fiche, et de 3 à 7 cartes cliquables sur `/projets`.
+
+### Poids : 34 fichiers pour 6,7 Mo
+
+Les originaux font 2 à 2,8 Mo chacun — 90 Mo pour le lot. Copiés à **1800 px de
+large** (couvertures à 1500), qualité 82 : la visionneuse ne demande jamais
+plus de 1600 px, au-delà on stockerait dans le dépôt des pixels que personne ne
+télécharge. Les originaux restent dans `reference/NewInfo/`.
+
+### Les deux recadrages
+
+| Photo | Pourquoi |
+|---|---|
+| `142-saint-joseph/couverture` | Une benne à déchets rouge occupait le cinquième droit du cadre. Rogné à `1600 × 1067` depuis la gauche — le numéro civique « 142 » reste dedans. |
+| `110-alphonse-desjardins/couverture` | Prise depuis le trottoir d'en face : un tiers de l'image était de la chaussée vide. Rogné sur le bâtiment et son entrée. |
+
+Les versions non recadrées de ces deux photos ne sont **pas** publiées ; la
+galerie reçoit la même image recadrée que la couverture.
+
+### Henderson — les photos Facebook sont sorties
+
+Les trois photos reprises du Facebook de Chester (2026-09-02) sont remplacées
+par les dix du client. **Ce n'est pas qu'une question de qualité** : le client
+avait lui-même écrit qu'elles venaient de là « sans leur permission ».
+Henderson ne dépend plus d'images de tiers.
+
+**Ridge et Sainte-Cécile, eux, en dépendent toujours** — aucun dossier ne leur
+a été livré cette fois. L'accord de Chester reste à obtenir pour ces deux-là,
+et pour les cahiers de location (voir § Provenance plus haut).
+
+### Descriptions — ce qui a été écrit, et d'où ça vient
+
+Ces quatre projets n'avaient qu'une phrase de description, héritée du mirror.
+Une page de projet construite là-dessus aurait été un hero suivi d'un vide.
+
+Deux paragraphes ont donc été ajoutés à chacun, qui **décrivent les photos
+livrées** : la façade, le nombre d'étages, le stationnement couvert du 110
+Alphonse-Desjardins, les vitrines commerciales du 145 Salaberry, les balcons
+superposés du 2575 route 209. Décrire une image que le client a livrée n'est
+pas inventer du contenu. Annoncer un loyer, une superficie ou une date que
+personne n'a fournis le serait — et rien de tel n'a été ajouté.
+
+Le premier paragraphe de chaque fiche reste celui du mirror, intact.
+
+### Un fait ajouté
+
+`2575-route-209` n'avait pas de fait « Statut ». La carte de `/projets` affiche
+le premier fait à côté de la municipalité : elle annonçait « Franklin ·
+Résidentiel » là où les quatorze autres disent « Livré ». Ajouté, plus
+« Bâtiments : 1 » — visible sur les photos.
+
 ## Ce qui reste à faire
 
 1. **Conversion des pages de plans en images** — bloquée : pas de rendu PDF sur

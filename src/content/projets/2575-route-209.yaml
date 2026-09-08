@@ -1,4 +1,9 @@
 # Source : client, 2026-08-28. Voir 148-route-202.yaml.
+#
+# Enrichi le 2026-09-08 : sept photos professionnelles livrées par le client
+# (reference/NewInfo/Franklin) donnent au projet sa première couverture et sa
+# page — jusque-là sa carte n'avait qu'un gabarit « Photos à venir » et deux
+# faits.
 nom: "2575 route 209"
 statut: realise
 ordre: 0
@@ -11,14 +16,71 @@ resume:
   fr: "Immeuble de 6 logements à Franklin."
   en: "Six-apartment building in Franklin."
 
+# Premier paragraphe : le client. Les suivants décrivent les photos livrées —
+# le seul projet du portefeuille en plein champ, et ça se voit.
 description:
   fr:
     - "Un immeuble résidentiel de 6 logements à Franklin."
+    - "Trois niveaux posés sur un socle de brique, en pleine campagne : le terrain est en herbe jusqu'au pied du bâtiment, sans voisin immédiat. Les logements de l'arrière ont chacun un balcon couvert, superposés sur toute la hauteur."
+    - "À l'intérieur, une aire ouverte unique avec cuisine à îlot et comptoir foncé, une thermopompe murale, et une salle de bain avec bain autoportant et douche vitrée. Depuis les balcons, la vue porte sur un verger."
   en:
     - "A six-apartment residential building in Franklin."
+    - "Three levels set on a brick base, in open country: grass runs right up to the building, with no immediate neighbour. The rear apartments each have a covered balcony, stacked the full height of the façade."
+    - "Inside, a single open-plan area with an island kitchen and a dark counter, a wall-mounted heat pump, and a bathroom with a freestanding tub and a glass shower. From the balconies, the view runs over an orchard."
 
 faits:
+  - label: { fr: "Statut", en: "Status" }
+    valeur: { fr: "Livré", en: "Delivered" }
   - label: { fr: "Programme", en: "Program" }
     valeur: { fr: "Résidentiel", en: "Residential" }
+  - label: { fr: "Bâtiments", en: "Buildings" }
+    valeur: { fr: "1", en: "1" }
   - label: { fr: "Logements", en: "Apartments" }
     valeur: { fr: "6", en: "6" }
+
+# Le fait « Statut » a été ajouté le 2026-09-08. La carte de /projets affiche
+# le premier fait à côté de la municipalité — sans lui, elle annonçait
+# « Franklin · Résidentiel » là où toutes les autres disent « Livré ».
+
+couverture:
+  src: ../../assets/projets/2575-route-209/couverture.jpg
+  alt:
+    fr: "2575 route 209 — Franklin"
+    en: "2575 route 209 — Franklin"
+
+# La vue d'angle sert de couverture plutôt que la façade de face : elle montre
+# les balcons superposés, qui sont ce que le bâtiment a de particulier, et le
+# terrain en herbe qui l'entoure. La face, elle, cadre surtout l'escalier
+# d'entrée et une pelouse encore en friche.
+photos:
+  - src: ../../assets/projets/2575-route-209/photos/exterieur-angle-01.jpg
+    alt:
+      fr: "Le 2575 route 209 vu d'angle : trois niveaux, balcons couverts superposés et terrain en herbe"
+      en: "2575 route 209 seen from an angle: three levels, stacked covered balconies and a grass lot"
+    categorie: exterieur
+  - src: ../../assets/projets/2575-route-209/photos/exterieur-facade-01.jpg
+    alt:
+      fr: "Façade avant, socle de brique et revêtement clair, escalier d'entrée extérieur"
+      en: "Front elevation, brick base and light cladding, exterior entrance stair"
+    categorie: exterieur
+  - src: ../../assets/projets/2575-route-209/photos/sejour-01.jpg
+    alt:
+      fr: "Aire ouverte vide avec cuisine au fond et thermopompe murale"
+      en: "Empty open-plan area with the kitchen at the back and a wall-mounted heat pump"
+  - src: ../../assets/projets/2575-route-209/photos/sejour-02.jpg
+    alt:
+      fr: "Séjour vide, fenêtres sur deux murs donnant sur la campagne"
+      en: "Empty living room, windows on two walls looking onto the countryside"
+  - src: ../../assets/projets/2575-route-209/photos/cuisine-01.jpg
+    alt:
+      fr: "Cuisine à îlot avec comptoir foncé, armoires claires et hotte"
+      en: "Island kitchen with a dark counter, light cabinets and a range hood"
+  - src: ../../assets/projets/2575-route-209/photos/salle-de-bain-01.jpg
+    alt:
+      fr: "Salle de bain avec bain autoportant et douche vitrée en céramique marbrée"
+      en: "Bathroom with a freestanding tub and a marbled-tile glass shower"
+  - src: ../../assets/projets/2575-route-209/photos/balcon-vue-01.jpg
+    alt:
+      fr: "Vue depuis un balcon couvert : un verger et la campagne environnante"
+      en: "View from a covered balcony: an orchard and the surrounding countryside"
+    categorie: exterieur

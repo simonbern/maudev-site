@@ -50,6 +50,25 @@ const t = projetsCopy[locale].detail;
 // Une réalisation est livrée et louée : ni loyer, ni visite, ni formulaire.
 const realise = d.statut === 'realise';
 
+// Classes écrites en toutes lettres : Tailwind lit le source, il ne calcule
+// pas `lg:grid-cols-${n}`. Indexé par le nombre de faits affichés (0 à 4).
+const COLONNES = ['', '', 'lg:grid-cols-2', 'lg:grid-cols-3', 'lg:grid-cols-4'];
+
+/**
+ * « En bref » est-il suivi d'une section du même fond ?
+ *
+ * L'ordre est : En bref → Logements → Photos. Les logements sont sur
+ * `section-alt`, les photos sur `page` — le même fond qu'« En bref ». Quand un
+ * projet n'a pas de tableau de logements, les deux blocs `page` se touchent
+ * donc, et chacun paie son rembourrage : 64 px en bas plus 64 px en haut, sur
+ * un fond qui ne change pas. Rien ne justifiait ce vide — un changement de
+ * couleur, oui ; deux sections identiques, non.
+ *
+ * C'est le cas des quatre fiches nées de la livraison photo du 2026-09-08, qui
+ * n'ont pas de superficies : le client a envoyé des images, pas des cahiers.
+ */
+const brefColleAuxPhotos = d.logements.length === 0 && d.photos.length > 0;
+
 const hasMedia = d.photos.length > 0 || d.plans.length > 0 || d.renders.length > 0;
 
 // Neuf inclusions au maximum dans la grille : trois colonnes, trois rangées,
@@ -122,10 +141,23 @@ const heroPoster = d.video?.poster ?? d.couverture?.src;
      toujours « Statut » et le hero le dit déjà autrement — on l'écarte. -->
 {
   realise && d.faits.length > 1 && (
-    <section class="bg-page py-12 md:py-14 lg:py-16">
+    <section
+      class:list={[
+        'bg-page pt-12 md:pt-14 lg:pt-16',
+        // Pas de rembourrage bas quand les photos suivent sur le même fond :
+        // leur `pt` suffit, et il vaut le même. Voir `brefColleAuxPhotos`.
+        !brefColleAuxPhotos && 'pb-12 md:pb-14 lg:pb-16',
+      ]}
+    >
       <div class="mx-auto max-w-page px-5 md:px-8 lg:px-12">
         <h2 class="mb-8 text-h2 text-balance text-ink md:mb-10">{t.faits}</h2>
-        <dl class="grid gap-x-10 gap-y-8 sm:grid-cols-2 lg:grid-cols-4">
+        {/* Le nombre de colonnes suit le nombre de faits, plafonné à quatre.
+            La grille était fixée à `lg:grid-cols-4` : les projets qui n'ont
+            que trois faits à montrer laissaient une quatrième colonne vide au
+            bout de la rangée, et le trou se lisait comme une donnée manquante
+            plutôt que comme une donnée absente. Trois faits occupent
+            maintenant trois colonnes. */}
+        <dl class:list={['grid gap-x-10 gap-y-8 sm:grid-cols-2', COLONNES[Math.min(d.faits.length - 1, 4)]]}>
           {d.faits.slice(1).map((f) => (
             <div class="border-t border-line pt-5">
               <dt class="text-label text-ink-muted first-letter:uppercase">{f.label[locale]}</dt>
@@ -316,7 +348,12 @@ const heroPoster = d.video?.poster ?? d.couverture?.src;
          section pour une seule phrase. */
       !hasMedia && <p class="mb-12 max-w-prose text-lead text-ink-muted">{t.noMedia}</p>
     }
-    <div class="border-t border-line-strong pt-14 md:pt-20">
+    {/* Le filet de fin de page. Son dégagement était réglé pour le formulaire
+        de visite, qui fait une dizaine de champs : 80 px au-dessus d'un bloc
+        de cette taille se lisent comme une respiration. Au-dessus du renvoi
+        d'une réalisation — deux lignes et deux boutons — ils se lisaient
+        comme un trou. */}
+    <div class:list={['border-t border-line-strong', realise ? 'pt-10 md:pt-12' : 'pt-14 md:pt-20']}>
       {
         realise ? (
           <div id="contact" class="flex scroll-mt-28 flex-col items-start justify-between gap-8 md:flex-row md:items-end">

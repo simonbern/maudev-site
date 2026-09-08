@@ -51,27 +51,64 @@ couverture:
     fr: "4A-B Henderson — Huntingdon"
     en: "4A-B Henderson — Huntingdon"
 
+# Couverture et galerie refaites le 2026-09-08.
+#
+# Historique en trois temps. La couverture du mirror montrait le second
+# bâtiment encore sous membrane Tyvek, cônes de chantier au premier plan — un
+# chantier sur une page de réalisations. Le 2026-09-02 elle a été remplacée
+# par une façade terminée tirée du Facebook de Chester, portrait, recadrée en
+# 3:2. Le client a depuis livré dix photos professionnelles du projet
+# (reference/NewInfo/4A-4B Henderson) : elles remplacent les trois photos
+# Facebook, couverture comprise.
+#
+# **Ce n'est pas qu'une question de qualité.** Les photos Facebook avaient été
+# reprises « sans leur permission », de l'aveu du client lui-même ; celles-ci
+# viennent de lui. Henderson ne dépend donc plus d'images de tiers — Ridge et
+# Ste-Cécile, eux, en dépendent toujours (voir reference/newinfo-mapping.md).
+#
+# La galerie ouvre sur les deux extérieurs : la façade de face, qui sert aussi
+# de couverture, puis la vue d'angle où le second bâtiment apparaît derrière
+# le premier. C'est la seule image qui montre que le projet en compte deux.
 photos:
   - src: ../../assets/projets/4a-b-henderson/photos/exterieur-facade-01.jpg
     alt:
-      fr: "Façade d'un des deux bâtiments Henderson, brique et revêtement foncé, stationnement au premier plan"
-      en: "Front of one of the two Henderson buildings, brick and dark cladding, parking lot in the foreground"
+      fr: "Façade d'un des deux bâtiments Henderson : quatre niveaux, brique au centre, revêtement foncé et panneaux de bois"
+      en: "Front of one of the two Henderson buildings: four levels, brick at the centre, dark cladding and wood panels"
     categorie: exterieur
+  - src: ../../assets/projets/4a-b-henderson/photos/exterieur-angle-01.jpg
+    alt:
+      fr: "Les deux bâtiments Henderson vus d'angle, le second en retrait derrière le premier"
+      en: "The two Henderson buildings seen from an angle, the second set back behind the first"
+    categorie: exterieur
+  - src: ../../assets/projets/4a-b-henderson/photos/sejour-01.jpg
+    alt:
+      fr: "Aire ouverte meublée : canapé, coin repas et cuisine à îlot avec tabourets"
+      en: "Furnished open-plan area: sofa, dining nook and island kitchen with stools"
+  - src: ../../assets/projets/4a-b-henderson/photos/sejour-02.jpg
+    alt:
+      fr: "Séjour meublé avec porte-fenêtre donnant sur le balcon"
+      en: "Furnished living room with a patio door onto the balcony"
   - src: ../../assets/projets/4a-b-henderson/photos/cuisine-01.jpg
     alt:
-      fr: "Cuisine à îlot de quartz, armoires blanches et bois, ouverte sur l'aire de vie"
-      en: "Quartz island kitchen, white and wood cabinets, open to the living area"
+      fr: "Aire ouverte vide, cuisine à îlot de bois et porte-fenêtre au fond"
+      en: "Empty open-plan area, wood island kitchen and a patio door at the back"
+  - src: ../../assets/projets/4a-b-henderson/photos/cuisine-02.jpg
+    alt:
+      fr: "Cuisine à îlot avec tabourets, armoires blanches et bois"
+      en: "Island kitchen with stools, white and wood cabinets"
+  - src: ../../assets/projets/4a-b-henderson/photos/chambre-01.jpg
+    alt:
+      fr: "Chambre meublée avec rideaux bleus et fenêtre sur la verdure"
+      en: "Furnished bedroom with blue curtains and a window onto greenery"
+  - src: ../../assets/projets/4a-b-henderson/photos/chambre-02.jpg
+    alt:
+      fr: "Chambre vide, large fenêtre donnant sur les arbres"
+      en: "Empty bedroom, wide window looking onto the trees"
   - src: ../../assets/projets/4a-b-henderson/photos/salle-de-bain-01.jpg
     alt:
-      fr: "Salle de bain avec douche vitrée à céramique marbrée et robinetterie noire"
+      fr: "Salle de bain avec douche vitrée en céramique marbrée et robinetterie noire"
       en: "Bathroom with a glass shower in marbled tile and black fixtures"
-
-# Couverture remplacée le 2026-09-02. L'ancienne (celle du mirror) montrait le
-# second bâtiment encore sous membrane Tyvek, avec des cônes de chantier :
-# lisible, mais c'était un chantier sur une page de réalisations. La livraison
-# « NewInfo » apporte une façade terminée, de face, plein soleil. Portrait à
-# l'origine (1024 × 1227), recadrée en 3:2 sur le bâtiment — les quatre
-# niveaux (sous-sol, RDC, 2e, 3e) restent dans le cadre.
-#
-# La même photo ouvre la galerie, en portrait cette fois : la couverture est
-# recadrée pour la grille, la galerie peut montrer le cadrage complet.
+  - src: ../../assets/projets/4a-b-henderson/photos/salle-de-bain-02.jpg
+    alt:
+      fr: "Salle de bain avec bain en céramique marbrée et douche vitrée séparée"
+      en: "Bathroom with a marbled-tile tub and a separate glass shower"

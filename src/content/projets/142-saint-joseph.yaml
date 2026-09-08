@@ -1,8 +1,11 @@
-# Genere depuis reference/mirror/www.mau-dev.ca/{fr,en}/projects/142-saint-joseph
-# Textes et chiffres repris de l’ancien site, moins le registre financier :
+# Généré depuis reference/mirror/www.mau-dev.ca/{fr,en}/projects/142-saint-joseph
+# Textes et chiffres repris de l'ancien site, moins le registre financier :
 # le fait « Note d'investissement / Mise de fonds remboursée (no cash deal) »
 # et la mention « approche de montage créative » ont été retirés sur demande
 # du client (2026-08-28). Le site s'adresse à des locataires.
+#
+# Enrichi le 2026-09-08 : sept photos professionnelles livrées par le client
+# (reference/NewInfo/142 rue St-Joseph) ouvrent une page de projet.
 nom: "142 Saint-Joseph"
 statut: realise
 ordre: 0
@@ -15,11 +18,16 @@ resume:
   fr: "Projet structuré à Sainte-Martine avec locataire ancré."
   en: "Structured project in Sainte-Martine with an anchor tenant."
 
+# Premier paragraphe : le mirror. Les suivants décrivent les photos livrées.
 description:
   fr:
     - "Un projet structuré autour de 12 unités résidentielles et d'un locataire ancré."
+    - "Un long volume de trois étages en brique rouge, rythmé par des travées de revêtement gris et par une série de pignons qui se répètent sur toute la façade. Chaque logement du rez-de-chaussée a sa porte sur rue, repérée par une lettre."
+    - "À l'intérieur, des aires ouvertes avec cuisine à îlot et armoires de bois, des portes-fenêtres donnant sur l'arrière, et des salles de bain en céramique marbrée — certaines avec bain et douche, d'autres avec une douche vitrée pleine hauteur."
   en:
     - "A structured project built around 12 residential units and an anchor tenant."
+    - "A long three-storey volume in red brick, punctuated by bays of grey cladding and by a run of gables repeated across the front. Each ground-floor apartment has its own street door, marked with a letter."
+    - "Inside, open-plan areas with island kitchens and wood cabinetry, patio doors onto the rear, and bathrooms in marbled tile — some with a tub and shower, others with a full-height glass shower."
 
 faits:
   - label: { fr: "Statut", en: "Status" }
@@ -38,3 +46,43 @@ couverture:
   alt:
     fr: "142 Saint-Joseph — Sainte-Martine"
     en: "142 Saint-Joseph — Sainte-Martine"
+
+# Deux extérieurs. La façade de face porte le numéro civique et sert de
+# couverture — recadrée à droite, où une benne à déchets rouge occupait le
+# cinquième du cadre. La vue d'angle, elle, est la seule qui donne la longueur
+# du bâtiment ; elle reste en galerie, non recadrée.
+#
+# Les deux ont été prises l'hiver, chantier encore ouvert : neige fondante,
+# palettes au pied du mur. C'est ce que le client a livré, et un bâtiment
+# terminé photographié en fin de chantier reste plus honnête qu'un rendu.
+photos:
+  - src: ../../assets/projets/142-saint-joseph/photos/exterieur-facade-01.jpg
+    alt:
+      fr: "Façade du 142 Saint-Joseph : trois étages de brique rouge, travées grises et pignons répétés"
+      en: "Front of 142 Saint-Joseph: three storeys of red brick, grey bays and repeated gables"
+    categorie: exterieur
+  - src: ../../assets/projets/142-saint-joseph/photos/exterieur-angle-01.jpg
+    alt:
+      fr: "Le bâtiment vu d'angle, qui montre toute sa longueur en brique et revêtement gris"
+      en: "The building seen from an angle, showing its full length in brick and grey cladding"
+    categorie: exterieur
+  - src: ../../assets/projets/142-saint-joseph/photos/sejour-01.jpg
+    alt:
+      fr: "Aire ouverte avec cuisine à îlot, armoires de bois et tabourets"
+      en: "Open-plan area with island kitchen, wood cabinetry and stools"
+  - src: ../../assets/projets/142-saint-joseph/photos/sejour-02.jpg
+    alt:
+      fr: "Grande aire ouverte vide, armoires de bois pleine hauteur et porte-fenêtre"
+      en: "Large empty open-plan area, full-height wood cabinetry and a patio door"
+  - src: ../../assets/projets/142-saint-joseph/photos/cuisine-01.jpg
+    alt:
+      fr: "Îlot de cuisine avec évier double, fenêtres donnant sur la verdure"
+      en: "Kitchen island with a double sink, windows onto greenery"
+  - src: ../../assets/projets/142-saint-joseph/photos/salle-de-bain-01.jpg
+    alt:
+      fr: "Salle de bain avec bain-douche en céramique marbrée et mur de tasseaux de bois"
+      en: "Bathroom with a marbled-tile tub-shower and a slatted wood wall"
+  - src: ../../assets/projets/142-saint-joseph/photos/salle-de-bain-02.jpg
+    alt:
+      fr: "Douche vitrée pleine hauteur en céramique marbrée, à côté d'une fenêtre"
+      en: "Full-height glass shower in marbled tile, beside a window"

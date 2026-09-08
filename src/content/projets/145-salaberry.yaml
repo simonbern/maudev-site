@@ -1,5 +1,10 @@
-# Genere depuis reference/mirror/www.mau-dev.ca/{fr,en}/projects/145-salaberry
-# Textes et chiffres repris tels quels de l’ancien site.
+# Généré depuis reference/mirror/www.mau-dev.ca/{fr,en}/projects/145-salaberry
+# Textes et chiffres repris tels quels de l'ancien site.
+#
+# Enrichi le 2026-09-08 : six photos professionnelles livrées par le client
+# (reference/NewInfo/145 rue Salaberry) ouvrent une page de projet. C'est le
+# lot le plus complet des cinq — une façade sur rue, une vue de drone, deux
+# intérieurs et le stationnement intérieur.
 nom: "145 Salaberry"
 statut: realise
 ordre: 0
@@ -12,11 +17,16 @@ resume:
   fr: "Actif mixte livré à Salaberry-de-Valleyfield."
   en: "Completed mixed-use asset in Salaberry-de-Valleyfield."
 
+# Premier paragraphe : le mirror. Les suivants décrivent les photos livrées.
 description:
   fr:
     - "Un actif mixte qui combine une base résidentielle dense à une composante commerciale de 10 000 pi²."
+    - "Quatre étages sur rue. Le rez-de-chaussée est entièrement commercial — une file de vitrines sous un auvent continu — et les trois niveaux de logements le surmontent, en brique claire et panneaux blancs, avec des balcons en saillie. Un niveau de stationnement intérieur occupe le sous-sol."
+    - "Les logements donnent sur de grandes fenêtres d'angle et s'ouvrent en aire unique de la cuisine au séjour. Les salles de bain reçoivent un bain autoportant et une douche vitrée séparée."
   en:
     - "A mixed-use asset that combines a dense residential base with 10,000 sq. ft. of commercial area."
+    - "Four storeys on the street. The ground floor is entirely commercial — a run of storefronts under a continuous canopy — with three residential levels above in light brick and white panels, balconies projecting from the face. A level of indoor parking occupies the basement."
+    - "The apartments open onto large corner windows and run as a single space from kitchen to living room. Bathrooms have a freestanding tub and a separate glass shower."
 
 faits:
   - label: { fr: "Statut", en: "Status" }
@@ -33,3 +43,39 @@ couverture:
   alt:
     fr: "145 Salaberry — Salaberry-de-Valleyfield"
     en: "145 Salaberry — Salaberry-de-Valleyfield"
+
+# La façade sur rue ouvre la galerie et sert de couverture : elle montre d'un
+# coup les deux moitiés du projet — les vitrines commerciales en bas, les
+# logements au-dessus. La vue de drone la suit, parce qu'elle situe l'immeuble
+# dans son îlot, ce qu'aucune vue de trottoir ne peut faire.
+#
+# Le stationnement intérieur est la troisième photo d'espace commun du site,
+# après les deux du 110 Ste-Cécile.
+photos:
+  - src: ../../assets/projets/145-salaberry/photos/exterieur-rue-01.jpg
+    alt:
+      fr: "Façade du 145 Salaberry : vitrines commerciales au rez-de-chaussée, trois étages de logements au-dessus"
+      en: "Front of 145 Salaberry: commercial storefronts at street level, three residential storeys above"
+    categorie: exterieur
+  - src: ../../assets/projets/145-salaberry/photos/drone-01.jpg
+    alt:
+      fr: "Vue aérienne de l'immeuble dans son îlot, arbres d'automne et rues environnantes"
+      en: "Aerial view of the building in its block, autumn trees and surrounding streets"
+    categorie: drone
+  - src: ../../assets/projets/145-salaberry/photos/sejour-01.jpg
+    alt:
+      fr: "Aire ouverte vide, grandes fenêtres et cuisine au fond"
+      en: "Empty open-plan area, large windows and the kitchen at the back"
+  - src: ../../assets/projets/145-salaberry/photos/cuisine-01.jpg
+    alt:
+      fr: "Cuisine à îlot avec évier, ouverte sur le séjour et ses fenêtres d'angle"
+      en: "Island kitchen with a sink, open to the living room and its corner windows"
+  - src: ../../assets/projets/145-salaberry/photos/salle-de-bain-01.jpg
+    alt:
+      fr: "Salle de bain avec bain autoportant, douche vitrée et vanité claire"
+      en: "Bathroom with a freestanding tub, glass shower and a light vanity"
+  - src: ../../assets/projets/145-salaberry/photos/commun-stationnement-01.jpg
+    alt:
+      fr: "Stationnement intérieur au sous-sol, colonnes de béton et porte de garage"
+      en: "Indoor basement parking, concrete columns and a garage door"
+    categorie: commun

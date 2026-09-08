@@ -59,3 +59,16 @@ reference/screenshots-*/
 # — 3 Mo de HTML, d'images et de CSS. Sauf ce clip décoratif de 96 Mo, qui à
 # lui seul pèse plus que tout le reste du dépôt et n'apprend rien sur le site.
 reference/mirror/www.mau-dev.ca/videos/
+
+# Livraison photo du 2026-09-08 : cinq dossiers de photos professionnelles,
+# 59 Mo. Les cahiers PDF de NewInfo restent versionnés — ils sont la seule
+# source des superficies. Ces photos, elles, ont déjà leur copie publiée dans
+# src/assets/projets/<slug>/ : 6,7 Mo à 1800 px, exactement ce que le site
+# sert (la visionneuse ne demande jamais plus de 1600 px). Garder les
+# originaux ici, c'est mettre dans le dépôt 59 Mo de pixels que personne ne
+# télécharge, et les redemander au client coûte un courriel.
+reference/NewInfo/110 alphonse-Desjardins/
+reference/NewInfo/142 rue St-Joseph/
+reference/NewInfo/145 rue Salaberry/
+reference/NewInfo/4A-4B Henderson/
+reference/NewInfo/Franklin/
