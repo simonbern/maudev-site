@@ -1,5 +1,47 @@
 # Hébergement et mise en ligne
 
+> ## Mettre le site en ligne — la commande
+>
+> ```bash
+> npm run build
+> npx wrangler deploy
+> ```
+>
+> C'est tout, et c'est la seule procédure retenue (2026-09-08).
+>
+> **Le déploiement part de `dist/` en local, pas de GitHub.** Pousser sur
+> `main` ne met donc rien en ligne : il faut reconstruire et redéployer. À
+> l'inverse, on peut déployer sans avoir commité — d'où l'intérêt de faire les
+> deux dans la foulée.
+>
+> `wrangler.jsonc`, à la racine du dépôt, dit quoi téléverser :
+> `assets.directory: ./dist`, aucun `main` — le site n'a pas de code serveur.
+>
+> ### Ce qui a été essayé et abandonné : la construction Git de Cloudflare
+>
+> Workers Builds détecte un projet Astro sans adaptateur et lance
+> `astro add cloudflare` **pendant la construction** — d'où les lignes
+> « lockfile has changed » et « Astro config changed » dans le journal, alors
+> que le dépôt ne contient ni l'un ni l'autre. L'adaptateur démarre ensuite un
+> serveur de prérendu miniflare, qui plante :
+>
+> ```
+> Failed to get static paths from the Cloudflare prerender server (500)
+> TypeError: Invalid URL string.
+> ```
+>
+> Le site est entièrement statique et n'a aucun usage de cet adaptateur. **Ne
+> jamais laisser `@astrojs/cloudflare` entrer dans `package.json` ou
+> `astro.config.mjs`** : c'est précisément ce qui cassait la construction.
+>
+> Deuxième piège du même épisode : Cloudflare construit par défaut avec Node 18,
+> alors qu'Astro 7 exige Node ≥ 22.12. D'où le `.nvmrc` à la racine.
+>
+> Tout ce qui suit décrit le plan d'origine — branchement Git, Pages, bascule
+> du domaine. Gardé pour le contexte et pour la partie GHL, qui reste à faire.
+
+---
+
 Trois chantiers en parallèle, puis on assemble.
 
 | Qui | Quoi |
