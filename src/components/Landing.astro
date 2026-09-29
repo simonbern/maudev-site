@@ -41,6 +41,8 @@ import interieur from '../assets/marque/interieur-aire-ouverte.jpg';
 // occupe un quart du cadre. La légende nomme le projet et dit que c'est un
 // rendu ; sans elle, une projection sur une page d'accueil passe pour un
 // immeuble livré.
+import survolValleyfield from '../assets/marque/survol-salaberry-de-valleyfield.jpg';
+import survolHuntingdon from '../assets/marque/survol-huntingdon.jpg';
 import aVenirRendu from '../assets/projets/1216-rue-principale/renders/rb-avant.jpg';
 
 /**
@@ -338,6 +340,16 @@ const chiffres = [
   titre={c.villes.titre}
   villes={municipalites}
   locale={locale}
+  survolLabel={c.villes.survol}
+  survolsTitre={c.villes.survolsTitre}
+  playLabel={c.hero.play}
+  pauseLabel={c.hero.pause}
+  survols={[
+    // Survols du client (2026-09), les projets épinglés à l'image. Les deux
+    // villes où MauDev a le plus bâti — ils répondent à « où » en montrant.
+    { ville: 'Salaberry-de-Valleyfield', mp4: '/videos/survols/salaberry-de-valleyfield.mp4', poster: survolValleyfield },
+    { ville: 'Huntingdon', mp4: '/videos/survols/huntingdon.mp4', poster: survolHuntingdon },
+  ]}
 />
 
 {/* ── Notre modèle ───────────────────────────────────────────────

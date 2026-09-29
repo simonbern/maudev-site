@@ -74,6 +74,10 @@ export const landing = {
     },
     villes: {
       titre: 'Où MauDev bâtit',
+      // Les survols portent des étiquettes incrustées (adresses, nom de la
+      // ville) : neutres en langue, donc une seule vidéo pour les deux.
+      survol: (ville: string) => `Vue aérienne de ${ville}, projets MauDev identifiés`,
+      survolsTitre: 'Nos projets, vus du ciel',
     },
     chiffres: {
       titre: 'MauDev en chiffres',
@@ -130,6 +134,8 @@ export const landing = {
     },
     villes: {
       titre: 'Where MauDev builds',
+      survol: (ville: string) => `Aerial view of ${ville}, MauDev projects pinned`,
+      survolsTitre: 'Our projects, from above',
     },
     chiffres: {
       titre: 'MauDev in numbers',

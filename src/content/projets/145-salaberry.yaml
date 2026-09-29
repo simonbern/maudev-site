@@ -79,3 +79,9 @@ photos:
       fr: "Stationnement intérieur au sous-sol, colonnes de béton et porte de garage"
       en: "Indoor basement parking, concrete columns and a garage door"
     categorie: commun
+
+# Drone du 2026-09-24 (DJI, 4K 60 i/s, HEVC). Clip complet, ramené à
+# 1920x1080 et 30 i/s, H.264 CRF 21, sans piste audio. Master : reference/NEW/drone-2026-09-24/.
+video:
+  mp4: /videos/145-salaberry/145-salaberry-2026-09.mp4
+  poster: ../../assets/projets/145-salaberry/video-poster.jpg

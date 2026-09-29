@@ -1,4 +1,5 @@
 ---
+import { getImage } from 'astro:assets';
 import { slugVille } from '../format';
 import { localize, type Locale } from '../i18n';
 
@@ -61,8 +62,32 @@ interface Props {
   /** Déjà triées et comptées par l'appelant. `projets` = livrés. */
   villes: { nom: string; projets: number }[];
   locale: Locale;
+  /**
+   * Survols aériens, un par ville, sous la liste. La liste nomme les villes,
+   * les vidéos les montrent avec les projets épinglés. Chaque légende mène au
+   * même groupe de `/projets` que la ligne correspondante.
+   */
+  survols?: { ville: string; mp4: string; poster: ImageMetadata }[];
+  survolLabel?: (ville: string) => string;
+  playLabel?: string;
+  pauseLabel?: string;
+  survolsTitre?: string;
 }
-const { titre, villes, locale } = Astro.props;
+const {
+  titre,
+  villes,
+  locale,
+  survols = [],
+  survolLabel = (v: string) => v,
+  playLabel = 'Play',
+  pauseLabel = 'Pause',
+  survolsTitre,
+} = Astro.props;
+
+// `poster` veut une URL, pas un composant <Image>.
+const posters = await Promise.all(
+  survols.map(async (s) => (await getImage({ src: s.poster, width: 1920, format: 'webp' })).src),
+);
 
 const projetsUrl = localize('/projets', locale);
 ---
@@ -125,5 +150,155 @@ const projetsUrl = localize('/projets', locale);
         ))
       }
     </ol>
+
+    {/* ── Survols. Un seul lecteur à la largeur de la colonne, qui enchaîne
+        les villes, plutôt que deux vignettes côte à côte. À 1 280 px, deux
+        vidéos faisaient 576 px chacune, trop peu pour lire les étiquettes
+        incrustées. Sorties de la grille, elles étaient lisibles mais
+        cassaient l'alignement de la page. Empilées, elles en faisaient deux
+        écrans pleins.
+
+        Les noms de ville au-dessus servent d'onglets. Le filet qui se remplit
+        sous chacun dit ce qui joue et ce qui vient. Au bout d'un clip, le
+        suivant prend le relais, en fondu. */}
+    {
+      survols.length > 0 && (
+        <div data-survols class="mt-16 md:mt-24" data-reveal>
+          {/* Sous-titre de section : `text-h1` sans serif, un cran sous le
+              titre de la section et dans l'autre famille que les noms de
+              ville, pour ne se confondre avec aucun des deux. */}
+          {survolsTitre && (
+            <h3 class="mb-10 text-h1 text-balance text-ink md:mb-12">{survolsTitre}</h3>
+          )}
+          <div class="grid gap-4 md:gap-6" style={`grid-template-columns:repeat(${survols.length},minmax(0,1fr))`}>
+            {survols.map((s, i) => (
+              <button
+                type="button"
+                data-survol-tab
+                aria-pressed={i === 0 ? 'true' : 'false'}
+                aria-controls={`survol-${i}`}
+                class="group cursor-pointer rounded-card text-left"
+              >
+                <span class="block h-0.5 overflow-hidden rounded-full bg-ink/15">
+                  <span data-progress class="block h-full w-0 bg-accent-ink" />
+                </span>
+                <span class="mt-3 block font-display text-h3 text-ink-muted transition-colors duration-500 group-hover:text-ink group-aria-pressed:text-ink">
+                  {s.ville}
+                </span>
+              </button>
+            ))}
+          </div>
+
+          <div class="relative mt-5 aspect-video overflow-hidden rounded-card bg-inverse">
+            {survols.map((s, i) => (
+              <video
+                id={`survol-${i}`}
+                data-actif={i === 0 ? '' : undefined}
+                aria-hidden={i === 0 ? 'false' : 'true'}
+                aria-label={survolLabel(s.ville)}
+                class="absolute inset-0 h-full w-full object-cover opacity-0 transition-opacity duration-700 data-[actif]:opacity-100 motion-reduce:transition-none"
+                src={s.mp4}
+                poster={posters[i]}
+                muted
+                playsinline
+                preload={i === 0 ? 'metadata' : 'none'}
+              />
+            ))}
+
+            {/* Le lecteur démarre seul : il lui faut une pause au clavier
+                (WCAG 2.2.2). Même bouton que le hero. */}
+            <button
+              type="button"
+              data-survol-toggle
+              data-play-label={playLabel}
+              data-pause-label={pauseLabel}
+              aria-label={playLabel}
+              class="absolute right-4 bottom-4 inline-flex h-11 w-11 cursor-pointer items-center justify-center rounded-card bg-scrim/60 text-on-inverse backdrop-blur-sm transition-colors duration-200 hover:bg-scrim/80"
+            >
+              <svg viewBox="0 0 24 24" fill="currentColor" class="hidden h-5 w-5" aria-hidden="true" data-icon-pause>
+                <rect x="7" y="5" width="3.5" height="14" rx="1" />
+                <rect x="13.5" y="5" width="3.5" height="14" rx="1" />
+              </svg>
+              <svg viewBox="0 0 24 24" fill="currentColor" class="h-5 w-5" aria-hidden="true" data-icon-play>
+                <path d="M8 5.5v13l11-6.5z" />
+              </svg>
+            </button>
+          </div>
+        </div>
+      )
+    }
   </div>
 </section>
+
+<script>
+  const root = document.querySelector<HTMLElement>('[data-survols]');
+  if (root) {
+    const vids = [...root.querySelectorAll('video')];
+    const tabs = [...root.querySelectorAll<HTMLButtonElement>('[data-survol-tab]')];
+    const bars = tabs.map((t) => t.querySelector<HTMLElement>('[data-progress]')!);
+    const toggle = root.querySelector<HTMLButtonElement>('[data-survol-toggle]')!;
+    const iconPause = toggle.querySelector('[data-icon-pause]')!;
+    const iconPlay = toggle.querySelector('[data-icon-play]')!;
+
+    let actif = 0;
+    let visible = false;
+    // En mouvement réduit, rien ne démarre seul : le poster reste, le bouton
+    // et les onglets lancent la lecture à la demande.
+    let arrete = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    const sync = () => {
+      const v = vids[actif];
+      const joue = visible && !arrete;
+      if (joue) v.play().catch(() => {});
+      else v.pause();
+      toggle.setAttribute('aria-label', joue ? toggle.dataset.pauseLabel! : toggle.dataset.playLabel!);
+      iconPause.classList.toggle('hidden', !joue);
+      iconPlay.classList.toggle('hidden', joue);
+    };
+
+    const montrer = (i: number) => {
+      vids.forEach((v, k) => {
+        const on = k === i;
+        v.toggleAttribute('data-actif', on);
+        v.setAttribute('aria-hidden', String(!on));
+        tabs[k].setAttribute('aria-pressed', String(on));
+        if (!on) {
+          v.pause();
+          v.currentTime = 0;
+          bars[k].style.width = '0%';
+        }
+      });
+      actif = i;
+      sync();
+    };
+
+    vids.forEach((v, k) => {
+      v.addEventListener('timeupdate', () => {
+        if (v.duration) bars[k].style.width = `${(v.currentTime / v.duration) * 100}%`;
+      });
+      v.addEventListener('ended', () => montrer((k + 1) % vids.length));
+    });
+
+    tabs.forEach((t, k) =>
+      t.addEventListener('click', () => {
+        arrete = false;
+        if (k !== actif) montrer(k);
+        else sync();
+      }),
+    );
+
+    toggle.addEventListener('click', () => {
+      arrete = !arrete;
+      sync();
+    });
+
+    // Rien ne tourne hors champ.
+    new IntersectionObserver(
+      ([e]) => {
+        visible = e.isIntersecting;
+        sync();
+      },
+      { threshold: 0.4 },
+    ).observe(root);
+  }
+</script>

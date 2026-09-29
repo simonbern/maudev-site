@@ -74,11 +74,10 @@ inclusions:
 # Source : src/assets/projets/NEW/DALHOUSIE, recadrée dans dalhousie/renders/.
 # Ce sont des RENDUS 3D, pas des photos : le projet n'est pas bâti. Ils
 # alimentent donc `renders` et non `photos`, et la page les titre comme tels.
-# Version web livrée : 4,63 Mo, 1280x720, 12 s, H.264, 3,2 Mb/s, sans piste
-# audio. Le master d'origine (1,17 Go, 4K, 341 Mb/s) reste dans NEW/ et n'est
-# pas publié. Pas de WebM fourni : H.264 est lu partout, le repli suffit.
+# Drone du 2026-09-24 (DJI, 4K 60 i/s, HEVC). Clip complet, ramené à
+# 1920x1080 et 30 i/s, H.264 CRF 21, sans piste audio. Master : reference/NEW/drone-2026-09-24/.
 video:
-  mp4: /videos/dalhousie/dalhousie.mp4
+  mp4: /videos/dalhousie/dalhousie-2026-09.mp4
   poster: ../../assets/projets/dalhousie/video-poster.jpg
 
 couverture:

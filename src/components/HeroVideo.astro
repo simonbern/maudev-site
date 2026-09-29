@@ -40,6 +40,13 @@ interface Props {
   playLabel: string;
   /** Hauteur du bloc. La landing occupe l'écran, une fiche projet moins. */
   height?: string;
+  /**
+   * Fiche projet : le plan de drone EST le sujet. Vidéo centrée, voile limité
+   * au bas (là où tombe le titre, deux lignes au plus), pas de voile latéral.
+   * Les réglages lourds ci-dessous servent le titre de trois lignes de
+   * l'accueil ; appliqués aux fiches, ils noyaient le bâtiment dans le vert.
+   */
+  leger?: boolean;
 }
 const {
   poster,
@@ -50,8 +57,15 @@ const {
   pauseLabel,
   playLabel,
   height = 'min-h-[85svh] max-h-[900px]',
+  leger = false,
 } = Astro.props;
 const hasVideo = Boolean(webm || mp4);
+// Cadre du média. Le calque est fixe et couvre la fenêtre, mais la section
+// suivante en recouvre le bas dès le départ : sur une fiche, où le bâtiment
+// est au centre du plan, il paraissait donc bas et rogné. En mode léger, le
+// média (et son voile) épouse le hero — même 92svh que `height` dans
+// ProjectDetail — et le plan est centré dans ce qu'on voit vraiment.
+const cadre = leger ? 'inset-x-0 top-0 h-[92svh]' : 'inset-0 h-full';
 
 /**
  * Art direction : deux images, une seule téléchargée.
@@ -153,7 +167,7 @@ const replMobile = posterMobile
             loading="eager"
             fetchpriority="high"
             decoding="async"
-            class="absolute inset-0 -z-20 h-full w-full object-cover"
+            class:list={["absolute -z-20 w-full object-cover", cadre]}
           />
         </picture>
       ) : (
@@ -164,7 +178,7 @@ const replMobile = posterMobile
           sizes="(min-width: 768px) 100vw, 300vw"
           loading="eager"
           fetchpriority="high"
-          class="absolute inset-0 -z-20 h-full w-full object-cover"
+          class:list={["absolute -z-20 w-full object-cover", cadre]}
         />
       )
     }
@@ -181,7 +195,11 @@ const replMobile = posterMobile
           playsinline
           aria-hidden="true"
           tabindex="-1"
-          class="absolute inset-0 -z-10 h-full w-full object-cover opacity-0 transition-opacity duration-500 data-[playing]:opacity-100 md:object-left"
+          class:list={[
+            'absolute -z-10 w-full object-cover opacity-0 transition-opacity duration-500 data-[playing]:opacity-100',
+            cadre,
+            !leger && 'md:object-left',
+          ]}
         />
       )
     }
@@ -200,7 +218,13 @@ const replMobile = posterMobile
          cadrage, de lumière et de saison. C'est donc lui qui doit tenir le
          contraste, pas le hasard du plan. -->
     <div
-      class="absolute inset-0 -z-10 bg-gradient-to-t from-scrim/88 via-scrim/62 to-scrim/38"
+      class:list={[
+        'absolute -z-10 bg-gradient-to-t',
+        cadre,
+        leger
+          ? 'from-scrim/75 via-scrim/15 via-45% to-transparent'
+          : 'from-scrim/88 via-scrim/62 to-scrim/38',
+      ]}
       aria-hidden="true"
     >
     </div>
@@ -219,11 +243,12 @@ const replMobile = posterMobile
          le titre prend toute la largeur, donc le voile aussi — il ne protégeait
          plus rien en particulier et assombrissait toute l'image. Le voile
          vertical y suffit. -->
-    <div
-      class="absolute inset-0 -z-10 hidden bg-gradient-to-r from-scrim/45 to-transparent to-70% md:block"
-      aria-hidden="true"
-    >
-    </div>
+    {!leger && (
+      <div
+        class="absolute inset-0 -z-10 hidden bg-gradient-to-r from-scrim/45 to-transparent to-70% md:block"
+        aria-hidden="true"
+      />
+    )}
   </div>
 
   <!-- Écran propre à la nav : elle flotte par-dessus la photo, et une image

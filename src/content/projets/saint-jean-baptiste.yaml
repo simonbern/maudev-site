@@ -89,12 +89,10 @@ inclusions:
     icone: square-parking
     payant: true
 
-# Drone de la livraison client (SJB00000438.mp4 : 3840x2160, 60 i/s,
-# 112 Mb/s, 28,8 s, 405 Mo). Douze secondes à partir de la sixième, ramenées à
-# 1280x720 et 30 i/s, sans piste audio : 2,17 Mo. Même recette que les autres
-# clips du site.
+# Drone du 2026-09-24 (DJI, 4K 60 i/s, HEVC). Clip complet, ramené à
+# 1920x1080 et 30 i/s, H.264 CRF 21, sans piste audio. Master : reference/NEW/drone-2026-09-24/.
 video:
-  mp4: /videos/saint-jean-baptiste/saint-jean-baptiste.mp4
+  mp4: /videos/saint-jean-baptiste/saint-jean-baptiste-2026-09.mp4
   poster: ../../assets/projets/saint-jean-baptiste/video-poster.jpg
 
 # Aucune photo d'extérieur dans la livraison : les neuf JPEG sont des

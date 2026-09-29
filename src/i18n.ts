@@ -42,12 +42,17 @@ export const realiseAvecFiche = (d: {
   logements: readonly unknown[];
   plans: readonly unknown[];
   renders: readonly unknown[];
+  video?: unknown;
 }) =>
   d.statut === 'realise' &&
   (d.photos.length > 0 ||
     d.logements.length > 0 ||
     d.plans.length > 0 ||
-    d.renders.length > 0);
+    d.renders.length > 0 ||
+    // Un plan de drone suffit (livraison du 2026-09-24) : 47 Nicholson et
+    // 5515 Pierre-Dansereau n'ont rien d'autre, et la vidéo est justement ce
+    // que la carte ne montre pas.
+    d.video !== undefined);
 
 /**
  * Segments d'URL traduits. La clé est toujours le segment FR — le français est
