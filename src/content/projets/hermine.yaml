@@ -79,6 +79,7 @@ inclusions:
 # L'original 12 s est conservé dans reference/NEW/HERMINE/.
 video:
   mp4: /videos/hermine/hermine.mp4
+  carte: /videos/hermine/hermine-carte.mp4
   poster: ../../assets/projets/hermine/video-poster.jpg
 
 # Source d'images : src/assets/projets/NEW/HERMINE (livraison 2026-08-15),

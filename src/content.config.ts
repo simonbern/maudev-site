@@ -163,6 +163,10 @@ const projets = defineCollection({
           .object({
             webm: z.string().optional(),
             mp4: z.string().optional(),
+            // Boucle légère pour les cartes des listes (960 px, 12 s, ~2 Mo) :
+            // elle remplace la couverture fixe. Le fichier du hero pèse
+            // jusqu'à 18 Mo — une grille de quatre cartes en tirerait 50.
+            carte: z.string().optional(),
             // Image de départ de la vidéo. À défaut, le hero retombe sur
             // `couverture` — mais un poster tiré de la première image évite
             // le saut visuel au moment où la lecture démarre.

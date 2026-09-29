@@ -1,0 +1,58 @@
+---
+/**
+ * La vidéo de drone d'un projet, posée sur la couverture d'une carte.
+ *
+ * Le parent garde son <Image> : elle est le poster, et le repli si la vidéo
+ * ne joue pas. La vidéo se superpose et n'apparaît (fondu) qu'une fois la
+ * lecture partie. Le parent doit être positionné (`relative`) et `group`
+ * s'il veut le zoom au survol.
+ *
+ * Même garanties que le hero : rien ne se télécharge avant que la carte
+ * entre dans le cadre, lecture seulement tant qu'elle y est, jamais en
+ * mouvement réduit.
+ */
+interface Props {
+  src: string;
+  class?: string;
+}
+const { src, class: extra } = Astro.props;
+---
+
+<video
+  data-couverture-video
+  data-src={src}
+  muted
+  loop
+  playsinline
+  preload="none"
+  aria-hidden="true"
+  tabindex="-1"
+  class:list={[
+    'absolute inset-0 h-full w-full object-cover opacity-0 transition-[opacity,scale] duration-700 ease-[var(--ease-doux)] data-[playing]:opacity-100',
+    extra,
+  ]}
+></video>
+
+<script>
+  if (!matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    const io = new IntersectionObserver(
+      (entrees) => {
+        for (const e of entrees) {
+          const v = e.target as HTMLVideoElement;
+          if (e.isIntersecting) {
+            // Source attachée au premier passage seulement : `preload="none"`
+            // n'est qu'une indication.
+            if (!v.src) v.src = v.dataset.src!;
+            v.play().then(() => v.setAttribute('data-playing', '')).catch(() => {});
+          } else v.pause();
+        }
+      },
+      { threshold: 0.25 },
+    );
+    document.querySelectorAll<HTMLVideoElement>('video[data-couverture-video]').forEach((v) => {
+      // Source en échec : la couverture fixe reste.
+      v.addEventListener('error', () => v.removeAttribute('data-playing'));
+      io.observe(v);
+    });
+  }
+</script>

@@ -1,5 +1,6 @@
 ---
 import { Image } from 'astro:assets';
+import CouvertureVideo from './CouvertureVideo.astro';
 import type { CollectionEntry } from 'astro:content';
 import Logo from './Logo.astro';
 import { localize, ui, type Locale } from '../i18n';
@@ -74,17 +75,20 @@ const imageADroite = index % 2 === 1;
       imageADroite ? 'md:order-2 md:col-start-7' : 'md:col-start-1',
     ]}
   >
-    <div class="aspect-[4/3] lg:aspect-[3/2]">
+    <div class="relative aspect-[4/3] lg:aspect-[3/2]">
       {
         d.couverture ? (
-          <Image
-            src={d.couverture.src}
-            alt={d.couverture.alt[locale]}
-            widths={[600, 1000, 1400]}
-            sizes="(min-width: 768px) 58vw, 100vw"
-            loading={index === 0 ? 'eager' : 'lazy'}
-            class="h-full w-full object-cover transition-transform duration-700 ease-[var(--ease-doux)] group-hover:scale-[1.04]"
-          />
+          <>
+            <Image
+              src={d.couverture.src}
+              alt={d.couverture.alt[locale]}
+              widths={[600, 1000, 1400]}
+              sizes="(min-width: 768px) 58vw, 100vw"
+              loading={index === 0 ? 'eager' : 'lazy'}
+              class="h-full w-full object-cover transition-transform duration-700 ease-[var(--ease-doux)] group-hover:scale-[1.04]"
+            />
+            {d.video?.carte && <CouvertureVideo src={d.video.carte} class="group-hover:scale-[1.04]" />}
+          </>
         ) : (
           /* Projet « à venir » sans image : gabarit sobre plutôt qu'un cadre
              vide ou une image d'emprunt. Voir DESIGN.md § 7. */

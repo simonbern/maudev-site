@@ -84,4 +84,5 @@ photos:
 # 1920x1080 et 30 i/s, H.264 CRF 21, sans piste audio. Master : reference/NEW/drone-2026-09-24/.
 video:
   mp4: /videos/145-salaberry/145-salaberry-2026-09.mp4
+  carte: /videos/145-salaberry/145-salaberry-carte.mp4
   poster: ../../assets/projets/145-salaberry/video-poster.jpg
