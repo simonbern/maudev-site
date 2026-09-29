@@ -1,5 +1,6 @@
 ---
 import { Image } from 'astro:assets';
+import CouvertureVideo from './CouvertureVideo.astro';
 import type { CollectionEntry } from 'astro:content';
 import CarrouselScript from './CarrouselScript.astro';
 import { landing } from '../copy/landing';
@@ -55,7 +56,7 @@ const avecImage = projets.filter((p) => p.data.couverture);
         avecImage.map((p) => (
           <li class="w-[78%] max-w-[26rem] shrink-0 snap-start sm:w-[22rem]">
             <figure class="h-full bg-page">
-              <div class="aspect-[3/2] overflow-hidden bg-surface-alt">
+              <div class="relative aspect-[3/2] overflow-hidden bg-surface-alt">
                 <Image
                   src={p.data.couverture!.src}
                   alt={p.data.couverture!.alt[locale]}
@@ -64,6 +65,7 @@ const avecImage = projets.filter((p) => p.data.couverture);
                   loading="lazy"
                   class="h-full w-full object-cover"
                 />
+                {p.data.video?.carte && <CouvertureVideo src={p.data.video.carte} />}
               </div>
               <figcaption class="px-5 py-5">
                 <span class="block text-h3 text-ink">{p.data.nom}</span>
